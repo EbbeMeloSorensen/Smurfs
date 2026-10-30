@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Craft.Persistence", "src\Cr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.Persistence.EFCore.AppData", "src\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj", "{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Craft.Persistence.EFCore", "src\Craft.Persistence.EFCore\Craft.Persistence.EFCore.csproj", "{DF874C2F-68F2-408F-96B6-1AC4F3506A67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF874C2F-68F2-408F-96B6-1AC4F3506A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF874C2F-68F2-408F-96B6-1AC4F3506A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF874C2F-68F2-408F-96B6-1AC4F3506A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF874C2F-68F2-408F-96B6-1AC4F3506A67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +50,7 @@ Global
 		{B11CA0F6-3615-4B4D-BECC-A3A3B62F93F0} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 		{9B2ADB00-914C-4883-897E-44EF12E43667} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
+		{DF874C2F-68F2-408F-96B6-1AC4F3506A67} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33F3668F-2253-40DD-ACEE-2BFCCE9FE7E7}

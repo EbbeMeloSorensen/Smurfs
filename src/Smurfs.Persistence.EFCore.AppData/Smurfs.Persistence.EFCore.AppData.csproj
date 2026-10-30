@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Craft.Persistence.EFCore\Craft.Persistence.EFCore.csproj" />
     <ProjectReference Include="..\Smurfs.Persistence\Smurfs.Persistence.csproj" />
   </ItemGroup>
 
