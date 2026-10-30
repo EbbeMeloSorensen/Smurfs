@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.9.12105.275 stable
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.Domain", "src\Smurfs.Domain\Smurfs.Domain.csproj", "{D76B4CC4-34C0-4DD5-97CF-53826200552E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.Persistence", "src\Smurfs.Persistence\Smurfs.Persistence.csproj", "{B11CA0F6-3615-4B4D-BECC-A3A3B62F93F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Craft.Persistence", "src\Craft.Persistence\Craft.Persistence.csproj", "{9B2ADB00-914C-4883-897E-44EF12E43667}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D76B4CC4-34C0-4DD5-97CF-53826200552E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D76B4CC4-34C0-4DD5-97CF-53826200552E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D76B4CC4-34C0-4DD5-97CF-53826200552E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D76B4CC4-34C0-4DD5-97CF-53826200552E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B11CA0F6-3615-4B4D-BECC-A3A3B62F93F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B11CA0F6-3615-4B4D-BECC-A3A3B62F93F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B11CA0F6-3615-4B4D-BECC-A3A3B62F93F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B11CA0F6-3615-4B4D-BECC-A3A3B62F93F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B2ADB00-914C-4883-897E-44EF12E43667}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B2ADB00-914C-4883-897E-44EF12E43667}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B2ADB00-914C-4883-897E-44EF12E43667}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B2ADB00-914C-4883-897E-44EF12E43667}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D76B4CC4-34C0-4DD5-97CF-53826200552E} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
+		{B11CA0F6-3615-4B4D-BECC-A3A3B62F93F0} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
+		{9B2ADB00-914C-4883-897E-44EF12E43667} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33F3668F-2253-40DD-ACEE-2BFCCE9FE7E7}
+	EndGlobalSection
+EndGlobal
