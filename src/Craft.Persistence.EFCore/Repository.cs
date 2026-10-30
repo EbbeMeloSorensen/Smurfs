@@ -19,9 +19,12 @@ namespace Craft.Persistence.EFCore
             throw new NotImplementedException();
         }
 
-        public Task Add(TEntity entity)
+        public virtual async Task Add(TEntity entity)
         {
-            throw new NotImplementedException();
+            await Task.Run(() =>
+            {
+                Context.Set<TEntity>().Add(entity);
+            });
         }
     }
 }
