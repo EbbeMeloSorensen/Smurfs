@@ -5,12 +5,12 @@ namespace Smurfs.Persistence.EFCore.AppData;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly DbContextAppData _context;
+    private readonly DataContext _context;
 
     public ISmurfRepository Smurfs { get; }
 
     public UnitOfWork(
-        DbContextAppData context)
+        DataContext context)
     {
         _context = context;
 
