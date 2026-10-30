@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.9.12105.275 stable
+VisualStudioVersion = 18.9.12105.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.Persistence", "src\Smurfs.Persistence\Smurfs.Persistence.csproj", "{B11CA0F6-3615-4B4D-BECC-A3A3B62F93F0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Craft.Persistence", "src\Craft.Persistence\Craft.Persistence.csproj", "{9B2ADB00-914C-4883-897E-44EF12E43667}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.Persistence.EFCore.AppData", "src\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj", "{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Craft.Persistence.EFCore", "Craft.Persistence.EFCore\Craft.Persistence.EFCore.csproj", "{A6360AE0-2DC4-431A-899D-DD89A7288C2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +33,14 @@ Global
 		{9B2ADB00-914C-4883-897E-44EF12E43667}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B2ADB00-914C-4883-897E-44EF12E43667}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B2ADB00-914C-4883-897E-44EF12E43667}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6360AE0-2DC4-431A-899D-DD89A7288C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6360AE0-2DC4-431A-899D-DD89A7288C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6360AE0-2DC4-431A-899D-DD89A7288C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6360AE0-2DC4-431A-899D-DD89A7288C2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
