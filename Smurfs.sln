@@ -19,6 +19,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2C7B997B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurf.Persistence.EFCore.AppData.UnitTest", "tests\Smurf.Persistence.EFCore.AppData.UnitTest\Smurf.Persistence.EFCore.AppData.UnitTest.csproj", "{EC1ABE6C-72C2-4BFA-BFD2-B7510235992E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{4C450375-312F-4A60-BC29-D98FE40A84A7}"
+	ProjectSection(SolutionItems) = preProject
+		docs\project-context.md = docs\project-context.md
+		docs\roundtrip.md = docs\roundtrip.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "architecture", "architecture", "{1614A5C6-94A5-4009-AD8B-BA405449AAF3}"
+	ProjectSection(SolutionItems) = preProject
+		docs\architecture\domain-model.puml = docs\architecture\domain-model.puml
+		docs\architecture\persistence-architecture.puml = docs\architecture\persistence-architecture.puml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +72,7 @@ Global
 		{2C5E9B5C-5DE1-4BE1-868A-F9303813F826} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 		{DF874C2F-68F2-408F-96B6-1AC4F3506A67} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 		{EC1ABE6C-72C2-4BFA-BFD2-B7510235992E} = {2C7B997B-B630-4014-9651-9CA67EF6118F}
+		{1614A5C6-94A5-4009-AD8B-BA405449AAF3} = {4C450375-312F-4A60-BC29-D98FE40A84A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33F3668F-2253-40DD-ACEE-2BFCCE9FE7E7}

@@ -1,0 +1,26 @@
+@startuml
+' Conceptual view: storage identifiers and EF details intentionally omitted.
+skinparam classAttributeIconSize 0
+left to right direction
+class Smurf {
+  +Name : string {get; set;}
+  +Age : int {get; set;}
+}
+class Village <<internal>> {
+  +Name : string {get; set;}
+}
+class Pet {
+  +Name : string {get; set;}
+}
+Village "0..1" --> "0..*" Smurf : Smurfs (intended membership)
+Smurf "0..*" --> "0..1" Pet : Pet
+note bottom of Village
+  Source exposes a mutable Smurfs collection only.
+  The intended 0..1 village per Smurf is not enforced:
+  no reverse reference or exclusive-membership validation.
+end note
+note bottom of Smurf
+  No age or name validation in source.
+  Pet may be shared; no reverse collection on Pet.
+end note
+@enduml

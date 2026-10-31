@@ -1,0 +1,78 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+package "Craft.Persistence" {
+  interface "IReadRepository<TEntity>" as IRead {
+    +CountAsync(predicates, cancellationToken) : Task<int>
+    +FindAsync(predicates, cancellationToken) : Task<IReadOnlyList<TEntity>>
+  }
+  interface "IWriteRepository<TEntity>" as IWrite {
+    +AddAsync(entity, cancellationToken) : Task
+    +UpdateAsync(entity, cancellationToken) : Task
+    +RemoveAsync(entity, cancellationToken) : Task
+  }
+  interface "IRepository<TEntity>" as IRepository
+}
+package "Craft.Persistence.EFCore" {
+  abstract class "Repository<TEntity>" as Repository
+}
+package "Smurfs.Persistence" {
+  interface ISmurfRepository
+  interface IUnitOfWork {
+    +Smurfs : ISmurfRepository {get;}
+    +CompleteAsync(cancellationToken) : Task
+  }
+  interface IUnitOfWorkFactory {
+    +CreateUnitOfWork() : IUnitOfWork
+  }
+}
+package "Smurfs.Persistence.EFCore.AppData" {
+  class SmurfRepository
+  class UnitOfWork <<sealed>>
+  class UnitOfWorkFactory <<internal>>
+  class DataContext {
+    +Smurfs : DbSet<Smurf> {get; set;}
+    {static} +Configure(modelBuilder) : void
+  }
+  class DataContextFactory <<design-time>>
+  class SmurfConfiguration
+}
+package "EF Core / BCL" {
+  class DbContext
+  interface "IDbContextFactory<DataContext>" as ContextFactory
+  interface "IDesignTimeDbContextFactory<DataContext>" as DesignFactory
+  interface "IEntityTypeConfiguration<Smurf>" as EntityConfiguration
+  interface IAsyncDisposable
+}
+IRead <|-- IRepository
+IWrite <|-- IRepository
+IRepository <|.. Repository
+IRepository <|-- ISmurfRepository : TEntity = Smurf
+Repository <|-- SmurfRepository : TEntity = Smurf
+ISmurfRepository <|.. SmurfRepository
+IAsyncDisposable <|-- IUnitOfWork
+IUnitOfWork <|.. UnitOfWork
+IUnitOfWorkFactory <|.. UnitOfWorkFactory
+IUnitOfWork --> ISmurfRepository : exposes
+IUnitOfWorkFactory ..> IUnitOfWork : creates
+UnitOfWork --> SmurfRepository : constructs
+UnitOfWork --> DataContext : owns / saves / disposes
+Repository --> DbContext : uses; does not own
+SmurfRepository ..> DbContext : constructor argument
+UnitOfWorkFactory --> ContextFactory : uses
+UnitOfWorkFactory ..> UnitOfWork : constructs with fresh context
+DbContext <|-- DataContext
+DesignFactory <|.. DataContextFactory
+DataContextFactory ..> DataContext : creates with SQLite options
+EntityConfiguration <|.. SmurfConfiguration
+DataContext ..> SmurfConfiguration : static helper only
+note bottom of Repository
+  AND predicates; configured tracking (default: tracking).
+  No explicit Includes. Mutations stage; never SaveChanges.
+end note
+note bottom of DataContext
+  Configure has no call site or OnModelCreating hook.
+  Model currently built by convention.
+  Pet discovered via Smurf; Village not mapped.
+end note
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+' Current migration/snapshot and convention-based DataContext model.
+hide methods
+entity "Smurfs" as SmurfTable {
+  * Id : Guid <<PK>>
+  --
+  * Name : string
+  * Age : int
+  PetId : Guid? <<FK, indexed>>
+}
+entity "Pet" as PetTable {
+  * Id : Guid <<PK>>
+  --
+  * Name : string
+}
+SmurfTable "0..*" --> "0..1" PetTable : PetId
+note bottom of PetTable
+  SQLite migration uses TEXT for Guid/string,
+  INTEGER for Age. No Village table.
+  FK migration does not specify a cascading delete action.
+end note
+@enduml

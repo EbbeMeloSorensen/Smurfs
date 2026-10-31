@@ -5,8 +5,10 @@ using Smurfs.Persistence.EFCore.AppData.Repositories;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest
 {
+    /// <summary>Checks a basic SQLite repository persistence round trip.</summary>
     public class SmurfRepositoryTests
     {
+        /// <summary>Verifies that an added Smurf can be read from a fresh context after saving.</summary>
         [Fact]
         public async Task Add_ShouldPersistSmurf()
         {
