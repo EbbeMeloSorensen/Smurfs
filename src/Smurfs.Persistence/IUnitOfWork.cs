@@ -6,5 +6,6 @@ public interface IUnitOfWork : IDisposable
 {
     ISmurfRepository Smurfs { get; }
 
-    void Complete();
+    Task CompleteAsync(
+        CancellationToken cancellationToken = default);
 }

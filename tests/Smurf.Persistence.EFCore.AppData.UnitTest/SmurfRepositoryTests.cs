@@ -30,7 +30,7 @@ namespace Smurf.Persistence.EFCore.AppData.UnitTest
                 };
 
                 // Act
-                await repository.Add(smurf);
+                await repository.AddAsync(smurf);
                 await context.SaveChangesAsync();
             }
 

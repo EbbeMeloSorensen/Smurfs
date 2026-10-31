@@ -1,11 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿namespace Craft.Persistence;
 
-namespace Craft.Persistence;
-
-public interface IRepository<TEntity> where TEntity : class
+public interface IRepository<TEntity> :
+    IReadRepository<TEntity>,
+    IWriteRepository<TEntity>
+    where TEntity : class
 {
-    Task<IEnumerable<TEntity>> Find(
-        IEnumerable<Expression<Func<TEntity, bool>>> predicates);
-
-    Task Add(TEntity entity);
 }

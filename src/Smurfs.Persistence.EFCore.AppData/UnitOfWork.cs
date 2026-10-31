@@ -1,5 +1,5 @@
-﻿using Smurfs.Persistence.Repositories;
-using Smurfs.Persistence.EFCore.AppData.Repositories;
+﻿using Smurfs.Persistence.EFCore.AppData.Repositories;
+using Smurfs.Persistence.Repositories;
 
 namespace Smurfs.Persistence.EFCore.AppData;
 
@@ -17,9 +17,13 @@ public class UnitOfWork : IUnitOfWork
         Smurfs = new SmurfRepository(_context);
     }
 
-    public void Complete()
+    public async Task CompleteAsync(
+        CancellationToken cancellationToken = default)
     {
-        _context.SaveChanges();
+        await Task.Run(() =>
+        {
+            _context.SaveChanges();
+        }, cancellationToken);
     }
 
     public void Dispose()
