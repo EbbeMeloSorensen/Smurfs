@@ -11,7 +11,7 @@ internal class UnitOfWorkFactory : IUnitOfWorkFactory
         _dbContextFactory = dbContextFactory;
     }
 
-    public IUnitOfWork GenerateUnitOfWork()
+    public IUnitOfWork CreateUnitOfWork()
     {
         return new UnitOfWork(_dbContextFactory.CreateDbContext());
     }

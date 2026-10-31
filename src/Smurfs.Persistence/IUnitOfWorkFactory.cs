@@ -2,5 +2,5 @@
 
 public interface IUnitOfWorkFactory
 {
-    IUnitOfWork GenerateUnitOfWork();
+    IUnitOfWork CreateUnitOfWork();
 }
