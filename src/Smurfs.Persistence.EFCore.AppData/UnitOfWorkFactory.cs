@@ -4,15 +4,16 @@ namespace Smurfs.Persistence.EFCore.AppData;
 
 internal class UnitOfWorkFactory : IUnitOfWorkFactory
 {
-    private readonly IDbContextFactory<DataContext> _dbContextFactory;
+    private readonly IDbContextFactory<DataContext> _contextFactory;
 
-    public UnitOfWorkFactory(IDbContextFactory<DataContext> dbContextFactory)
+    public UnitOfWorkFactory(
+        IDbContextFactory<DataContext> contextFactory)
     {
-        _dbContextFactory = dbContextFactory;
+        _contextFactory = contextFactory;
     }
 
     public IUnitOfWork CreateUnitOfWork()
     {
-        return new UnitOfWork(_dbContextFactory.CreateDbContext());
+        return new UnitOfWork(_contextFactory.CreateDbContext());
     }
 }

@@ -3,7 +3,7 @@ using Smurfs.Persistence.EFCore.AppData.Repositories;
 
 namespace Smurfs.Persistence.EFCore.AppData;
 
-public class UnitOfWork : IUnitOfWork
+public sealed class UnitOfWork : IUnitOfWork
 {
     private readonly DataContext _context;
 
@@ -12,7 +12,7 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(
         DataContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
 
         Smurfs = new SmurfRepository(_context);
     }
@@ -20,17 +20,11 @@ public class UnitOfWork : IUnitOfWork
     public async Task CompleteAsync(
         CancellationToken cancellationToken = default)
     {
-        await Task.Run(() =>
-        {
-            _context.SaveChanges();
-        }, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await Task.Run(() =>
-        {
-            _context.Dispose();
-        });
+        return _context.DisposeAsync();
     }
 }

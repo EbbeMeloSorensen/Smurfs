@@ -3,52 +3,79 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Craft.Persistence.EFCore
 {
-    public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public abstract class Repository<TEntity> : IRepository<TEntity>
+        where TEntity : class
     {
         protected readonly DbContext Context;
 
         protected Repository(
             DbContext context)
         {
-            Context = context;
+            Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public Task<int> CountAsync(
+        public async Task<int> CountAsync(
             IEnumerable<Expression<Func<TEntity, bool>>> predicates,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = ApplyPredicates(predicates);
+
+            return await query.CountAsync(cancellationToken);
         }
 
-        public Task<IReadOnlyList<TEntity>> FindAsync(
+        public async Task<IReadOnlyList<TEntity>> FindAsync(
             IEnumerable<Expression<Func<TEntity, bool>>> predicates,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = ApplyPredicates(predicates);
+
+            return await query.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(
+        public Task AddAsync(
             TEntity entity,
             CancellationToken cancellationToken = default)
         {
-            await Task.Run(() =>
-            {
-                Context.Set<TEntity>().Add(entity);
-            }, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Context.Set<TEntity>().Add(entity);
+
+            return Task.CompletedTask;
         }
 
         public Task UpdateAsync(
             TEntity entity,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Context.Set<TEntity>().Update(entity);
+
+            return Task.CompletedTask;
         }
 
         public Task RemoveAsync(
             TEntity entity,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Context.Set<TEntity>().Remove(entity);
+
+            return Task.CompletedTask;
+        }
+
+        private IQueryable<TEntity> ApplyPredicates(
+            IEnumerable<Expression<Func<TEntity, bool>>> predicates)
+        {
+            IQueryable<TEntity> query = Context.Set<TEntity>();
+
+            foreach (var predicate in predicates)
+            {
+                query = query.Where(predicate);
+            }
+
+            return query;
         }
     }
 }
