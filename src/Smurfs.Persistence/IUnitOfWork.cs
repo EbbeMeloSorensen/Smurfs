@@ -2,7 +2,7 @@
 
 namespace Smurfs.Persistence;
 
-public interface IUnitOfWork : IDisposable
+public interface IUnitOfWork : IAsyncDisposable
 {
     ISmurfRepository Smurfs { get; }
 

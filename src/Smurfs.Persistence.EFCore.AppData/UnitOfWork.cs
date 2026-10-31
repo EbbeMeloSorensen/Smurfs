@@ -26,8 +26,11 @@ public class UnitOfWork : IUnitOfWork
         }, cancellationToken);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _context.Dispose();
+        await Task.Run(() =>
+        {
+            _context.Dispose();
+        });
     }
 }
