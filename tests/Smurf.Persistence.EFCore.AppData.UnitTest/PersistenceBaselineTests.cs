@@ -13,7 +13,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     private readonly SqliteConnection _connection = new("Data Source=:memory:");
     private DbContextOptions<DataContext> Options => new DbContextOptionsBuilder<DataContext>()
         .UseSqlite(_connection).Options;
-    private static readonly Expression<Func<SmurfEntity, bool>>[] All = [];
+    private static readonly Expression<Func<SmurfEntity, bool>>[] _all = [];
 
     /// <summary>Opens an isolated database and creates the convention-based schema.</summary>
     public async Task InitializeAsync()
@@ -41,8 +41,8 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
 
         Assert.Single(await repository.FindAsync(filters));
         Assert.Equal(1, await repository.CountAsync(filters));
-        Assert.Equal(3, await repository.CountAsync(All));
-        Assert.Equal(3, (await repository.FindAsync(All)).Count);
+        Assert.Equal(3, await repository.CountAsync(_all));
+        Assert.Equal(3, (await repository.FindAsync(_all)).Count);
         Assert.Empty(await repository.FindAsync([s => s.Age < 0]));
     }
 
@@ -57,7 +57,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         }
         await using (var context = new DataContext(Options))
         {
-            var entity = Assert.Single(await new SmurfRepository(context).FindAsync(All));
+            var entity = Assert.Single(await new SmurfRepository(context).FindAsync(_all));
             Assert.Equal(EntityState.Unchanged, context.Entry(entity).State);
             entity.Name = "After";
             await context.SaveChangesAsync();
