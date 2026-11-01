@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Craft.Persistence.EFCore;
+using Microsoft.EntityFrameworkCore;
 using Smurfs.Domain;
 using Smurfs.Persistence.Repositories;
 

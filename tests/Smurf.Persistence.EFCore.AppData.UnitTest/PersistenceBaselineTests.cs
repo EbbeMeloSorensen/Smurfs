@@ -82,7 +82,10 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         {
             await unit.Smurfs.UpdateAsync(entity);
             await using (var beforeCommit = new DataContext(Options))
+            {
                 Assert.Equal("Before", (await beforeCommit.Smurfs.SingleAsync()).Name);
+            }
+
             await unit.CompleteAsync();
         }
         await using var verify = new DataContext(Options);
@@ -97,11 +100,17 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         await using var unit = new UnitOfWork(new DataContext(Options));
         await unit.Smurfs.AddAsync(entity);
         await using (var beforeCommit = new DataContext(Options))
+        {
             Assert.Empty(await beforeCommit.Smurfs.ToListAsync());
+        }
+
         await unit.CompleteAsync();
         await unit.Smurfs.RemoveAsync(entity);
         await using (var beforeDelete = new DataContext(Options))
+        {
             Assert.Single(await beforeDelete.Smurfs.ToListAsync());
+        }
+
         await unit.CompleteAsync();
         await using var verify = new DataContext(Options);
         Assert.Empty(await verify.Smurfs.ToListAsync());
@@ -113,7 +122,10 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     {
         var context = new DataContext(Options);
         await using (var unit = new UnitOfWork(context))
+        {
             await unit.Smurfs.AddAsync(new SmurfEntity { Name = "Unsaved" });
+        }
+
         Assert.Throws<ObjectDisposedException>(() => context.Smurfs.ToList());
         await using var verify = new DataContext(Options);
         Assert.Empty(await verify.Smurfs.ToListAsync());
