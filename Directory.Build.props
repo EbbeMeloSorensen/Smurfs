@@ -1,0 +1,18 @@
+<Project>
+  <PropertyGroup>
+    <!-- Shared version number for all projects -->
+    <Version>0.0.1</Version>
+
+    <!-- Optional but nice-to-have metadata -->
+    <Authors>Your Name</Authors>
+    <Company>Your Company</Company>
+    <Product>Smurfs solution</Product>
+
+    <!-- Common settings -->
+    <RepositoryUrl>https://github.com/EbbeMeloSorensen/Smurfs</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>false</IncludeSymbols>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>
