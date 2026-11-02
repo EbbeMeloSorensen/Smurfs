@@ -1,7 +1,7 @@
 namespace Smurfs.Domain;
 
 /// <summary>An internal village model with a mutable collection of Smurfs.</summary>
-internal class Village
+public class Village
 {
     /// <summary>Gets the identifier assigned when this instance is constructed.</summary>
     public Guid Id { get; private set; } = Guid.NewGuid();
