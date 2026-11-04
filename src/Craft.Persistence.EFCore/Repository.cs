@@ -3,18 +3,32 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Craft.Persistence.EFCore;
 
-/// <summary>Uses an EF Core context to query entities and stage changes.</summary>
-/// <typeparam name="TEntity">An entity type mapped by the supplied context.</typeparam>
-/// <remarks>Does not own or dispose the context. Queries use its configured tracking policy (tracking by default), apply predicates with AND, and do not explicitly include navigations. Mutations use EF graph/state rules; Update may mark all mapped values modified and attach reachable entities. No method saves changes.</remarks>
+/// <summary>
+/// Uses an EF Core context to query entities and stage changes.
+/// </summary>
+/// <typeparam name="TEntity">
+/// An entity type mapped by the supplied context.
+/// </typeparam>
+/// <remarks>
+/// Does not own or dispose the context. Queries use its configured tracking policy (tracking by default), apply predicates with AND, and do not explicitly include navigations. Mutations use EF graph/state rules; Update may mark all mapped values modified and attach reachable entities. No method saves changes.
+/// </remarks>
 public abstract class Repository<TEntity> : IRepository<TEntity>
     where TEntity : class
 {
-    /// <summary>The context shared with the owning persistence session.</summary>
+    /// <summary>
+    /// The context shared with the owning persistence session.
+    /// </summary>
     protected readonly DbContext Context;
 
-    /// <summary>Creates a repository using an externally owned context.</summary>
-    /// <param name="context">The context used for all operations.</param>
-    /// <exception cref="ArgumentNullException">The context is null.</exception>
+    /// <summary>
+    /// Creates a repository using an externally owned context.
+    /// </summary>
+    /// <param name="context">
+    /// The context used for all operations.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// The context is null.
+    /// </exception>
     protected Repository(
         DbContext context)
     {

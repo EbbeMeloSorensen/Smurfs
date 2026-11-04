@@ -7,7 +7,9 @@ using SmurfEntity = Smurfs.Domain.Smurf;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;
 
-/// <summary>Verifies relational repository and session behavior against isolated in-memory SQLite databases.</summary>
+/// <summary>
+/// Verifies relational repository and session behavior against isolated in-memory SQLite databases.
+/// </summary>
 public sealed class PersistenceBaselineTests : IAsyncLifetime
 {
     private readonly SqliteConnection _connection = new("Data Source=:memory:");
@@ -17,7 +19,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
 
     private static readonly Expression<Func<SmurfEntity, bool>>[] _all = [];
 
-    /// <summary>Opens an isolated database and creates the convention-based schema.</summary>
+    /// <summary>
+    /// Opens an isolated database and creates the convention-based schema.
+    /// </summary>
     public async Task InitializeAsync()
     {
         await _connection.OpenAsync();
@@ -25,10 +29,14 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         await context.Database.EnsureCreatedAsync();
     }
 
-    /// <summary>Closes the connection and releases the in-memory database.</summary>
+    /// <summary>
+    /// Closes the connection and releases the in-memory database.
+    /// </summary>
     public Task DisposeAsync() => _connection.DisposeAsync().AsTask();
 
-    /// <summary>Verifies filter conjunction, unfiltered queries and empty results.</summary>
+    /// <summary>
+    /// Verifies filter conjunction, unfiltered queries and empty results.
+    /// </summary>
     [Fact]
     public async Task Queries_CombinePredicatesWithAnd_AndAcceptEmptyFilters()
     {
@@ -48,7 +56,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Empty(await repository.FindAsync([s => s.Age < 0]));
     }
 
-    /// <summary>Verifies that default read tracking allows edits to persist without an explicit Update.</summary>
+    /// <summary>
+    /// Verifies that default read tracking allows edits to persist without an explicit Update.
+    /// </summary>
     [Fact]
     public async Task Find_TracksByDefault_AndTrackedEditsAreCommitted()
     {
@@ -68,7 +78,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Equal("After", (await verify.Smurfs.SingleAsync()).Name);
     }
 
-    /// <summary>Verifies detached updates and the Unit of Work commit boundary.</summary>
+    /// <summary>
+    /// Verifies detached updates and the Unit of Work commit boundary.
+    /// </summary>
     [Fact]
     public async Task DetachedUpdate_IsStagedUntilComplete_AndPersistsThroughUnitOfWork()
     {
@@ -94,7 +106,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Equal("After", (await verify.Smurfs.SingleAsync()).Name);
     }
 
-    /// <summary>Verifies insert and delete staging against independent read contexts.</summary>
+    /// <summary>
+    /// Verifies insert and delete staging against independent read contexts.
+    /// </summary>
     [Fact]
     public async Task AddAndRemove_DoNotSaveUntilComplete()
     {
@@ -118,7 +132,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Empty(await verify.Smurfs.ToListAsync());
     }
 
-    /// <summary>Verifies context ownership and absence of an implicit commit on disposal.</summary>
+    /// <summary>
+    /// Verifies context ownership and absence of an implicit commit on disposal.
+    /// </summary>
     [Fact]
     public async Task Disposal_DiscardsUncommittedInsert_AndDisposesOwnedContext()
     {
@@ -133,8 +149,12 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Empty(await verify.Smurfs.ToListAsync());
     }
 
-    /// <summary>Verifies that already-cancelled mutations leave the change tracker empty.</summary>
-    /// <param name="operation">The staging operation to cancel.</param>
+    /// <summary>
+    /// Verifies that already-cancelled mutations leave the change tracker empty.
+    /// </summary>
+    /// <param name="operation">
+    /// The staging operation to cancel.
+    /// </param>
     [Theory]
     [InlineData("Add")]
     [InlineData("Update")]
@@ -155,7 +175,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Empty(context.ChangeTracker.Entries());
     }
 
-    /// <summary>Verifies that current mappings match the regenerated migration snapshot.</summary>
+    /// <summary>
+    /// Verifies that current mappings match the regenerated migration snapshot.
+    /// </summary>
     [Fact]
     public async Task Model_IncludesVillageAndPets_AndMatchesMigrationSnapshot()
     {
@@ -180,7 +202,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Equal(typeof(Guid?), foreignKey.ClrType);
     }
 
-    /// <summary>Verifies village membership and shared pets survive a relational round trip.</summary>
+    /// <summary>
+    /// Verifies village membership and shared pets survive a relational round trip.
+    /// </summary>
     [Fact]
     public async Task VillageMembership_AndSharedPet_RoundTrip()
     {
@@ -208,7 +232,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Null(verify.Entry(traveller).Property<Guid?>("VillageId").CurrentValue);
     }
 
-    /// <summary>Verifies that the initial migration creates usable village and pet relationships.</summary>
+    /// <summary>
+    /// Verifies that the initial migration creates usable village and pet relationships.
+    /// </summary>
     [Fact]
     public async Task InitialMigration_CreatesUsableSchemaInFreshDatabase()
     {

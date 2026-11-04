@@ -15,6 +15,14 @@
 - Separate every pair of adjacent members in handwritten classes, interfaces, structs and records by exactly one blank line, including consecutive properties, fields, constants, events, constructors, methods and nested types. Place the separator before the next member's XML comments and attributes; keep those comments and attributes together with the declaration. Do not add blank lines immediately inside type braces. Leave generated migrations, snapshots and other generated code under their generator's formatting. Standard `dotnet format` does not reliably enforce member separation; inspect it explicitly during review, especially after adding properties or fields.
 - Order overloads together and private helpers logically rather than alphabetically. Avoid `#region` unless it materially aids navigation.
 - Use precise XML `summary`, `remarks`, `param`, `returns`, `exception` and `see` tags where warranted. Explain behavior, invariants, constraints and non-obvious contracts, not just names. Don't add boilerplate comments to trivial private members.
+- In handwritten C#, put each paired documentation block's opening tag, content and closing tag on separate `///` lines. Apply this to summary, remarks, param, typeparam, returns, value, exception and example blocks, even when the text is short. Preserve inline markup such as `<see cref="..." />` and `<c>...</c>` within prose. Keep self-closing tags such as `<inheritdoc />` on one line. Do not insert blank lines between documentation and its member; leave generated code to its generator.
+
+```csharp
+/// <summary>
+/// Gets the identifier assigned when this instance is constructed.
+/// </summary>
+public Guid Id { get; private set; } = Guid.NewGuid();
+```
 - Prefer small, focused changes. Treat warnings as errors where the project already does so; don't suppress diagnostics just to make a build green.
 
 ## PlantUML conventions

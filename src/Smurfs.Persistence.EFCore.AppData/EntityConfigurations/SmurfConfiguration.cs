@@ -4,7 +4,9 @@ using Smurfs.Domain;
 
 namespace Smurfs.Persistence.EFCore.AppData.EntityConfigurations;
 
-/// <summary>Defines the explicit Smurf primary-key mapping.</summary>
+/// <summary>
+/// Defines the explicit Smurf primary-key mapping.
+/// </summary>
 public class SmurfConfiguration : IEntityTypeConfiguration<Smurf>
 {
     /// <inheritdoc />
