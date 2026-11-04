@@ -11,8 +11,10 @@ namespace Smurf.Persistence.EFCore.AppData.UnitTest;
 public sealed class PersistenceBaselineTests : IAsyncLifetime
 {
     private readonly SqliteConnection _connection = new("Data Source=:memory:");
+
     private DbContextOptions<DataContext> Options => new DbContextOptionsBuilder<DataContext>()
         .UseSqlite(_connection).Options;
+
     private static readonly Expression<Func<SmurfEntity, bool>>[] _all = [];
 
     /// <summary>Opens an isolated database and creates the convention-based schema.</summary>

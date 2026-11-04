@@ -108,9 +108,11 @@ dotnet_naming_style.interface_style.capitalization = pascal_case
 # Formatting warnings (IDE0055), not build-breaking by default.
 dotnet_diagnostic.IDE0055.severity = warning
 
-# Note: EditorConfig cannot reliably enforce C# member ordering, exactly one
-# blank line between members, or XML docs on every public member. Put those
-# in AGENTS.md and/or enforce them with additional analyzers.
+# Member spacing: exactly one blank line between adjacent handwritten type
+# members, including properties and fields. Keep XML docs/attributes attached
+# to their declaration. See AGENTS.md and docs/roundtrip.md. Standard EditorConfig
+# and dotnet format do not reliably enforce this; review spacing explicitly.
+# Generated migrations and snapshots retain generator formatting.
 
 [*.{json,jsonc,yml,yaml,md,xml,props,targets}]
 end_of_line = lf
