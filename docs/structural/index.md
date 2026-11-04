@@ -10,7 +10,7 @@ Source: [domain-model.puml](diagrams/domain-model.puml).
 
 ## Persistence architecture
 
-The five production projects separate domain types, provider-neutral Craft and Smurfs contracts, and reusable/Smurfs-specific EF Core implementations. Only the Smurf repository exists. One UnitOfWork owns the shared DataContext, saves it on CompleteAsync and disposes it asynchronously. The internal runtime factory and public design-time SQLite factory have different purposes. No application or composition root exists.
+The five production projects separate domain types, provider-neutral Craft and Smurfs contracts, and reusable/Smurfs-specific EF Core implementations. The diagram groups selected types by their containing assembly using UML components, rather than namespace packages. Arrows describe type relationships; those crossing component boundaries reveal the relevant assembly dependencies. The diagram does not enumerate project references. Explicit domain dependencies show generic type arguments, entity sets and configuration targets; dependencies through other interfaces are not repeated as direct domain dependencies. The external framework area spans multiple assemblies. Domain members and relationships remain detailed in the conceptual domain model. Only the Smurf repository exists. One UnitOfWork owns the shared DataContext, saves it on CompleteAsync and disposes it asynchronously. The internal runtime factory and public design-time SQLite factory have different purposes. No application or composition root exists.
 
 ![Persistence architecture](../_generated/diagrams/structural/diagrams/persistence-architecture.svg)
 

@@ -26,6 +26,16 @@
 - Reconcile only the diagrams affected by a change. Omission from a scoped diagram is not evidence a type or relationship should be deleted.
 - Diagram generation must not depend on sending private content to a public PlantUML server.
 
+### Assembly architecture views
+
+- Group selected classes and interfaces by their containing production .NET assembly using UML components (`component` with `skinparam componentStyle uml2`). Verify ownership against project files and any AssemblyName overrides; namespaces do not define assembly boundaries. Explain that components represent assemblies.
+- Keep external framework types in a clearly labelled area spanning multiple assemblies unless individual external assemblies are relevant to the view.
+- Show inheritance, interface realization, associations and direct type dependencies across component boundaries. Do not add separate assembly/project-reference arrows to this type-oriented view.
+- Inspect signatures, generic base classes and interfaces, generic arguments, properties, parameters, return types and configuration targets for relevant dependencies. A concrete generic argument creates a dependency even when only named on an inheritance label: for example, `ISmurfRepository : IRepository<Smurf>` warrants `ISmurfRepository ..> Smurf`.
+- Add a dashed dependency when a relevant direct type use would otherwise be hidden; label its purpose, such as generic type argument, entity set or configures. Do not duplicate an association, inheritance or realization that already expresses the same type relationship. Do not infer direct dependencies merely from transitive use or a project reference.
+- Keep domain types selective, but include those needed as endpoints for the persistence dependencies. Keep domain member details and internal domain associations in the conceptual model.
+- As the model grows, check new and changed types against all applicable diagrams. Keep assembly ownership, navigation direction and multiplicities consistent with the inspected code and accepted decisions; document implementation gaps explicitly.
+
 ## Change workflow
 
 1. Inspect affected C# and relevant diagrams/docs; identify implemented facts and design intentions.

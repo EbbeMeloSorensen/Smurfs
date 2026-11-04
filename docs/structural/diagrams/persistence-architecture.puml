@@ -1,7 +1,9 @@
 @startuml
+allowmixing
+skinparam componentStyle uml2
 skinparam classAttributeIconSize 0
 left to right direction
-package "Craft.Persistence" {
+component "Craft.Persistence" as CraftContracts {
   interface "IReadRepository<TEntity>" as IRead {
     +CountAsync(predicates, cancellationToken) : Task<int>
     +FindAsync(predicates, cancellationToken) : Task<IReadOnlyList<TEntity>>
@@ -13,10 +15,10 @@ package "Craft.Persistence" {
   }
   interface "IRepository<TEntity>" as IRepository
 }
-package "Craft.Persistence.EFCore" {
+component "Craft.Persistence.EFCore" as CraftEF {
   abstract class "Repository<TEntity>" as Repository
 }
-package "Smurfs.Persistence" {
+component "Smurfs.Persistence" as SmurfContracts {
   interface ISmurfRepository
   interface IUnitOfWork {
     +Smurfs : ISmurfRepository {get;}
@@ -26,7 +28,7 @@ package "Smurfs.Persistence" {
     +CreateUnitOfWork() : IUnitOfWork
   }
 }
-package "Smurfs.Persistence.EFCore.AppData" {
+component "Smurfs.Persistence.EFCore.AppData" as AppData {
   class SmurfRepository
   class UnitOfWork <<sealed>>
   class UnitOfWorkFactory <<internal>>
@@ -39,19 +41,31 @@ package "Smurfs.Persistence.EFCore.AppData" {
   class DataContextFactory <<design-time>>
   class SmurfConfiguration
 }
-package "EF Core / BCL" {
+component "Smurfs.Domain" as Domain {
+  class Smurf
+  class Village
+  class Pet
+}
+rectangle "External framework types (multiple assemblies)" as Framework {
   class DbContext
   interface "IDbContextFactory<DataContext>" as ContextFactory
   interface "IDesignTimeDbContextFactory<DataContext>" as DesignFactory
   interface "IEntityTypeConfiguration<Smurf>" as EntityConfiguration
   interface IAsyncDisposable
 }
+
 IRead <|-- IRepository
 IWrite <|-- IRepository
 IRepository <|.. Repository
 IRepository <|-- ISmurfRepository : TEntity = Smurf
 Repository <|-- SmurfRepository : TEntity = Smurf
 ISmurfRepository <|.. SmurfRepository
+ISmurfRepository ..> Smurf : generic type argument
+SmurfRepository ..> Smurf : generic type argument
+SmurfConfiguration ..> Smurf : configures
+DataContext ..> Smurf : entity set
+DataContext ..> Village : entity set
+DataContext ..> Pet : entity set
 IAsyncDisposable <|-- IUnitOfWork
 IUnitOfWork <|.. UnitOfWork
 IUnitOfWorkFactory <|.. UnitOfWorkFactory
@@ -78,4 +92,10 @@ note bottom of DataContext
   Smurf, Village and Pet exposed through DbSets.
   Initial migration and snapshot match the runtime model.
 end note
+legend bottom left
+  UML components represent production .NET assemblies.
+  Arrows describe relationships between types.
+  Framework area groups external types, not a single assembly.
+  Domain members and internal relationships: see domain model.
+endlegend
 @enduml

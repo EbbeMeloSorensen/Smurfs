@@ -100,3 +100,5 @@ docfx serve docs/_site
 Running DocFX alone does not perform the separate PlantUML rendering step. Use the platform build entry point whenever diagram sources change or when building a fresh checkout.
 
 Inspect `docs/_site/index.html`, `structural/index.html`, `behavioral/index.html`, `decisions/index.html`, and `api/Smurfs.Domain.Village.html`. API cross-references must resolve to generated pages; diagram links must point to copied SVG resources. A successful build is separate from semantic model review.
+
+When reconciling diagrams, rebuild generated diagrams and the DocFX site in the repository whose documentation the user views. A successful staging-copy build validates the staged inputs but does not refresh that repository's `_generated` or `_site` output. After applying validated source changes, run the repository build entry point there and verify the affected SVG copied into `_site/_generated/diagrams/` contains the expected types and relationships. Report the distinction if only staging validation was possible. Do not edit generated SVG or HTML as the source of a correction.

@@ -10,7 +10,7 @@ This file is the entry point for Codex. Read the linked documents before making 
 
 1. Own the quality of the implementation **and its documentation**. Documentation is part of the definition of done, not optional follow-up work.
 2. Inspect existing code, diagrams, project files and DocFX configuration before editing. Never assume this guidance overrides facts in the repository.
-3. Keep public/protected XML documentation meaningful; maintain affected structural and behavioral PlantUML and Markdown whenever implementation/design changes warrant it.
+3. Keep public/protected XML documentation meaningful; maintain affected structural and behavioral PlantUML and Markdown whenever implementation/design changes warrant it. Follow the assembly grouping and direct type-dependency rules in `docs/roundtrip.md`; review all three structural perspectives when domain or persistence types change.
 4. Respect `.editorconfig` and use the member organization described in `docs/roundtrip.md`. Do not reformat unrelated files merely to apply style preferences.
 5. Avoid changing runtime behavior, public contracts, EF Core mappings or migrations unless explicitly asked. Report architectural or model inconsistencies instead of guessing.
 6. Run the narrowest relevant tests and validation commands available; report which passed, failed or could not run.
