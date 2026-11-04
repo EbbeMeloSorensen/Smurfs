@@ -27,7 +27,9 @@
     "resource": [
       {
         "files": [
-          "images/**"
+          "images/**",
+          "_generated/diagrams/**",
+          "structural/diagrams/*.puml"
         ]
       }
     ],

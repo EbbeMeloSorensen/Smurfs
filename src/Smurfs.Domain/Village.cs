@@ -1,6 +1,6 @@
 namespace Smurfs.Domain;
 
-/// <summary>An internal village model with a mutable collection of Smurfs.</summary>
+/// <summary>A village model with a mutable collection of Smurfs.</summary>
 public class Village
 {
     /// <summary>Gets the identifier assigned when this instance is constructed.</summary>

@@ -1,4 +1,12 @@
-- name: Docs
-  href: docs/
-- name: API
+- name: Home
+  href: index.md
+- name: Structural
+  href: structural/index.md
+- name: Behavioral
+  href: behavioral/index.md
+- name: API reference
   href: api/
+- name: Decisions
+  href: decisions/index.md
+- name: Contributing and publishing
+  href: documentation.md

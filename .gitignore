@@ -430,3 +430,6 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# Locally rendered PlantUML output only (hand-authored SVGs remain tracked)
+/docs/_generated/diagrams/

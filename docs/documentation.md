@@ -47,3 +47,18 @@ Document mismatches rather than silently declaring one source universally author
 - Structural and behavioral Markdown should explain each diagram's scope, not merely display a picture.
 - Link to generated API reference using DocFX-supported cross-references when stable; verify those links after generation.
 - Empty perspectives can have a short index explaining scope and planned content; do not invent design artifacts.
+
+## Local build
+
+Prerequisites: .NET SDK supporting net10.0, PowerShell 7, DocFX on PATH, Java and Graphviz `dot` on PATH, and a local PlantUML JAR. Set `PLANTUML_JAR` or pass `-PlantUmlJar`. The script does not download tools or call a rendering service. Use a trusted local JAR; validation used PlantUML bundled with VS Code extension jebbs.plantuml-2.18.1 and DocFX 2.81.0.
+
+From the repository root, run:
+
+```powershell
+$env:PLANTUML_JAR = 'C:\path\to\plantuml.jar'
+./docs/build-docs.ps1
+```
+
+This checks every documentation `.puml`, renders SVGs preserving relative paths under `docs/_generated/diagrams/`, then runs `docfx metadata` and `docfx build`. Each external command failure stops the build. Generated diagrams, metadata and site are ignored; source models, scripts and configuration are tracked. After renaming/removing diagrams, obsolete generated assets can be removed from that dedicated output directory.
+
+Inspect `docs/_site/index.html`, `structural/index.html`, `behavioral/index.html`, `decisions/index.html`, and `api/Smurfs.Domain.Village.html`. API cross-references must resolve to generated pages; diagram links must point to copied SVG resources. A successful build is separate from semantic model review.

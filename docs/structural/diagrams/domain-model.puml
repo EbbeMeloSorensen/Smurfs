@@ -6,7 +6,7 @@ class Smurf {
   +Name : string {get; set;}
   +Age : int {get; set;}
 }
-class Village <<internal>> {
+class Village {
   +Name : string {get; set;}
 }
 class Pet {

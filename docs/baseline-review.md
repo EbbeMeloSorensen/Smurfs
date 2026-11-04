@@ -1,3 +1,5 @@
+> Historical report: see the [2026-11-04 baseline](baseline-2026-11-04.md). Village is now public; XML generation is enabled; models moved to [structural/diagrams](structural/index.md).
+
 # Documentation baseline — 2026-10-31
 
 ## Scope and authority
