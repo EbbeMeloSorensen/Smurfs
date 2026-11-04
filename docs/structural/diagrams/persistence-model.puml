@@ -25,13 +25,14 @@ note bottom of VillageTable
   Accepted (ADR 0001): optional one-to-many membership.
   Smurfs.VillageId references Villages.Id; NULL = no village.
   VillageId is an EF shadow property, absent from C# Smurf.
-  Both optional FKs use ClientSetNull by convention.
+  Pet FK: explicit Restrict.
+  Village FK: ClientSetNull by convention.
 end note
 note bottom of PetTable
-  Initial migration 20261104164331_InitialMigration
+  Initial migration 20261104192233_InitialMigration
   and snapshot match these tables, columns and indexes.
   SQLite uses TEXT for Guid/string, INTEGER for Age.
-  FKs specify no cascading database delete action.
+  Pet FK: ON DELETE RESTRICT; Village FK: no cascade.
   No existing database was updated during reconciliation.
 end note
 @enduml

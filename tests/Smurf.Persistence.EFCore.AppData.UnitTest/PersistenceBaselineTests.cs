@@ -20,7 +20,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     private static readonly Expression<Func<SmurfEntity, bool>>[] _all = [];
 
     /// <summary>
-    /// Opens an isolated database and creates the convention-based schema.
+    /// Opens an isolated database and creates the configured schema.
     /// </summary>
     public async Task InitializeAsync()
     {
@@ -192,10 +192,15 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         {
             Assert.False(relationship.IsRequired);
             Assert.False(relationship.IsUnique);
-            Assert.Equal(DeleteBehavior.ClientSetNull, relationship.DeleteBehavior);
+
         });
         var village = Assert.Single(relationships, relationship =>
             relationship.PrincipalEntityType.ClrType == typeof(Smurfs.Domain.Village));
+        Assert.Equal(DeleteBehavior.ClientSetNull, village.DeleteBehavior);
+        var pet = Assert.Single(relationships, relationship =>
+            relationship.PrincipalEntityType.ClrType == typeof(Smurfs.Domain.Pet));
+        Assert.Equal(DeleteBehavior.Restrict, pet.DeleteBehavior);
+        Assert.Equal(nameof(SmurfEntity.PetId), Assert.Single(pet.Properties).Name);
         var foreignKey = Assert.Single(village.Properties);
         Assert.Equal("VillageId", foreignKey.Name);
         Assert.True(foreignKey.IsShadowProperty());
@@ -230,6 +235,57 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         });
         var traveller = await verify.Smurfs.SingleAsync(s => s.Name == "Traveller");
         Assert.Null(verify.Entry(traveller).Property<Guid?>("VillageId").CurrentValue);
+    }
+
+    /// <summary>
+    /// Verifies Restrict blocks referenced Pet deletion unless EF clears tracked optional relationships.
+    /// </summary>
+    /// <param name="trackSmurfs">
+    /// Whether the referencing Smurfs are loaded into the deleting context.
+    /// </param>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task PetDeletion_RespectsTrackedAndUntrackedReferences(bool trackSmurfs)
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+        var options = new DbContextOptionsBuilder<DataContext>().UseSqlite(connection).Options;
+        await using (var seed = new DataContext(options))
+        {
+            await seed.Database.MigrateAsync();
+            var pet = new Smurfs.Domain.Pet { Name = "Shared" };
+            seed.Smurfs.AddRange(new SmurfEntity { Name = "Papa", Pet = pet },
+                new SmurfEntity { Name = "Brainy", Pet = pet });
+            await seed.SaveChangesAsync();
+        }
+
+        await using (var context = new DataContext(options))
+        {
+            var pet = await context.Pets.SingleAsync();
+            if (trackSmurfs)
+            {
+                await context.Smurfs.LoadAsync();
+            }
+
+            context.Pets.Remove(pet);
+            if (trackSmurfs)
+            {
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                var error = await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync());
+                var sqliteError = Assert.IsType<SqliteException>(error.InnerException);
+                Assert.Equal(19, sqliteError.SqliteErrorCode);
+            }
+        }
+
+        await using var verify = new DataContext(options);
+        Assert.Equal(2, await verify.Smurfs.CountAsync());
+        Assert.Equal(trackSmurfs ? 0 : 1, await verify.Pets.CountAsync());
+        var smurfs = await verify.Smurfs.ToListAsync();
+        Assert.All(smurfs, smurf => Assert.Equal(!trackSmurfs, smurf.PetId.HasValue));
     }
 
     /// <summary>

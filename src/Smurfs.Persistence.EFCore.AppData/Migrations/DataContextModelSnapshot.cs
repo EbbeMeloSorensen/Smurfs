@@ -79,7 +79,8 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
                 {
                     b.HasOne("Smurfs.Domain.Pet", "Pet")
                         .WithMany()
-                        .HasForeignKey("PetId");
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Smurfs.Domain.Village", null)
                         .WithMany("Smurfs")

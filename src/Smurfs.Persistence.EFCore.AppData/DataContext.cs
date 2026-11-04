@@ -5,10 +5,10 @@ using Smurfs.Persistence.EFCore.AppData.EntityConfigurations;
 namespace Smurfs.Persistence.EFCore.AppData;
 
 /// <summary>
-/// EF Core persistence session exposing Smurfs, Villages and Pets with convention-based relationships.
+/// EF Core persistence session exposing Smurfs, Villages and Pets with explicit Smurf configuration and convention-based village membership.
 /// </summary>
 /// <remarks>
-/// Village membership uses an optional shadow VillageId foreign key on Smurf. The static Configure helper is not automatically invoked during model creation.
+/// Village membership uses an optional shadow VillageId foreign key on Smurf. OnModelCreating invokes Configure to apply the explicit Smurf mapping.
 /// </remarks>
 public class DataContext : DbContext
 {
@@ -45,11 +45,24 @@ public class DataContext : DbContext
     /// The model builder to configure.
     /// </param>
     /// <remarks>
-    /// This helper has no call site in this solution; normal context model creation currently uses conventions.
+    /// Called by OnModelCreating; also available to callers composing the same model.
     /// </remarks>
     public static void Configure(
         ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new SmurfConfiguration());
+    }
+
+    /// <summary>
+    /// Applies the explicit entity configurations during EF Core model creation.
+    /// </summary>
+    /// <param name="modelBuilder">
+    /// The model builder supplied by EF Core.
+    /// </param>
+    protected override void OnModelCreating(
+        ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        Configure(modelBuilder);
     }
 }

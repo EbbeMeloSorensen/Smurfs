@@ -52,7 +52,8 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
                         name: "FK_Smurfs_Pets_PetId",
                         column: x => x.PetId,
                         principalTable: "Pets",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Smurfs_Villages_VillageId",
                         column: x => x.VillageId,

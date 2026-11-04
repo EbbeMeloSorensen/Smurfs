@@ -27,7 +27,7 @@ Retain the existing shadow VillageId mapping; a relational foreign key does not 
 
 The current EF runtime mapping and relational diagram agree with this decision. Existing SQLite tests verify nullable shadow VillageId, optional non-unique membership, and a round trip through Village.Smurfs.
 
-Subsequent implementation on 2026-11-04: regenerated initial migration `20261104164331_InitialMigration` and its snapshot now create Smurfs, Pets and Villages, including nullable indexed VillageId referencing Villages.Id. The old initial migration was replaced, so no Pet-to-Pets rename operation is needed in the new baseline. Migration application is validated against a fresh in-memory SQLite database; no existing database was updated.
+Subsequent implementation on 2026-11-04: regenerated initial migration `20261104164331_InitialMigration` and its snapshot now create Smurfs, Pets and Villages, including nullable indexed VillageId referencing Villages.Id. The old initial migration was replaced, so no Pet-to-Pets rename operation is needed in the new baseline. The baseline was subsequently regenerated again for the explicit Pet delete policy in [ADR 0002](0002-pet-configuration.md); village mapping is unchanged. Migration application is validated against a fresh in-memory SQLite database; no existing database was updated.
 
 Plain mutable Village.Smurfs collections can still contain conflicting memberships before EF tracking. This is a known implementation limitation, not permission for multiple membership. How domain objects should prevent that conflict remains an open implementation question. No domain API, reassignment workflow or delete policy is introduced here.
 

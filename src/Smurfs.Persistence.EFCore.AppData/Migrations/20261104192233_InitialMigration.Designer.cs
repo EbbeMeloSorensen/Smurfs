@@ -11,7 +11,7 @@ using Smurfs.Persistence.EFCore.AppData;
 namespace Smurfs.Persistence.EFCore.AppData.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20261104164331_InitialMigration")]
+    [Migration("20261104192233_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -82,7 +82,8 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
                 {
                     b.HasOne("Smurfs.Domain.Pet", "Pet")
                         .WithMany()
-                        .HasForeignKey("PetId");
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Smurfs.Domain.Village", null)
                         .WithMany("Smurfs")

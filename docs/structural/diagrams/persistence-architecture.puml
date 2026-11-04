@@ -37,6 +37,7 @@ component "Smurfs.Persistence.EFCore.AppData" as AppData {
     +Villages : DbSet<Village> {get; set;}
     +Pets : DbSet<Pet> {get; set;}
     {static} +Configure(modelBuilder) : void
+    #OnModelCreating(modelBuilder) : void
   }
   class DataContextFactory <<design-time>>
   class SmurfConfiguration
@@ -74,7 +75,7 @@ UnitOfWork --> SmurfRepository : constructs
 UnitOfWork --> DataContext : owns / saves / disposes
 UnitOfWorkFactory ..> UnitOfWork : constructs with fresh context
 DataContextFactory ..> DataContext : creates with SQLite options
-DataContext ..> SmurfConfiguration : static helper only
+DataContext ..> SmurfConfiguration : applies during model creation
 legend bottom left
   UML components represent production .NET assemblies.
   Arrows describe relationships between types.
