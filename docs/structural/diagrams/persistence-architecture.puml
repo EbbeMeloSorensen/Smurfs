@@ -64,6 +64,7 @@ ISmurfRepository <|.. SmurfRepository
 ISmurfRepository .up.> Smurf : generic type argument
 SmurfRepository .up.> Smurf : generic type argument
 SmurfConfiguration .up.> Smurf : configures
+SmurfConfiguration .up.> Village : relationship target
 DataContext .up.> Smurf : entity set
 DataContext .up.> Village : entity set
 DataContext .up.> Pet : entity set

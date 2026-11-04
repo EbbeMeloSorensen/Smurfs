@@ -26,7 +26,7 @@ note bottom of VillageTable
   Smurfs.VillageId references Villages.Id; NULL = no village.
   VillageId is an EF shadow property, absent from C# Smurf.
   Pet FK: explicit Restrict.
-  Village FK: ClientSetNull by convention.
+  Village FK: explicit ClientSetNull.
 end note
 note bottom of PetTable
   Initial migration 20261104192233_InitialMigration

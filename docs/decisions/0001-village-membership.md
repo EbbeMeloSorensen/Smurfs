@@ -6,7 +6,7 @@ Date: 2026-11-04
 
 ## Context
 
-Village exposes a collection of Smurfs. DataContext exposes Villages, Smurfs and Pets. The current EF runtime model discovers an optional one-to-many village relationship through a shadow VillageId property on Smurf. At approval, the migration snapshot still predated this mapping; the regenerated initial migration now includes it.
+Village exposes a collection of Smurfs. DataContext exposes Villages, Smurfs and Pets. The EF runtime model maps an optional one-to-many village relationship through a shadow VillageId property on Smurf. This was originally discovered by convention and is now configured explicitly in SmurfConfiguration with ClientSetNull, preserving the same model and schema. At approval, the migration snapshot still predated this mapping; the regenerated initial migration now includes it.
 
 ## Options
 

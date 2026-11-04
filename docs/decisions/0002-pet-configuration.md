@@ -10,7 +10,7 @@ The project owner added an explicit optional Smurf-to-Pet relationship with Dele
 
 ## Decision
 
-DataContext.OnModelCreating calls the base implementation and the public static Configure helper. The helper applies SmurfConfiguration, which owns the Smurf primary key and optional, non-unique PetId relationship. Pet has no reverse collection. Preserve the owner's Restrict choice; village membership remains convention-based with ClientSetNull.
+DataContext.OnModelCreating calls the base implementation and the public static Configure helper. The helper applies SmurfConfiguration, which owns the Smurf primary key and optional, non-unique PetId relationship. Pet has no reverse collection. Preserve the owner's Restrict choice; village membership initially remained convention-based with ClientSetNull. It was subsequently made explicit in SmurfConfiguration with the same ClientSetNull behavior; this introduces no schema change.
 
 ## Consequences and validation
 

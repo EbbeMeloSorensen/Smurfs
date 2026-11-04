@@ -5,7 +5,7 @@ using Smurfs.Persistence.EFCore.AppData.EntityConfigurations;
 namespace Smurfs.Persistence.EFCore.AppData;
 
 /// <summary>
-/// EF Core persistence session exposing Smurfs, Villages and Pets with explicit Smurf configuration and convention-based village membership.
+/// EF Core persistence session exposing Smurfs, Villages and Pets with explicit Smurf relationship configuration.
 /// </summary>
 /// <remarks>
 /// Village membership uses an optional shadow VillageId foreign key on Smurf. OnModelCreating invokes Configure to apply the explicit Smurf mapping.

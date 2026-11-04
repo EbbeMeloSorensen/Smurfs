@@ -204,6 +204,9 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         var foreignKey = Assert.Single(village.Properties);
         Assert.Equal("VillageId", foreignKey.Name);
         Assert.True(foreignKey.IsShadowProperty());
+        Assert.Null(village.DependentToPrincipal);
+        Assert.Equal(nameof(Smurfs.Domain.Village.Smurfs), village.PrincipalToDependent!.Name);
+        Assert.Equal(nameof(Smurfs.Domain.Village.Id), Assert.Single(village.PrincipalKey.Properties).Name);
         Assert.Equal(typeof(Guid?), foreignKey.ClrType);
     }
 

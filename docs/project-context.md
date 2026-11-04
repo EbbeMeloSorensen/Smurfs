@@ -9,7 +9,7 @@ Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip 
 ## Domain intent
 
 - `Smurf`, `Village`, and `Pet` are domain concepts.
-- A `Village` can contain zero or many `Smurf` instances; each `Smurf` belongs to zero or one `Village`. This is accepted in [ADR 0001](decisions/0001-village-membership.md). Navigation goes from Village to Smurfs only; Smurf has no Village navigation. The relational model uses nullable `Smurfs.VillageId` referencing `Villages.Id`, currently represented by an EF shadow property.
+- A `Village` can contain zero or many `Smurf` instances; each `Smurf` belongs to zero or one `Village`. This is accepted in [ADR 0001](decisions/0001-village-membership.md). Navigation goes from Village to Smurfs only; Smurf has no Village navigation. The relational model uses nullable `Smurfs.VillageId` referencing `Villages.Id`, explicitly mapped in SmurfConfiguration as an EF shadow property with ClientSetNull.
 - A `Smurf` has zero or one `Pet`; a `Pet` may be shared by multiple `Smurf` instances. [ADR 0002](decisions/0002-pet-configuration.md) records explicit Restrict mapping and its tracked/untracked deletion semantics.
 - Distinguish optional navigation properties from required names or other invariants. Check actual definitions and EF Core mappings before documenting exact field/property names or cascade behavior.
 - Keep conceptual class models free of PK/FK stereotypes where possible. Separate persistence/ER representations may show keys and foreign keys.
@@ -21,7 +21,7 @@ Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip 
 - The Smurfs persistence boundary includes repository interfaces and a unit-of-work abstraction/factory. Check the actual current interfaces and names rather than inventing method signatures.
 - Preserve project boundaries among Smurfs.Domain, Smurfs.Persistence, Smurfs.Persistence.EFCore.AppData and Craft dependencies as actually present.
 - Scope the persistence architecture diagram to solution-owned types grouped by assembly components. Keep relevant direct dependencies between these types; omit standalone EF Core/BCL types and their arrows. Framework names may remain in member signatures. Do not add a shared external framework hub as the solution grows.
-- DataContext.OnModelCreating calls Configure to apply SmurfConfiguration; Smurf key and Pet relationship rules belong in that configuration.
+- DataContext.OnModelCreating calls Configure to apply SmurfConfiguration; Smurf key, Pet and Village relationship rules belong in that configuration.
 - EF Core is code-first. No migrations, database schema or storage behavior should be inferred purely from PlantUML.
 
 ## Domain-model changes
