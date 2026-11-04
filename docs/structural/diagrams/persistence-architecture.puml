@@ -76,6 +76,6 @@ note bottom of DataContext
   Configure has no call site or OnModelCreating hook.
   Model currently built by convention.
   Smurf, Village and Pet exposed through DbSets.
-  Migration snapshot still describes the earlier model.
+  Initial migration and snapshot match the runtime model.
 end note
 @enduml

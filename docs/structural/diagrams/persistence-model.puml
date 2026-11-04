@@ -1,5 +1,5 @@
 @startuml
-' Current convention-based runtime model; migration snapshot is older.
+' Current runtime model, regenerated initial migration and snapshot.
 hide methods
 entity "Smurfs" as SmurfTable {
   * Id : Guid <<PK>>
@@ -28,9 +28,10 @@ note bottom of VillageTable
   Both optional FKs use ClientSetNull by convention.
 end note
 note bottom of PetTable
-  Needs reconciliation: checked-in migration/snapshot
-  still use Pet (singular), omit Villages and VillageId.
+  Initial migration 20261104164331_InitialMigration
+  and snapshot match these tables, columns and indexes.
   SQLite uses TEXT for Guid/string, INTEGER for Age.
-  No migration or database update has been performed.
+  FKs specify no cascading database delete action.
+  No existing database was updated during reconciliation.
 end note
 @enduml

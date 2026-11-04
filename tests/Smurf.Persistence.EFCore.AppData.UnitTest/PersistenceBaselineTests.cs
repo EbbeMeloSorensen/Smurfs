@@ -153,13 +153,12 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Empty(context.ChangeTracker.Entries());
     }
 
-    /// <summary>Verifies current mappings and explicitly records the outstanding migration discrepancy.</summary>
+    /// <summary>Verifies that current mappings match the regenerated migration snapshot.</summary>
     [Fact]
-    public async Task Model_IncludesVillageAndPets_AndRequiresMigration()
+    public async Task Model_IncludesVillageAndPets_AndMatchesMigrationSnapshot()
     {
         await using var context = new DataContext(Options);
-        // Remove this pending-change expectation when a reviewed migration is added.
-        Assert.True(context.Database.HasPendingModelChanges());
+        Assert.False(context.Database.HasPendingModelChanges());
         Assert.Equal(3, context.Model.GetEntityTypes().Count());
         Assert.Equal("Pets", context.Model.FindEntityType(typeof(Smurfs.Domain.Pet))!.GetTableName());
         Assert.Equal("Villages", context.Model.FindEntityType(typeof(Smurfs.Domain.Village))!.GetTableName());
@@ -207,15 +206,35 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Null(verify.Entry(traveller).Property<Guid?>("VillageId").CurrentValue);
     }
 
-    /// <summary>Verifies that migration application detects the stale snapshot before updating a database.</summary>
+    /// <summary>Verifies that the initial migration creates usable village and pet relationships.</summary>
     [Fact]
-    public async Task Migration_RejectsPendingModelChanges()
+    public async Task InitialMigration_CreatesUsableSchemaInFreshDatabase()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
         var options = new DbContextOptionsBuilder<DataContext>().UseSqlite(connection).Options;
         await using var context = new DataContext(options);
-        var error = await Assert.ThrowsAsync<InvalidOperationException>(() => context.Database.MigrateAsync());
-        Assert.Contains("PendingModelChangesWarning", error.Message);
+        await context.Database.MigrateAsync();
+        Assert.Equal(context.Database.GetMigrations(), await context.Database.GetAppliedMigrationsAsync());
+        var pet = new Smurfs.Domain.Pet { Name = "Shared" };
+        var village = new Smurfs.Domain.Village { Name = "Migrated" };
+        village.Smurfs.Add(new SmurfEntity { Name = "Papa", Pet = pet });
+        village.Smurfs.Add(new SmurfEntity { Name = "Brainy", Pet = pet });
+        context.Villages.Add(village);
+        context.Smurfs.Add(new SmurfEntity { Name = "Traveller" });
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+
+        var saved = await context.Villages.Include(v => v.Smurfs).ThenInclude(s => s.Pet).SingleAsync();
+        Assert.Equal(2, saved.Smurfs.Count);
+        Assert.Single(await context.Pets.ToListAsync());
+        Assert.All(saved.Smurfs, smurf =>
+        {
+            Assert.Equal(pet.Id, smurf.PetId);
+            Assert.NotNull(smurf.Pet);
+            Assert.Equal(saved.Id, context.Entry(smurf).Property<Guid?>("VillageId").CurrentValue);
+        });
+        var traveller = await context.Smurfs.SingleAsync(s => s.Name == "Traveller");
+        Assert.Null(context.Entry(traveller).Property<Guid?>("VillageId").CurrentValue);
     }
 }

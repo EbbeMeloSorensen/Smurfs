@@ -20,7 +20,7 @@ Source: [persistence-architecture.puml](diagrams/persistence-architecture.puml).
 
 This separate model reflects the current EF runtime model: Smurfs, Villages and Pets tables. DataContext exposes all three entity sets. Smurf has optional indexed PetId and shadow VillageId foreign keys; each village and pet can be associated with multiple Smurfs. VillageId is nullable and maintained by EF, with no corresponding C# property. Both optional relationships use ClientSetNull by convention. DataContext.Configure has no call site and no OnModelCreating override; conventions currently establish the model.
 
-**Needs reconciliation:** the checked-in SQLite migration and snapshot still define Smurfs and Pet (singular), with no Villages table or VillageId column. Adding DbSets changes the runtime model, not an existing database. A reviewed migration is still needed, including the Pet-to-Pets table rename and village membership schema. No migration or database update was performed during this reconciliation.
+The regenerated initial migration `20261104164331_InitialMigration` and snapshot now match this model: Smurfs, Pets and Villages, with nullable indexed PetId and VillageId foreign keys. Both foreign keys reference the corresponding Id primary key and specify no cascading database delete action. This replaces the earlier initial migration; it creates the current schema directly rather than renaming an existing Pet table. This reconciliation validates migration application only against isolated in-memory SQLite databases; no existing database was updated.
 
 ![Relational persistence model](../_generated/diagrams/structural/diagrams/persistence-model.svg)
 

@@ -6,7 +6,7 @@ Date: 2026-11-04
 
 ## Context
 
-Village exposes a collection of Smurfs. DataContext exposes Villages, Smurfs and Pets. The current EF runtime model discovers an optional one-to-many village relationship through a shadow VillageId property on Smurf. The migration snapshot still predates this mapping.
+Village exposes a collection of Smurfs. DataContext exposes Villages, Smurfs and Pets. The current EF runtime model discovers an optional one-to-many village relationship through a shadow VillageId property on Smurf. At approval, the migration snapshot still predated this mapping; the regenerated initial migration now includes it.
 
 ## Options
 
@@ -27,7 +27,7 @@ Retain the existing shadow VillageId mapping; a relational foreign key does not 
 
 The current EF runtime mapping and relational diagram agree with this decision. Existing SQLite tests verify nullable shadow VillageId, optional non-unique membership, and a round trip through Village.Smurfs.
 
-The checked-in migration and snapshot still need reconciliation to add Villages and VillageId, alongside the previously identified Pet-to-Pets rename. This decision does not generate a migration or update a database.
+Subsequent implementation on 2026-11-04: regenerated initial migration `20261104164331_InitialMigration` and its snapshot now create Smurfs, Pets and Villages, including nullable indexed VillageId referencing Villages.Id. The old initial migration was replaced, so no Pet-to-Pets rename operation is needed in the new baseline. Migration application is validated against a fresh in-memory SQLite database; no existing database was updated.
 
 Plain mutable Village.Smurfs collections can still contain conflicting memberships before EF tracking. This is a known implementation limitation, not permission for multiple membership. How domain objects should prevent that conflict remains an open implementation question. No domain API, reassignment workflow or delete policy is introduced here.
 
