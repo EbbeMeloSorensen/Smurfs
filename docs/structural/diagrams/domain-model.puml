@@ -18,6 +18,8 @@ note bottom of Village
   Source exposes a mutable Smurfs collection only.
   The intended 0..1 village per Smurf is not enforced:
   no reverse reference or exclusive-membership validation.
+  EF tracks one optional village through a shadow FK;
+  see the separate relational model.
 end note
 note bottom of Smurf
   No age or name validation in source.

@@ -32,6 +32,8 @@ package "Smurfs.Persistence.EFCore.AppData" {
   class UnitOfWorkFactory <<internal>>
   class DataContext {
     +Smurfs : DbSet<Smurf> {get; set;}
+    +Villages : DbSet<Village> {get; set;}
+    +Pets : DbSet<Pet> {get; set;}
     {static} +Configure(modelBuilder) : void
   }
   class DataContextFactory <<design-time>>
@@ -73,6 +75,7 @@ end note
 note bottom of DataContext
   Configure has no call site or OnModelCreating hook.
   Model currently built by convention.
-  Pet discovered via Smurf; Village not mapped.
+  Smurf, Village and Pet exposed through DbSets.
+  Migration snapshot still describes the earlier model.
 end note
 @enduml

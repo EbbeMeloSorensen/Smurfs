@@ -153,34 +153,69 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         Assert.Empty(context.ChangeTracker.Entries());
     }
 
-    /// <summary>Verifies migration consistency and optional shared-pet cardinality.</summary>
+    /// <summary>Verifies current mappings and explicitly records the outstanding migration discrepancy.</summary>
     [Fact]
-    public async Task Model_MatchesMigrationSnapshot_AndIncludesOnlySmurfAndPet()
+    public async Task Model_IncludesVillageAndPets_AndRequiresMigration()
     {
         await using var context = new DataContext(Options);
-        Assert.False(context.Database.HasPendingModelChanges());
-        Assert.Equal(2, context.Model.GetEntityTypes().Count());
-        var relationship = Assert.Single(context.Model.FindEntityType(typeof(SmurfEntity))!.GetForeignKeys());
-        Assert.False(relationship.IsRequired);
-        Assert.False(relationship.IsUnique);
-        Assert.Equal(typeof(Smurfs.Domain.Pet), relationship.PrincipalEntityType.ClrType);
+        // Remove this pending-change expectation when a reviewed migration is added.
+        Assert.True(context.Database.HasPendingModelChanges());
+        Assert.Equal(3, context.Model.GetEntityTypes().Count());
+        Assert.Equal("Pets", context.Model.FindEntityType(typeof(Smurfs.Domain.Pet))!.GetTableName());
+        Assert.Equal("Villages", context.Model.FindEntityType(typeof(Smurfs.Domain.Village))!.GetTableName());
+        var relationships = context.Model.FindEntityType(typeof(SmurfEntity))!.GetForeignKeys().ToArray();
+        Assert.Equal(2, relationships.Length);
+        Assert.All(relationships, relationship =>
+        {
+            Assert.False(relationship.IsRequired);
+            Assert.False(relationship.IsUnique);
+            Assert.Equal(DeleteBehavior.ClientSetNull, relationship.DeleteBehavior);
+        });
+        var village = Assert.Single(relationships, relationship =>
+            relationship.PrincipalEntityType.ClrType == typeof(Smurfs.Domain.Village));
+        var foreignKey = Assert.Single(village.Properties);
+        Assert.Equal("VillageId", foreignKey.Name);
+        Assert.True(foreignKey.IsShadowProperty());
+        Assert.Equal(typeof(Guid?), foreignKey.ClrType);
     }
 
-    /// <summary>Verifies that the checked-in migration creates a usable relational schema.</summary>
+    /// <summary>Verifies village membership and shared pets survive a relational round trip.</summary>
     [Fact]
-    public async Task InitialMigration_CreatesUsableSchemaInFreshDatabase()
+    public async Task VillageMembership_AndSharedPet_RoundTrip()
     {
-        // Use a second database because the fixture schema was created via EnsureCreated.
+        await using (var context = new DataContext(Options))
+        {
+            var pet = new Smurfs.Domain.Pet { Name = "Shared" };
+            var village = new Smurfs.Domain.Village { Name = "Home" };
+            village.Smurfs.Add(new SmurfEntity { Name = "Papa", Pet = pet });
+            village.Smurfs.Add(new SmurfEntity { Name = "Brainy", Pet = pet });
+            context.Villages.Add(village);
+            context.Smurfs.Add(new SmurfEntity { Name = "Traveller" });
+            await context.SaveChangesAsync();
+        }
+
+        await using var verify = new DataContext(Options);
+        var saved = await verify.Villages.Include(v => v.Smurfs).ThenInclude(s => s.Pet).SingleAsync();
+        Assert.Equal(2, saved.Smurfs.Count);
+        var petId = (await verify.Pets.SingleAsync()).Id;
+        Assert.All(saved.Smurfs, smurf =>
+        {
+            Assert.Equal(petId, smurf.PetId);
+            Assert.Equal(saved.Id, verify.Entry(smurf).Property<Guid?>("VillageId").CurrentValue);
+        });
+        var traveller = await verify.Smurfs.SingleAsync(s => s.Name == "Traveller");
+        Assert.Null(verify.Entry(traveller).Property<Guid?>("VillageId").CurrentValue);
+    }
+
+    /// <summary>Verifies that migration application detects the stale snapshot before updating a database.</summary>
+    [Fact]
+    public async Task Migration_RejectsPendingModelChanges()
+    {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
         var options = new DbContextOptionsBuilder<DataContext>().UseSqlite(connection).Options;
-        await using (var context = new DataContext(options))
-        {
-            await context.Database.MigrateAsync();
-            context.Add(new SmurfEntity { Name = "Migrated", Pet = new Smurfs.Domain.Pet { Name = "Shared" } });
-            await context.SaveChangesAsync();
-        }
-        await using var verify = new DataContext(options);
-        Assert.Equal("Shared", (await verify.Smurfs.Include(s => s.Pet).SingleAsync()).Pet!.Name);
+        await using var context = new DataContext(options);
+        var error = await Assert.ThrowsAsync<InvalidOperationException>(() => context.Database.MigrateAsync());
+        Assert.Contains("PendingModelChangesWarning", error.Message);
     }
 }

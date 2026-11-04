@@ -1,5 +1,5 @@
 @startuml
-' Current migration/snapshot and convention-based DataContext model.
+' Current convention-based runtime model; migration snapshot is older.
 hide methods
 entity "Smurfs" as SmurfTable {
   * Id : Guid <<PK>>
@@ -7,16 +7,29 @@ entity "Smurfs" as SmurfTable {
   * Name : string
   * Age : int
   PetId : Guid? <<FK, indexed>>
+  VillageId : Guid? <<shadow FK, indexed>>
 }
-entity "Pet" as PetTable {
+entity "Pets" as PetTable {
+  * Id : Guid <<PK>>
+  --
+  * Name : string
+}
+entity "Villages" as VillageTable {
   * Id : Guid <<PK>>
   --
   * Name : string
 }
 SmurfTable "0..*" --> "0..1" PetTable : PetId
+SmurfTable "0..*" --> "0..1" VillageTable : VillageId
+note bottom of VillageTable
+  Runtime model: optional one-to-many membership.
+  VillageId is an EF shadow property, absent from C# Smurf.
+  Both optional FKs use ClientSetNull by convention.
+end note
 note bottom of PetTable
-  SQLite migration uses TEXT for Guid/string,
-  INTEGER for Age. No Village table.
-  FK migration does not specify a cascading delete action.
+  Needs reconciliation: checked-in migration/snapshot
+  still use Pet (singular), omit Villages and VillageId.
+  SQLite uses TEXT for Guid/string, INTEGER for Age.
+  No migration or database update has been performed.
 end note
 @enduml

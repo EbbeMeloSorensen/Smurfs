@@ -4,12 +4,18 @@ using Smurfs.Persistence.EFCore.AppData.EntityConfigurations;
 
 namespace Smurfs.Persistence.EFCore.AppData;
 
-/// <summary>EF Core persistence session exposing Smurfs and discovering their Pet relationship by convention.</summary>
-/// <remarks>Village is not mapped. The static Configure helper is not automatically invoked during model creation.</remarks>
+/// <summary>EF Core persistence session exposing Smurfs, Villages and Pets with convention-based relationships.</summary>
+/// <remarks>Village membership uses an optional shadow VillageId foreign key on Smurf. The static Configure helper is not automatically invoked during model creation.</remarks>
 public class DataContext : DbContext
 {
     /// <summary>Gets or sets the Smurf entity set; queries track by default.</summary>
     public DbSet<Smurf> Smurfs { get; set; }
+
+    /// <summary>Gets or sets the Village entity set; queries track by default.</summary>
+    public DbSet<Village> Villages { get; set; }
+
+    /// <summary>Gets or sets the Pet entity set; queries track by default.</summary>
+    public DbSet<Pet> Pets { get; set; }
 
     /// <summary>Creates a context with caller-supplied provider and options.</summary>
     /// <param name="options">The EF Core configuration for this context.</param>

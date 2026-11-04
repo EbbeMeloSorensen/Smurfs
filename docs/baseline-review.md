@@ -1,3 +1,5 @@
+> Subsequent reconciliation: DataContext now exposes Villages and Pets. See the [current relational model](structural/index.md#relational-model) for runtime mappings and the pending migration discrepancy. Statements below describe the earlier baseline.
+
 > Historical report: see the [2026-11-04 baseline](baseline-2026-11-04.md). Village is now public; XML generation is enabled; models moved to [structural/diagrams](structural/index.md).
 
 # Documentation baseline — 2026-10-31
