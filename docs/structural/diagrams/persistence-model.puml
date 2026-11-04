@@ -22,7 +22,8 @@ entity "Villages" as VillageTable {
 SmurfTable "0..*" --> "0..1" PetTable : PetId
 SmurfTable "0..*" --> "0..1" VillageTable : VillageId
 note bottom of VillageTable
-  Runtime model: optional one-to-many membership.
+  Accepted (ADR 0001): optional one-to-many membership.
+  Smurfs.VillageId references Villages.Id; NULL = no village.
   VillageId is an EF shadow property, absent from C# Smurf.
   Both optional FKs use ClientSetNull by convention.
 end note

@@ -12,12 +12,13 @@ class Village {
 class Pet {
   +Name : string {get; set;}
 }
-Village "0..1" --> "0..*" Smurf : Smurfs (intended membership)
+Village "0..1" --> "0..*" Smurf : Smurfs (accepted membership)
 Smurf "0..*" --> "0..1" Pet : Pet
 note bottom of Village
   Source exposes a mutable Smurfs collection only.
-  The intended 0..1 village per Smurf is not enforced:
-  no reverse reference or exclusive-membership validation.
+  Accepted: a Smurf belongs to zero or one village.
+  No reverse Village navigation on Smurf, by decision.
+  Plain collections do not enforce exclusive membership.
   EF tracks one optional village through a shadow FK;
   see the separate relational model.
 end note
