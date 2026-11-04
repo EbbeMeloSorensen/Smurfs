@@ -29,7 +29,7 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pet");
+                    b.ToTable("Pets");
                 });
 
             modelBuilder.Entity("Smurfs.Domain.Smurf", b =>
@@ -48,11 +48,31 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
                     b.Property<Guid?>("PetId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("VillageId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PetId");
 
+                    b.HasIndex("VillageId");
+
                     b.ToTable("Smurfs");
+                });
+
+            modelBuilder.Entity("Smurfs.Domain.Village", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Villages");
                 });
 
             modelBuilder.Entity("Smurfs.Domain.Smurf", b =>
@@ -61,7 +81,16 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
                         .WithMany()
                         .HasForeignKey("PetId");
 
+                    b.HasOne("Smurfs.Domain.Village", null)
+                        .WithMany("Smurfs")
+                        .HasForeignKey("VillageId");
+
                     b.Navigation("Pet");
+                });
+
+            modelBuilder.Entity("Smurfs.Domain.Village", b =>
+                {
+                    b.Navigation("Smurfs");
                 });
 #pragma warning restore 612, 618
         }
