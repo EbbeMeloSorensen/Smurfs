@@ -20,6 +20,7 @@ Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip 
 - A persistence-ignorant `IRepository<TEntity>` lives in Craft.Persistence; EF Core-specific implementations live in Craft.Persistence.EFCore or solution-specific infrastructure.
 - The Smurfs persistence boundary includes repository interfaces and a unit-of-work abstraction/factory. Check the actual current interfaces and names rather than inventing method signatures.
 - Preserve project boundaries among Smurfs.Domain, Smurfs.Persistence, Smurfs.Persistence.EFCore.AppData and Craft dependencies as actually present.
+- Scope the persistence architecture diagram to solution-owned types grouped by assembly components. Keep relevant direct dependencies between these types; omit standalone EF Core/BCL types and their arrows. Framework names may remain in member signatures. Do not add a shared external framework hub as the solution grows.
 - EF Core is code-first. No migrations, database schema or storage behavior should be inferred purely from PlantUML.
 
 ## Domain-model changes
