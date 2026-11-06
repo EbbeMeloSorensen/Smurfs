@@ -5,7 +5,7 @@ namespace Smurfs.Persistence.EFCore.AppData;
 /// <summary>
 /// Creates independent units of work through an EF Core context factory.
 /// </summary>
-internal class UnitOfWorkFactory : IUnitOfWorkFactory
+public class UnitOfWorkFactory : IUnitOfWorkFactory
 {
     private readonly IDbContextFactory<DataContext> _contextFactory;
 
