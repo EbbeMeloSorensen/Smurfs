@@ -2,6 +2,9 @@ using CommandLine;
 
 namespace Smurfs.UI.Console.Verbs.Smurfs;
 
+/// <summary>
+/// Represents a console request for a page of Smurfs.
+/// </summary>
 [Verb("listsmurfs", HelpText = "List a page of Smurfs.")]
 public sealed class List
 {

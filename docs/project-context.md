@@ -17,6 +17,8 @@ Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip 
 ## Architecture intent
 
 - Keep domain and application contracts independent of EF Core infrastructure.
+- The console composes application handlers, the app-data initializer and write session factory, and the Infrastructure read service. The command persists a domain object through the unit of work. The query retrieves projected summaries through an application-owned read contract.
+- Console startup creates the app-data database on first use. The list operation opens an existing database read-only. The Identity adapter has its own context and migration set and is outside the current console workflow.
 - A persistence-ignorant `IRepository<TEntity>` lives in Craft.Persistence; EF Core-specific implementations live in Craft.Persistence.EFCore or solution-specific infrastructure.
 - The Smurfs persistence boundary includes repository interfaces and a unit-of-work abstraction/factory. Check the actual current interfaces and names rather than inventing method signatures.
 - Preserve project boundaries among Smurfs.Domain, Smurfs.Persistence, Smurfs.Persistence.EFCore.AppData and Craft dependencies as actually present.

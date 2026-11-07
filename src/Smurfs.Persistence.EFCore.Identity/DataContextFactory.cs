@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Smurfs.Persistence.EFCore.Identity;
@@ -10,6 +10,9 @@ namespace Smurfs.Persistence.EFCore.Identity;
 public sealed class DataContextFactory
     : IDesignTimeDbContextFactory<DataContext>
 {
+    /// <summary>
+    /// Creates the SQLite Identity context for design-time tooling.
+    /// </summary>
     public DataContext CreateDbContext(string[] args)
     {
         var options = new DbContextOptionsBuilder<DataContext>()

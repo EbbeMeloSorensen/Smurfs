@@ -8,6 +8,12 @@ namespace Smurfs.Infrastructure.Smurfs;
 /// <summary>
 /// Projects pages of Smurf summaries in the app-data database.
 /// </summary>
+/// <param name="context">
+/// The app-data context supplied by the caller's scope.
+/// </param>
+/// <remarks>
+/// Counts rows and reads the projected page in separate queries without tracking.
+/// </remarks>
 public sealed class SmurfReadService(DataContext context) : ISmurfReadService
 {
     /// <inheritdoc />

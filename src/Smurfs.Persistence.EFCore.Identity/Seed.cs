@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace Smurfs.Persistence.EFCore.Identity;
 
+/// <summary>
+/// Provides sample accounts for a separate Identity host.
+/// </summary>
 public class Seed
 {
+    /// <summary>
+    /// Attempts to create sample accounts if no users exist and writes creation errors to the console.
+    /// </summary>
     public static async Task SeedData(
         DataContext context,
         UserManager<AppUser> userManager)

@@ -2,8 +2,14 @@ using Smurfs.Domain;
 
 namespace Smurfs.Persistence.EFCore.AppData;
 
+/// <summary>
+/// Provides sample data for the app-data database.
+/// </summary>
 public class Seeding
 {
+    /// <summary>
+    /// Saves the sample Smurfs when the Smurfs table is empty.
+    /// </summary>
     public static async Task SeedDatabase(
         DataContext context)
     {

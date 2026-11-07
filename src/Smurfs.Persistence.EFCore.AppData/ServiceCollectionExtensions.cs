@@ -6,8 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Smurfs.Persistence.EFCore.AppData;
 
+/// <summary>
+/// Exposes dependency injection registration for EF Core app-data services.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers the context factory and scoped application database initializer.
+    /// </summary>
     public static IServiceCollection AddAppDataPersistence<TContext>(
         this IServiceCollection services,
         Action<DbContextOptionsBuilder> optionsAction)

@@ -29,7 +29,8 @@
         "files": [
           "images/**",
           "_generated/diagrams/**",
-          "structural/diagrams/*.puml"
+          "structural/diagrams/*.puml",
+          "behavioral/diagrams/*.puml"
         ]
       }
     ],

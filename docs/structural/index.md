@@ -18,11 +18,19 @@ Source: [persistence-architecture.puml](diagrams/persistence-architecture.puml).
 
 ## Console use cases
 
-The console is the composition root for Application, the EF app-data adapter and Infrastructure. Application owns the creation request and the Smurf read contract. Infrastructure implements that contract using the app-data context, with ordering and DTO projection in the database. The persistence diagram below the conceptual model scopes its type relationships to the repository and unit-of-work design.
+The console is the composition root for Application, the EF app-data adapter and Infrastructure. Application owns the MediatR requests, handlers and read contract. It depends on provider-neutral persistence contracts for writes. Infrastructure implements the read contract using the EF app-data context, with ordering and DTO projection in SQL. The two paths share the app-data database.
+
+![Console use-case architecture](../_generated/diagrams/structural/diagrams/console-architecture.svg)
+
+The [console architecture source](diagrams/console-architecture.puml) shows selected type dependencies grouped by assembly. The persistence architecture view covers the underlying repository and session types. The generic paging adapter and AutoMapper profile remain available outside the active list path. The validation pipeline is registered, and the console currently registers no request validators.
+
+## Identity storage
+
+The separate Identity adapter defines an EF context for ASP.NET Core Identity and adds a required `DisplayName` to `AspNetUsers`. The initial Identity migration `20261105171045_InitialMigration` creates the user and role tables and their related claim, login, membership and token tables. The design-time factory targets `smurfs-identity.db`. The console currently uses app-data services only and does not register the Identity context, user accessor or sample account seeder.
 
 ## Relational model
 
-This separate model reflects the current EF runtime model: Smurfs, Villages and Pets tables. DataContext exposes all three entity sets. Smurf has optional indexed PetId and shadow VillageId foreign keys; each village and pet can be associated with multiple Smurfs. VillageId is nullable and maintained by EF, with no corresponding C# property. SmurfConfiguration explicitly maps the optional Pet relationship with Restrict. SmurfConfiguration also explicitly maps optional Village membership through the shadow VillageId, with ClientSetNull and navigation from Village to Smurfs only. DataContext.OnModelCreating calls the shared Configure helper, which applies SmurfConfiguration. See [ADR 0002](../decisions/0002-pet-configuration.md) for the mapping and deletion semantics.
+This app-data model reflects the current EF runtime model: Smurfs, Villages and Pets tables. DataContext exposes all three entity sets. Smurf has optional indexed PetId and shadow VillageId foreign keys; each village and pet can be associated with multiple Smurfs. VillageId is nullable and maintained by EF, with no corresponding C# property. SmurfConfiguration explicitly maps the optional Pet relationship with Restrict. SmurfConfiguration also explicitly maps optional Village membership through the shadow VillageId, with ClientSetNull and navigation from Village to Smurfs only. DataContext.OnModelCreating calls the shared Configure helper, which applies SmurfConfiguration. See [ADR 0002](../decisions/0002-pet-configuration.md) for the mapping and deletion semantics.
 
 The regenerated initial migration `20261104192233_InitialMigration` and snapshot now match this model: Smurfs, Pets and Villages, with nullable indexed PetId and VillageId foreign keys. Both foreign keys reference the corresponding Id primary key. The Pet foreign key specifies ON DELETE RESTRICT; the Village foreign key specifies no cascading database delete action. This replaces the earlier initial migration; it creates the current schema directly rather than renaming an existing Pet table. This reconciliation validates migration application only against isolated in-memory SQLite databases; no existing database was updated.
 

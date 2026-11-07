@@ -1,0 +1,56 @@
+@startuml
+allowmixing
+top to bottom direction
+title Smurfs console use-case architecture
+skinparam componentStyle uml2
+skinparam classAttributeIconSize 0
+
+component "Smurfs.Domain" {
+  class Smurf
+}
+component "Smurfs.Persistence" {
+  interface IUnitOfWorkFactory
+  interface IAppDataInitializer
+}
+component "Smurfs.Application" {
+  class "Create.Command" as CreateCommand
+  class "Create.Handler" as CreateHandler
+  class "List.Query" as ListQuery
+  class "List.Handler" as ListHandler
+  interface ISmurfReadService
+  class SmurfDto
+  class "PagedList<T>" as PagedList
+}
+component "Smurfs.Persistence.EFCore.AppData" {
+  class DataContext
+  class UnitOfWorkFactory
+  class "AppDataInitializer<TContext>" as AppDataInitializer
+}
+component "Smurfs.Infrastructure" {
+  class SmurfReadService
+}
+component "Smurfs.UI.Console" {
+  class Program <<composition root>>
+}
+
+CreateHandler ..> CreateCommand : handles
+CreateHandler ..> Smurf : constructs
+CreateHandler ..> IUnitOfWorkFactory : opens write session
+ListHandler ..> ListQuery : handles
+ListHandler ..> ISmurfReadService : requests page
+ISmurfReadService ..> PagedList : returns
+ISmurfReadService ..> SmurfDto : item type
+SmurfReadService ..|> ISmurfReadService
+SmurfReadService ..> DataContext : queries
+SmurfReadService ..> PagedList : constructs
+SmurfReadService ..> SmurfDto : projects
+UnitOfWorkFactory ..|> IUnitOfWorkFactory
+AppDataInitializer ..|> IAppDataInitializer
+AppDataInitializer ..> DataContext : context constraint
+Program ..> CreateCommand : dispatches
+Program ..> ListQuery : dispatches
+Program ..> IAppDataInitializer : runs setup
+Program ..> DataContext : configures
+Program ..> SmurfReadService : registers
+Program ..> UnitOfWorkFactory : registers
+@enduml

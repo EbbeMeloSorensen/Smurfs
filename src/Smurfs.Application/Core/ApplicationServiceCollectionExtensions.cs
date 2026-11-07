@@ -3,8 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Smurfs.Application.Core;
 
+/// <summary>
+/// Exposes dependency injection registration for the application use cases.
+/// </summary>
 public static class ApplicationServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers the assembly's MediatR handlers and the validation pipeline behavior.
+    /// </summary>
     public static IServiceCollection AddApplication(
         this IServiceCollection services)
     {

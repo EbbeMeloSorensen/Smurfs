@@ -1,6 +1,6 @@
 # Behavioral perspective
 
-The following describes implemented behavior, verified against Repository, UnitOfWork and the existing SQLite integration tests. No reviewed sequence/activity/state model exists yet; add one when a meaningful workflow needs it.
+The generic repository and unit-of-work behavior below is covered by the SQLite integration tests. The console list use case uses the separate read service described in the console workflow.
 
 1. A caller obtains a UnitOfWork owning a DataContext and its SmurfRepository. The runtime factory creates a context per session. The console registers the factory in its composition root.
 2. CountAsync and FindAsync apply successive predicates using logical AND. An empty sequence selects all persisted rows. Results have no guaranteed ordering. Find uses configured tracking (tracking by default), with no explicit navigation Includes. A read-only result list contains mutable entities.
@@ -14,6 +14,10 @@ See [IUnitOfWork](xref:Smurfs.Persistence.IUnitOfWork), [Repository](xref:Craft.
 
 ## Console workflow
 
+![Console setup and use-case dispatch](../_generated/diagrams/behavioral/diagrams/console-workflow.svg)
+
+The [sequence source](diagrams/console-workflow.puml) shows startup and use-case dispatch. The host disposes its service scope after the command completes.
+
 Run these commands from the same working directory so they use the same SQLite file. If the file is missing, either Smurf verb creates the database, applies migrations and seeds sample data before running. Use `initdb` to explicitly apply migrations to an existing database.
 
 ```powershell
@@ -21,6 +25,8 @@ dotnet run --project src/Smurfs.UI.Console -- createsmurf --name "New Smurf"
 dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page 2 --page-size 5
 ```
 
-- **initdb** applies migrations and seeds sample data when the Smurfs table is empty.
+- **initdb** applies outstanding migrations, then seeds sample data if the Smurfs table is empty.
 - **createsmurf** sends the name to Application. The handler creates a Smurf with age zero, commits it and disposes the write session.
-- **listsmurfs** opens an existing database in read-only mode. The read adapter counts rows and retrieves the requested page ordered by name and identifier. Pages start at 1, and the page size defaults to 25 and is capped at 50. An out-of-range page is empty.
+- **listsmurfs** opens an existing database in read-only mode. The read adapter counts rows and retrieves the requested page ordered by name and identifier. Pages start at 1, and the page size defaults to 25 and is capped at 50. An out-of-range page is empty. The identifier breaks ties between equal names. Count and page retrieval run as separate queries, so concurrent writes can change page contents or totals.
+
+The create handler relies on the supplied name and currently has no name validator. The list handler returns a failure for nonpositive paging values. The console returns exit code 1 for use-case failures and caught runtime exceptions. If setup fails after the file is created, run `initdb` to retry setup on the existing file.
