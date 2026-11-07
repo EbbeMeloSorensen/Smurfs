@@ -23,7 +23,7 @@
 /// </summary>
 public Guid Id { get; private set; } = Guid.NewGuid();
 ```
-- Prefer small, focused changes. Treat warnings as errors where the project already does so; don't suppress diagnostics just to make a build green.
+- Prefer small, focused changes. CS8618 is a build error across the solution. Fix the initialization or nullability contract. Use the null-forgiving operator only when an established framework contract guarantees initialization.
 
 ## PlantUML conventions
 
