@@ -6,6 +6,8 @@ Start with [AGENTS.md](AGENTS.md), [engineering conventions](docs/roundtrip.md),
 
 The [baseline review](docs/baseline-review.md) records verified architecture, validation and remaining decisions. Editable diagrams cover the [structural](docs/structural/index.md) and [behavioral](docs/behavioral/index.md) perspectives. See [console startup and commands](docs/behavioral/index.md#console-workflow) for first-run setup and paging.
 
+Use a stable .NET 10 SDK. The solution root's `global.json` selects the highest installed stable .NET 10 feature band and patch. Run `dotnet --version` from the solution root to confirm the selection.
+
 Build and run the SQLite integration tests:
 
 ```powershell
