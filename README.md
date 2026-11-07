@@ -17,7 +17,35 @@ dotnet test Smurfs.sln
 
 The test project retains its existing `UnitTest` name, although its current tests exercise real in-memory SQLite databases. Tests do not use `smurfs.db` or production data.
 
-Build the perspective-based documentation with `./docs/build-docs.ps1`; see [publishing prerequisites](docs/documentation.md#local-build) and the [November 2026 persistence baseline](docs/baseline-2026-11-04.md).
+## Build the documentation
+
+Use the .NET 10 SDK and make sure DocFX (`docfx`), Java (`java`), and Graphviz (`dot`) are on your PATH. Use a local PlantUML JAR and replace the example path below with its location.
+
+From the repository root, run the command for your platform.
+
+**Windows (PowerShell 7)**
+
+```powershell
+./docs/build-docs.ps1 -PlantUmlJar 'C:\path\to\plantuml.jar'
+```
+
+**Linux (Bash)**
+
+```bash
+bash docs/build-docs.sh /path/to/plantuml.jar
+```
+
+Both scripts accept the JAR path through the `PLANTUML_JAR` environment variable if you omit the path argument. On Linux, the script can also use `plantuml` on your PATH when neither JAR option is set.
+
+The build validates the structural and behavioral PlantUML sources and regenerates their SVGs in `docs/_generated/diagrams/`. DocFX then generates the .NET API reference from C# and XML comments in `docs/api/` and publishes the complete site to `docs/_site/`. Rerun the script whenever you change a diagram or other documentation source.
+
+Preview the generated site from the repository root.
+
+```text
+docfx serve docs/_site
+```
+
+See the [publishing guide](docs/documentation.md#local-build) and the [November 2026 persistence baseline](docs/baseline-2026-11-04.md).
 
 ## Populate a database for paging tests
 

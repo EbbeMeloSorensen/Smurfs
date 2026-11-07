@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.Infrastructure", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.UI.Console", "src\Smurfs.UI.Console\Smurfs.UI.Console.csproj", "{60125AA6-6406-4DE2-991A-465122A7CD76}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Craft.Domain", "src\Craft.Domain\Craft.Domain.csproj", "{674275FB-4339-4B8D-8F8F-1071F44E3D11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{60125AA6-6406-4DE2-991A-465122A7CD76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60125AA6-6406-4DE2-991A-465122A7CD76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60125AA6-6406-4DE2-991A-465122A7CD76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{674275FB-4339-4B8D-8F8F-1071F44E3D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{674275FB-4339-4B8D-8F8F-1071F44E3D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{674275FB-4339-4B8D-8F8F-1071F44E3D11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{674275FB-4339-4B8D-8F8F-1071F44E3D11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,6 +115,7 @@ Global
 		{C8CD7CEE-9CEE-4E35-A030-459011D646F0} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 		{8807A600-9772-4445-9BF9-98889DB1120E} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 		{60125AA6-6406-4DE2-991A-465122A7CD76} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
+		{674275FB-4339-4B8D-8F8F-1071F44E3D11} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33F3668F-2253-40DD-ACEE-2BFCCE9FE7E7}
