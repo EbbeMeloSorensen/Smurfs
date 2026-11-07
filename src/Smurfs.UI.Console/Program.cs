@@ -48,7 +48,9 @@ internal class Program
                 {
                     var connectionString = $"Data Source={DatabaseFile}";
                     if (readOnly && !initializeDatabase)
+                    {
                         connectionString += ";Mode=ReadOnly";
+                    }
                     services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
@@ -58,7 +60,9 @@ internal class Program
 
             await using var scope = host.Services.CreateAsyncScope();
             if (initializeDatabase)
+            {
                 await InitializeAsync(scope.ServiceProvider);
+            }
 
             return await run(scope.ServiceProvider);
         }
@@ -114,7 +118,9 @@ internal class Program
         var page = result.Value;
         System.Console.WriteLine($"Smurfs (page {page.CurrentPage}, {page.TotalPages} total pages, {page.TotalCount} rows):");
         foreach (var smurf in page)
+        {
             System.Console.WriteLine($" {smurf.Name}");
+        }
 
         return 0;
     }

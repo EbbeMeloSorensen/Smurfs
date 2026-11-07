@@ -14,7 +14,9 @@ public class Seeding
         DataContext context)
     {
         if (context.Smurfs.Any())
+        {
             return;
+        }
 
         CreateDataForSeeding(
             out var smurfs);

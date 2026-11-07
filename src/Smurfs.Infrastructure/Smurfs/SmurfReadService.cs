@@ -27,7 +27,9 @@ public sealed class SmurfReadService(DataContext context) : ISmurfReadService
         var offset = (pageNumber - 1L) * pageSize;
 
         if (offset >= count)
+        {
             return new PagedList<SmurfDto>([], count, pageNumber, pageSize);
+        }
 
         var items = await smurfs
             .OrderBy(smurf => smurf.Name)

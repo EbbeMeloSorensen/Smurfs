@@ -45,7 +45,9 @@ public class List
             var pageNumber = request.Params.PageNumber;
             var pageSize = request.Params.PageSize;
             if (pageNumber < 1 || pageSize < 1)
+            {
                 return Result<PagedList<SmurfDto>>.Failure("Page number and page size must be positive.");
+            }
 
             var page = await _readService.GetPageAsync(pageNumber, pageSize, cancellationToken);
             return Result<PagedList<SmurfDto>>.Success(page);

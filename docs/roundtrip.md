@@ -23,7 +23,7 @@
 /// </summary>
 public Guid Id { get; private set; } = Guid.NewGuid();
 ```
-- Prefer small, focused changes. CS8618 is a build error across the solution. Fix the initialization or nullability contract. Use the null-forgiving operator only when an established framework contract guarantees initialization.
+- Prefer small, focused changes. CS8618, IDE0005, IDE0161, and IDE0011 are build errors across the solution. Remove unnecessary imports, use file-scoped namespaces, and brace control-flow bodies in handwritten code. Fix the initialization or nullability contract. Use the null-forgiving operator only when an established framework contract guarantees initialization.
 
 ## PlantUML conventions
 

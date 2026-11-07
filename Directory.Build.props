@@ -14,6 +14,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <IncludeSymbols>false</IncludeSymbols>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <WarningsAsErrors>$(WarningsAsErrors);CS8618</WarningsAsErrors>
   </PropertyGroup>
 </Project>
