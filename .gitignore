@@ -3,6 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Databases
+*.db
+*.db-shm
+*.db-wal
+
 # DocFX generated files
 /docs/api/
 /docs/_site/
