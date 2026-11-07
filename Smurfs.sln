@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		AGENTS.md = AGENTS.md
 		Directory.Build.props = Directory.Build.props
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.Application", "src\Smurfs.Application\Smurfs.Application.csproj", "{BCD9FC7C-AC1F-4EEB-8FAB-E58B64C5BE0E}"
