@@ -1,4 +1,5 @@
 using CommandLine;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,53 +22,13 @@ internal class Program
     static async Task Main(
         string[] args)
     {
-        //args = "breakfast".Split();
-        //args = "create --host localhost --user postgres --password L1on8Zebra --firstname Egon".Split();
-        //args = "count --user john --password secret".Split();
-        //args = "list --host localhost --user postgres --password L1on8Zebra".Split();
-        //args = "import --host localhost --user postgres --password L1on8Zebra".Split();
-        //args = "export --host localhost --user postgres --password L1on8Zebra".Split();
-        //args = "update --user john --password secret --id 67".Split();
-        //args = "delete --user john --password secret --id 67".Split();
-        //args = "list -h localhost -d PR -u postgres -p L1on8Zebra".Split();
-        //args = "import --filename Contacts.json --legacy true --host localhost --user postgres --password L1on8Zebra".Split();
-
         await Parser.Default.ParseArguments<
-                //Verbs.PR.Create,
-                //Count,
-                //Verbs.PR.List,
-                //Verbs.Smurfs.List,
-                //Details,
-                //Export,
-                //Import,
-                //Update,
-                //Delete,
-                Breakfast>(args)
+                Verbs.Smurfs.Create,
+                Verbs.Smurfs.List>(args)
             .MapResult(
-                //(Verbs.PR.Create options) => CreatePerson(options),
-                //(Count options) => CountPeople(options),
-                //(Verbs.PR.List options) => ListPeople(options),
-                //(Verbs.Smurfs.List options) => ListSmurfs(options),
-                //(Details options) => GetPersonDetails(options),
-                //(Export options) => ExportPeople(options),
-                //(Import options) => ImportPeople(options),
-                //(Update options) => UpdatePerson(options),
-                //(Delete options) => DeletePerson(options),
-                (Breakfast options) => MakeBreakfast(options),
+                (Verbs.Smurfs.Create options) => CreateSmurf(options),
+                (Verbs.Smurfs.List options) => ListSmurfs(options),
                 errs => Task.FromResult(0));
-    }
-
-    public static async Task MakeBreakfast(
-        Breakfast options)
-    {
-        //System.Console.Write("Making breakfast...\nProgress: ");
-        //await GetApplication().MakeBreakfast((progress, nameOfSubtask) =>
-        //{
-        //    System.Console.SetCursorPosition(10, System.Console.CursorTop);
-        //    System.Console.Write($"{progress:F2} %");
-        //    return false;
-        //});
-        //System.Console.WriteLine("\nDone");
     }
 
     private static async Task<IHost> GetHost()
@@ -88,7 +49,7 @@ internal class Program
                 {
                     // Load connection string from appsettings.json or environment
                     //var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
-                    var connectionString = "Data source=babuska3.db";
+                    var connectionString = "Data source=smurfs.db";
 
                     // Postgres - MELO - Basement
                     //connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=DB_Temple_UI_Console";
@@ -120,4 +81,62 @@ internal class Program
 
         return _host;
     }
+
+    public static async Task CreateSmurf(
+        Verbs.Smurfs.Create options)
+    {
+        System.Console.Write("Creating Smurf...\nProgress: ");
+
+        var smurf = new Domain.Smurf
+        {
+            Name = options.Name,
+            Age = 0,
+        };
+
+        try
+        {
+            using var scope = (await GetHost()).Services.CreateScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+            var result = await mediator.Send(new Application.Smurfs.Create.Command
+                {
+                    Smurf = smurf
+                });
+
+            System.Console.Write(result.IsSuccess
+                ? $"\nSmurf: \"{smurf.Name}\" created successfully\n"
+                : $"\nSmurf: \"{smurf.Name}\" creation failed ({result.Error})\n");
+        }
+        catch (Exception exception)
+        {
+            System.Console.Write($"\nException thrown when trying to create smurf: \"{exception.Message}\"\n");
+        }
+    }
+
+    public static async Task ListSmurfs(
+        Verbs.Smurfs.List options)
+    {
+        try
+        {
+            using var scope = (await GetHost()).Services.CreateScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+            var result = await mediator.Send(new Application.Smurfs.List.Query { Params = new Application.Smurfs.SmurfParams() });
+
+            System.Console.WriteLine($"\nSmurfs:");
+            foreach (var smurfDto in result.Value)
+            {
+                System.Console.WriteLine($" {smurfDto.Name}");
+            }
+        }
+        catch (HttpRequestException exception)
+        {
+            System.Console.Write($"\nHttpRequestException thrown: \"{exception.Message}\"\n");
+        }
+        catch (Exception exception)
+        {
+            System.Console.Write($"\nException thrown: \"{exception.Message}\"\n");
+        }
+    }
+
 }

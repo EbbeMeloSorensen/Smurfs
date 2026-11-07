@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Smurfs.UI.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "listsmurfs"
+    }
+  }
+}

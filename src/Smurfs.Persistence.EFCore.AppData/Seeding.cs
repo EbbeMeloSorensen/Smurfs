@@ -1,3 +1,5 @@
+using Smurfs.Domain;
+
 namespace Smurfs.Persistence.EFCore.AppData;
 
 public class Seeding
@@ -8,16 +10,26 @@ public class Seeding
         if (context.Smurfs.Any())
             return;
 
-        //CreateDataForSeeding(
-        //    PRDbContextBase.Versioned,
-        //    out var people,
-        //    out var personComments,
-        //    out var smurfs);
+        CreateDataForSeeding(
+            out var smurfs);
 
-        //await context.Smurfs.AddRangeAsync(smurfs);
-        //await context.People.AddRangeAsync(people);
-        //await context.PersonComments.AddRangeAsync(personComments);
+        await context.Smurfs.AddRangeAsync(smurfs);
 
         context.SaveChanges();
+    }
+
+    private static void CreateDataForSeeding(
+        out List<Smurf> smurfs)
+    {
+        smurfs = new List<Smurf>
+        {
+            new Smurf{ Name = "Papa Smurf"},
+            new Smurf{ Name = "Smurfette"},
+            new Smurf{ Name = "Clumsy Smurf"},
+            new Smurf{ Name = "Grouchy Smurf"},
+            new Smurf{ Name = "Brainy Smurf"},
+            new Smurf{ Name = "Gutsy Smurf"},
+            new Smurf{ Name = "Vanity Smurf"}
+        };
     }
 }
