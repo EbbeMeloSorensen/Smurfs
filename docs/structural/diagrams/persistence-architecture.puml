@@ -31,7 +31,7 @@ component "Smurfs.Persistence" as SmurfContracts {
 component "Smurfs.Persistence.EFCore.AppData" as AppData {
   class SmurfRepository
   class UnitOfWork <<sealed>>
-  class UnitOfWorkFactory <<internal>>
+  class UnitOfWorkFactory
   class DataContext {
     +Smurfs : DbSet<Smurf> {get; set;}
     +Villages : DbSet<Village> {get; set;}

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Smurfs.Application\Smurfs.Application.csproj" />
+    <ProjectReference Include="..\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj" />
     <ProjectReference Include="..\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj" />
   </ItemGroup>
 

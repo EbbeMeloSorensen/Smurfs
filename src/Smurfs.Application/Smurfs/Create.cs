@@ -9,7 +9,10 @@ public class Create
 {
     public class Command : IRequest<Result<Unit>>
     {
-        public Smurf Smurf { get; set; }
+        /// <summary>
+        /// Gets the name supplied by the caller.
+        /// </summary>
+        public required string Name { get; init; }
     }
 
     public class Handler : IRequestHandler<Command, Result<Unit>>
@@ -26,10 +29,11 @@ public class Create
             Command request,
             CancellationToken cancellationToken)
         {
-            var unitOfWork = _unitOfWorkFactory.CreateUnitOfWork();
+            var smurf = new Smurf { Name = request.Name, Age = 0 };
 
-            await unitOfWork.Smurfs.AddAsync(request.Smurf);
-            await unitOfWork.CompleteAsync();
+            await using var unitOfWork = _unitOfWorkFactory.CreateUnitOfWork();
+            await unitOfWork.Smurfs.AddAsync(smurf, cancellationToken);
+            await unitOfWork.CompleteAsync(cancellationToken);
 
             return Result<Unit>.Success(Unit.Value);
         }

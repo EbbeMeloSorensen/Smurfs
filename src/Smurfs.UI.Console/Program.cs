@@ -1,142 +1,121 @@
 using CommandLine;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Smurfs.Application.Core;
-using Smurfs.Application.Interfaces;
-using Smurfs.Infrastructure.Pagination;
+using Smurfs.Application.Smurfs;
+using Smurfs.Infrastructure.Smurfs;
 using Smurfs.Persistence;
 using Smurfs.Persistence.EFCore.AppData;
 using Smurfs.UI.Console.Verbs;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Smurfs.UI.Console;
 
 internal class Program
 {
-    private static IHost? _host = null;
+    private const string DatabaseFile = "smurfs.db";
 
-    static async Task Main(
-        string[] args)
+    private static Task<int> Main(string[] args)
     {
-        await Parser.Default.ParseArguments<
+        return Parser.Default.ParseArguments<
                 Verbs.Smurfs.Create,
-                Verbs.Smurfs.List>(args)
+                Verbs.Smurfs.List,
+                InitializeDatabase>(args)
             .MapResult(
-                (Verbs.Smurfs.Create options) => CreateSmurf(options),
-                (Verbs.Smurfs.List options) => ListSmurfs(options),
-                errs => Task.FromResult(0));
+                (Verbs.Smurfs.Create options) => RunAsync(false, services => CreateSmurf(services, options)),
+                (Verbs.Smurfs.List options) => RunAsync(true, services => ListSmurfs(services, options)),
+                (InitializeDatabase _) => RunAsync(false, _ => Task.FromResult(0), initialize: true),
+                errors => Task.FromResult(errors.All(error => error.StopsProcessing) ? 0 : 2));
     }
 
-    private static async Task<IHost> GetHost()
+    private static async Task<int> RunAsync(
+        bool readOnly,
+        Func<IServiceProvider, Task<int>> run,
+        bool initialize = false)
     {
-        if (_host == null)
+        try
         {
-            _host = Host.CreateDefaultBuilder()
+            var initializeDatabase = initialize || !File.Exists(DatabaseFile);
+            using var host = Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging =>
                 {
-                    // Turn off logging entirely
-                    //logging.ClearProviders();
-
-                    // Filter EF Core logs
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Migrations", LogLevel.None);
                 })
-                .ConfigureServices((context, services) =>
+                .ConfigureServices(services =>
                 {
-                    // Load connection string from appsettings.json or environment
-                    //var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
-                    var connectionString = "Data source=smurfs.db";
-
-                    // Postgres - MELO - Basement
-                    //connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=DB_Temple_UI_Console";
-
-                    // Postgres - Linux in podman
-                    //connectionString = "Server=localhost;Port=5432;User Id=myuser;Password=mypassword;Database=DB_Temple_UI_Console";
-
-                    services.AddAppDataPersistence<DataContext>(options =>
-                    {
-                        options.UseSqlite(connectionString);
-                        //options.UseNpgsql(connectionString);
-                    });
-
-                    services.AddApplication(); // registers MediatR and handlers
-                    services.AddAutoMapper(assemblies: typeof(MappingProfiles).Assembly);
-                    services.AddScoped<IUserAccessor, UserAccessor>();
+                    var connectionString = $"Data Source={DatabaseFile}";
+                    if (readOnly && !initializeDatabase)
+                        connectionString += ";Mode=ReadOnly";
+                    services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
+                    services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
-                    //services.AddScoped<IBusinessRuleCatalog, BusinessRuleCatalog>();
-                    services.AddScoped<IPagingHandler<Application.Smurfs.SmurfDto>, PagingHandler<Application.Smurfs.SmurfDto>>();
+                    services.AddScoped<ISmurfReadService, SmurfReadService>();
                 })
                 .Build();
 
-            // Run migrations once when the host is created
-            using var scope = _host.Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-            await db.Database.MigrateAsync();
-            await Seeding.SeedDatabase(db);
-        }
+            await using var scope = host.Services.CreateAsyncScope();
+            if (initializeDatabase)
+                await InitializeAsync(scope.ServiceProvider);
 
-        return _host;
+            return await run(scope.ServiceProvider);
+        }
+        catch (Exception exception)
+        {
+            System.Console.Error.WriteLine(exception.Message);
+            return 1;
+        }
     }
 
-    public static async Task CreateSmurf(
+    private static async Task InitializeAsync(
+        IServiceProvider services)
+    {
+        var initializer = services.GetRequiredService<IAppDataInitializer>();
+        await initializer.MigrateAsync();
+        await initializer.SeedAsync();
+        System.Console.WriteLine("Database initialized.");
+    }
+
+    private static async Task<int> CreateSmurf(
+        IServiceProvider services,
         Verbs.Smurfs.Create options)
     {
-        System.Console.Write("Creating Smurf...\nProgress: ");
+        var sender = services.GetRequiredService<ISender>();
+        var result = await sender.Send(new Create.Command { Name = options.Name });
 
-        var smurf = new Domain.Smurf
+        if (!result.IsSuccess)
         {
-            Name = options.Name,
-            Age = 0,
-        };
-
-        try
-        {
-            using var scope = (await GetHost()).Services.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
-            var result = await mediator.Send(new Application.Smurfs.Create.Command
-                {
-                    Smurf = smurf
-                });
-
-            System.Console.Write(result.IsSuccess
-                ? $"\nSmurf: \"{smurf.Name}\" created successfully\n"
-                : $"\nSmurf: \"{smurf.Name}\" creation failed ({result.Error})\n");
+            System.Console.Error.WriteLine(result.Error);
+            return 1;
         }
-        catch (Exception exception)
-        {
-            System.Console.Write($"\nException thrown when trying to create smurf: \"{exception.Message}\"\n");
-        }
+
+        System.Console.WriteLine($"Smurf: \"{options.Name}\" created successfully.");
+        return 0;
     }
 
-    public static async Task ListSmurfs(
+    private static async Task<int> ListSmurfs(
+        IServiceProvider services,
         Verbs.Smurfs.List options)
     {
-        try
+        var sender = services.GetRequiredService<ISender>();
+        var result = await sender.Send(new List.Query
         {
-            using var scope = (await GetHost()).Services.CreateScope();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            Params = new SmurfParams { PageNumber = options.Page, PageSize = options.PageSize }
+        });
 
-            var result = await mediator.Send(new Application.Smurfs.List.Query { Params = new Application.Smurfs.SmurfParams() });
+        if (!result.IsSuccess)
+        {
+            System.Console.Error.WriteLine(result.Error);
+            return 1;
+        }
 
-            System.Console.WriteLine($"\nSmurfs:");
-            foreach (var smurfDto in result.Value)
-            {
-                System.Console.WriteLine($" {smurfDto.Name}");
-            }
-        }
-        catch (HttpRequestException exception)
-        {
-            System.Console.Write($"\nHttpRequestException thrown: \"{exception.Message}\"\n");
-        }
-        catch (Exception exception)
-        {
-            System.Console.Write($"\nException thrown: \"{exception.Message}\"\n");
-        }
+        var page = result.Value;
+        System.Console.WriteLine($"Smurfs (page {page.CurrentPage}, {page.TotalPages} total pages, {page.TotalCount} rows):");
+        foreach (var smurf in page)
+            System.Console.WriteLine($" {smurf.Name}");
+
+        return 0;
     }
-
 }

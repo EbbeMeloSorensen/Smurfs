@@ -10,11 +10,15 @@ Source: [domain-model.puml](diagrams/domain-model.puml).
 
 ## Persistence architecture
 
-The five production projects separate domain types, provider-neutral Craft and Smurfs contracts, and reusable/Smurfs-specific EF Core implementations. The diagram groups selected types by their containing assembly using UML components, rather than namespace packages. Arrows describe type relationships; those crossing component boundaries reveal the relevant assembly dependencies. The diagram does not enumerate project references. Explicit domain dependencies show generic type arguments, entity sets and configuration targets; dependencies through other interfaces are not repeated as direct domain dependencies. The view focuses on solution-owned types. Standalone EF Core and BCL types and their connecting arrows are omitted; framework names remain in signatures where useful, such as DbSet<Smurf>. Framework inheritance and interface contracts remain available in the API reference. Domain members and relationships remain detailed in the conceptual domain model. Only the Smurf repository exists. One UnitOfWork owns the shared DataContext, saves it on CompleteAsync and disposes it asynchronously. The internal runtime factory and public design-time SQLite factory have different purposes. No application or composition root exists.
+The five projects in this view separate domain types, provider-neutral Craft and Smurfs contracts, and reusable/Smurfs-specific EF Core implementations. The diagram groups selected types by their containing assembly using UML components, rather than namespace packages. Arrows describe type relationships; those crossing component boundaries reveal the relevant assembly dependencies. The diagram does not enumerate project references. Explicit domain dependencies show generic type arguments, entity sets and configuration targets; dependencies through other interfaces are not repeated as direct domain dependencies. The view focuses on solution-owned types. Standalone EF Core and BCL types and their connecting arrows are omitted; framework names remain in signatures where useful, such as DbSet<Smurf>. Framework inheritance and interface contracts remain available in the API reference. Domain members and relationships remain detailed in the conceptual domain model. Only the Smurf repository exists. One UnitOfWork owns the shared DataContext, saves it on CompleteAsync and disposes it asynchronously. The runtime factory and design-time SQLite factory have different purposes.
 
 ![Persistence architecture](../_generated/diagrams/structural/diagrams/persistence-architecture.svg)
 
 Source: [persistence-architecture.puml](diagrams/persistence-architecture.puml). See [behavior](../behavioral/index.md) and [DataContext](xref:Smurfs.Persistence.EFCore.AppData.DataContext).
+
+## Console use cases
+
+The console is the composition root for Application, the EF app-data adapter and Infrastructure. Application owns the creation request and the Smurf read contract. Infrastructure implements that contract using the app-data context, with ordering and DTO projection in the database. The persistence diagram below the conceptual model scopes its type relationships to the repository and unit-of-work design.
 
 ## Relational model
 
