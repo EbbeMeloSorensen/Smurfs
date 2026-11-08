@@ -1,0 +1,52 @@
+@startuml
+title Smurfs solution project dependencies
+' Keep nodes and arrows aligned with Smurfs.sln and direct ProjectReference items.
+skinparam componentStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 18
+skinparam ranksep 35
+
+package "Production projects (src)" {
+  component "Craft.Domain" as Craft_Domain
+  component "Craft.Persistence" as Craft_Persistence
+  component "Craft.Persistence.EFCore" as Craft_Persistence_EFCore
+  component "Smurfs.Application" as Smurfs_Application
+  component "Smurfs.Domain" as Smurfs_Domain
+  component "Smurfs.Infrastructure" as Smurfs_Infrastructure
+  component "Smurfs.Persistence" as Smurfs_Persistence
+  component "Smurfs.Persistence.EFCore.AppData" as Smurfs_Persistence_EFCore_AppData
+  component "Smurfs.Persistence.EFCore.Identity" as Smurfs_Persistence_EFCore_Identity
+  component "Smurfs.UI.Console" as Smurfs_UI_Console
+  component "Smurfs.UI.WPF" as Smurfs_UI_WPF
+  component "Smurfs.ViewModel" as Smurfs_ViewModel
+}
+
+package "Test projects (tests)" {
+  component "Smurf.Persistence.EFCore.AppData.UnitTest" as Smurf_Persistence_EFCore_AppData_UnitTest
+}
+
+Craft_Persistence_EFCore -up-> Craft_Persistence
+Smurfs_Application -up-> Smurfs_Persistence
+Smurfs_Domain -up-> Craft_Domain
+Smurfs_Infrastructure -up-> Smurfs_Application
+Smurfs_Infrastructure -up-> Smurfs_Persistence_EFCore_AppData
+Smurfs_Infrastructure -up-> Smurfs_Persistence_EFCore_Identity
+Smurfs_Persistence -up-> Craft_Persistence
+Smurfs_Persistence -up-> Smurfs_Domain
+Smurfs_Persistence_EFCore_AppData -up-> Craft_Persistence_EFCore
+Smurfs_Persistence_EFCore_AppData -up-> Smurfs_Persistence
+Smurfs_UI_Console -up-> Smurfs_Application
+Smurfs_UI_Console -up-> Smurfs_Infrastructure
+Smurfs_UI_Console -up-> Smurfs_Persistence_EFCore_AppData
+Smurfs_UI_WPF -up-> Smurfs_Infrastructure
+Smurfs_UI_WPF -up-> Smurfs_Persistence_EFCore_AppData
+Smurfs_UI_WPF -up-> Smurfs_ViewModel
+Smurfs_ViewModel -up-> Smurfs_Application
+Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Application
+Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Persistence_EFCore_AppData
+
+legend bottom
+  Arrow points from the referencing project to the referenced project.
+  Direct project references only.
+endlegend
+@enduml

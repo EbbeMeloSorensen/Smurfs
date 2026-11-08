@@ -2,6 +2,14 @@
 
 The [traceability matrix](../_generated/traceability.md) connects the design views below to requirements and evidence. The [use case model](../requirements/use-cases.md) describes the externally visible goals.
 
+## Project dependencies
+
+This solution-wide view shows the production and test projects in `Smurfs.sln`. An arrow points from a project to a project it directly references in its `.csproj` file. The diagram includes explicit references even when a transitive route also exists. Package dependencies and type relationships are covered separately or outside this view.
+
+![Smurfs solution project dependencies](../_generated/diagrams/structural/diagrams/project-dependencies.svg)
+
+[PlantUML source](diagrams/project-dependencies.puml)
+
 ## Conceptual domain
 
 [Smurf](xref:Smurfs.Domain.Smurf), [Pet](xref:Smurfs.Domain.Pet), and [Village](xref:Smurfs.Domain.Village) are public domain classes. This selective class model omits storage identifiers. Assigning a Smurf name requires non-whitespace text and at most 20 characters. Age has no range validation. A Smurf has an optional Pet; multiple Smurfs may share it. Village exposes a mutable collection. [ADR 0001](../decisions/0001-village-membership.md) establishes optional single-village membership and navigation from Village to Smurfs only. Plain CLR collections still permit conflicting memberships, a known implementation limitation. EF tracking represents membership with a single optional shadow VillageId foreign key; Smurf has no reverse village reference.
