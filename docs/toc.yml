@@ -1,5 +1,5 @@
 - name: Home
-  href: index.md
+  href: _generated/site-pages/index.md
 - name: Requirements
   href: requirements/index.md
 - name: Use cases

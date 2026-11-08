@@ -109,6 +109,8 @@ After a successful build, serve the output from the repository root:
 docfx serve docs/_site
 ```
 
+The build entry points also prepare the published home and API landing pages from their Markdown sources. The source API links open local HTML in `_site`, while the published page uses DocFX cross-references.
+
 Running DocFX alone does not perform the separate PlantUML rendering step. Use the platform build entry point whenever diagram sources change or when building a fresh checkout.
 
 Inspect `docs/_site/index.html`, `structural/index.html`, `behavioral/index.html`, `decisions/index.html`, and `api/Smurfs.Domain.Village.html`. API cross-references must resolve to generated pages; diagram links must point to copied SVG resources. A successful build is separate from semantic model review.

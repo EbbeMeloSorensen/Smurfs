@@ -20,8 +20,15 @@
           "**/*.{md,yml}"
         ],
         "exclude": [
-          "_site/**"
+          "_site/**",
+          "index.md",
+          "api-reference.md",
+          "_generated/site-pages/**"
         ]
+      },
+      {
+        "src": "_generated/site-pages",
+        "files": ["index.md", "api-reference.md"]
       }
     ],
     "resource": [

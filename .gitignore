@@ -439,3 +439,4 @@ FodyWeavers.xsd
 # Locally rendered PlantUML output only (hand-authored SVGs remain tracked)
 /docs/_generated/diagrams/
 /docs/_generated/traceability.md
+/docs/_generated/site-pages/
