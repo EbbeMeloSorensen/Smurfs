@@ -11,6 +11,7 @@ using Smurfs.Persistence.EFCore.AppData;
 using Smurfs.ViewModel;
 
 namespace Smurfs.UI.WPF;
+
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
@@ -18,65 +19,75 @@ public partial class App
 {
     private IHost? _host;
 
-    protected override void OnStartup(StartupEventArgs e)
+    /// <summary>
+    /// Prepares the database before replacing the splash screen with the main window.
+    /// </summary>
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
+        var shutdownMode = ShutdownMode;
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
         var splash = new SplashScreenWindow();
-        splash.Show();
 
-        _host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                var connectionString = "Data Source=babuska.db";
-
-                services.AddAppDataPersistence<DataContext>(options =>
-                {
-                    options.UseSqlite(connectionString);
-                });
-
-                services.AddAutoMapper(assemblies: typeof(MappingProfiles).Assembly);
-                services.AddApplication();
-                services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
-                services.AddScoped<ISmurfReadService, SmurfReadService>();
-                services.AddScoped<IPagingHandler<SmurfDto>, PagingHandler<SmurfDto>>();
-
-                services.AddMediatR(cfg =>
-                    cfg.RegisterServicesFromAssemblyContaining<List.Query>());
-
-                // Register our ViewModel and View
-                services.AddSingleton<MainWindowViewModel>();
-                services.AddTransient<MainWindow>();
-            })
-            .Build();
-
-        Task.Run(async () =>
+        try
         {
-            using var scope = _host.Services.CreateScope();
+            splash.Show();
 
-            await Current.Dispatcher.InvokeAsync(() =>
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureServices(services =>
+                {
+                    const string connectionString = "Data Source=babuska.db";
+
+                    services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
+                    services.AddAutoMapper(assemblies: typeof(MappingProfiles).Assembly);
+                    services.AddApplication();
+                    services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
+                    services.AddScoped<ISmurfReadService, SmurfReadService>();
+                    services.AddScoped<IPagingHandler<SmurfDto>, PagingHandler<SmurfDto>>();
+                    services.AddSingleton<MainWindowViewModel>();
+                    services.AddTransient<MainWindow>();
+                })
+                .Build();
+            _host = host;
+
+            await Task.Run(async () =>
             {
-                var scope = _host!.Services.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-                db.Database.MigrateAsync().GetAwaiter().GetResult();
-                Seeding.SeedDatabase(db).GetAwaiter().GetResult();
-
-                var mainWindow = scope.ServiceProvider.GetRequiredService<MainWindow>();
-                MainWindow = mainWindow;
-                mainWindow.Show();
-                splash.Close();
+                await using var scope = host.Services.CreateAsyncScope();
+                var initializer = scope.ServiceProvider.GetRequiredService<IAppDataInitializer>();
+                await initializer.MigrateAsync();
+                await initializer.SeedAsync();
             });
-        });
+
+            var mainWindow = host.Services.GetRequiredService<MainWindow>();
+            MainWindow = mainWindow;
+            mainWindow.Show();
+            ShutdownMode = shutdownMode;
+            splash.Close();
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                $"Smurfs could not start. {exception.Message}",
+                "Smurfs startup error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            Shutdown(1);
+        }
     }
 
-    protected override async void OnExit(ExitEventArgs e)
+    /// <summary>
+    /// Disposes the host and its service provider when WPF exits.
+    /// </summary>
+    protected override void OnExit(ExitEventArgs e)
     {
-        if (_host is not null)
+        try
         {
-            await _host.StopAsync();
+            _host?.Dispose();
         }
-
-        _host?.Dispose();
-        base.OnExit(e);
+        finally
+        {
+            base.OnExit(e);
+        }
     }
 }

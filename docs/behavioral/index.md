@@ -32,3 +32,13 @@ dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page 2 --page-size 5
 - **listsmurfs** opens an existing database in read-only mode. The read adapter counts rows and retrieves the requested page ordered by name and identifier. Pages start at 1, and the page size defaults to 25 and is capped at 50. An out-of-range page is empty. The identifier breaks ties between equal names. Count and page retrieval run as separate queries, so concurrent writes can change page contents or totals.
 
 Names must contain non-whitespace text and be at most 20 characters. The console, the domain property and the catalog use the same policy. The console writes invalid-name messages to standard error. If the catalog returns several violations, the handler reports the first. The list handler returns a failure for nonpositive paging values. The console returns exit code 1 for use-case failures and caught runtime exceptions. If setup fails after the file is created, run `initdb` to retry setup on the existing file. The console filters the MediatR license log category.
+
+## WPF startup and first-page load
+
+The WPF app shows a splash screen while a background operation migrates and seeds its local `babuska.db` using the shared app-data initializer. The initialization scope is disposed before the main window opens. WPF creates and shows the main window on the dispatcher, then closes the splash. If initialization or window creation fails, the app displays the error and exits.
+
+**Load smurfs** requests the default first page through the same application query as the console. Each load resolves a sender in its own scope. The button is disabled until the operation completes. A successful load replaces the displayed rows. A failure shows an error and preserves the previous rows. WPF currently displays names from the first page and provides no page selection or total count display.
+
+![WPF startup and first-page load](../_generated/diagrams/behavioral/diagrams/wpf-workflow.svg)
+
+[PlantUML source](diagrams/wpf-workflow.puml)

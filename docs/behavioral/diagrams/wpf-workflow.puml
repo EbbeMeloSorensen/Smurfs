@@ -1,0 +1,35 @@
+@startuml
+title WPF startup and first-page load
+actor Operator
+participant "WPF App" as App
+participant "Startup scope (worker)" as Setup
+participant IAppDataInitializer as Initializer
+participant MainWindowViewModel as ViewModel
+participant "Load scope" as Load
+participant "List.Handler" as Handler
+
+App -> App : Show splash on UI thread
+App -> Setup : Start background initialization
+Setup -> Initializer : MigrateAsync(), then SeedAsync()
+Setup -> Setup : Dispose scope
+alt startup succeeds
+  Setup --> App : Initialization completed
+  App -> App : Show main window, then close splash
+  Operator -> ViewModel : Load smurfs
+  ViewModel -> ViewModel : Disable load command
+  ViewModel -> Load : Open scope and resolve sender
+  Load -> Handler : Send default List.Query
+  alt query succeeds
+    Handler --> ViewModel : First page
+    ViewModel -> ViewModel : Replace displayed rows
+  else query fails
+    Handler --> ViewModel : Failure or exception
+    ViewModel -> ViewModel : Show error, preserve rows
+  end
+  ViewModel -> Load : Dispose scope
+  ViewModel -> ViewModel : Enable load command
+else startup fails
+  Setup --> App : Initialization exception
+  App -> App : Report error and shut down
+end
+@enduml

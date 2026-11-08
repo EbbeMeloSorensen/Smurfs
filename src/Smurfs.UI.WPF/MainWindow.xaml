@@ -12,8 +12,19 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" FlowDirection="LeftToRight" Orientation="Horizontal">
-            <Button Content="Load smurfs" Command="{Binding LoadSmurfsCommand}"/>
+        <StackPanel Grid.Row="0">
+            <Button Content="Load smurfs" Command="{Binding LoadSmurfsCommand}" HorizontalAlignment="Left"/>
+            <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ErrorMessage}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </StackPanel>
 
         <ListBox Grid.Row="1" ItemsSource="{Binding Smurfs}">
