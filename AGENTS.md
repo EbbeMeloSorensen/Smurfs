@@ -16,7 +16,7 @@ This file is the entry point for Codex. Read the linked documents before making 
 6. Avoid changing runtime behavior, public contracts, EF Core mappings or migrations unless explicitly asked. Report architectural or model inconsistencies instead of guessing.
 7. Treat CS8618, IDE0005, IDE0161, and IDE0011 as build errors. Fix initialization or nullability contracts, remove unnecessary imports, use file-scoped namespaces, and brace control-flow bodies. Verify the build.
 8. Run the narrowest relevant tests and validation commands available; report which passed, failed or could not run.
-9. When changing documentation links or navigation, verify the affected links in the built DocFX site and in source Markdown where local browsing is supported. Follow the link checks in `docs/roundtrip.md`.
+9. When changing documentation links or navigation, verify the affected links in the built DocFX site and in source Markdown where local browsing is supported. Follow the link checks in `docs/roundtrip.md`. Apply the behavioral modeling conventions there and the client-specific split in `docs/project-context.md`.
 10. At task completion, summarize code changes, documentation changes, model/code discrepancies and validation results.
 
 ## Scope and security

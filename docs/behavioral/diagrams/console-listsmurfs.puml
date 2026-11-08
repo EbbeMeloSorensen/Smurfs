@@ -1,0 +1,26 @@
+@startuml
+title Console — listsmurfs
+actor Operator
+participant "Console Program" as CLI
+participant "List.Handler" as List
+participant SmurfReadService as Read
+database "SQLite" as DB
+
+Operator -> CLI : listsmurfs [page and page size]
+CLI -> CLI : Build host and open scope
+ref over CLI : Database setup if missing (initdb operations)
+CLI -> List : Send List.Query
+alt nonpositive page or page size
+  List --> CLI : Failure
+  CLI --> Operator : Paging error, exit 1
+else valid paging inputs
+  List -> Read : GetPageAsync()
+  Read -> DB : Count rows
+  opt page starts within the row count
+    Read -> DB : Order and project requested page
+  end
+  Read --> List : Rows and totals
+  List --> CLI : Success
+  CLI --> Operator : Page and row count, exit 0
+end
+@enduml

@@ -6,7 +6,7 @@
       "method": "Manual acceptance and migration integration",
       "implementation": "Implemented in console",
       "design": [
-        "console",
+        "console-init",
         "storage"
       ],
       "automated": [
@@ -20,9 +20,9 @@
       "method": "Manual acceptance and repository integration",
       "implementation": "Implemented in console and WPF through the shared create command.",
       "design": [
-        "console",
+        "console-create",
         "catalog",
-        "wpf"
+        "wpf-create"
       ],
       "automated": [
         "IT-002",
@@ -36,8 +36,8 @@
       "method": "Manual acceptance",
       "implementation": "Console implements the proposed scope. WPF supports adjacent pages and shows page totals.",
       "design": [
-        "console",
-        "wpf"
+        "console-list",
+        "wpf-browse"
       ],
       "automated": [],
       "note": "WPF shows the number of pages and has no total row count or direct page entry. Manual console and WPF cases are unexecuted. No checked-in automated client paging tests."
@@ -49,8 +49,8 @@
       "implementation": "Implemented in console and WPF through the shared create command.",
       "design": [
         "catalog",
-        "console",
-        "wpf"
+        "console-create",
+        "wpf-create"
       ],
       "automated": [
         "IT-006"
@@ -63,7 +63,7 @@
       "method": "Manual invalid input and retry",
       "implementation": "Implemented in list handler",
       "design": [
-        "console"
+        "console-list"
       ],
       "automated": [],
       "note": "Console accepts explicit paging inputs. WPF uses bounded controls and does not expose numeric paging inputs. The console manual case is unexecuted."
@@ -182,11 +182,6 @@
     }
   },
   "design": {
-    "console": {
-      "title": "Console workflow",
-      "path": "behavioral/index.md",
-      "anchor": "console-workflow"
-    },
     "catalog": {
       "title": "Domain catalog and console architecture",
       "path": "structural/index.md",
@@ -202,10 +197,30 @@
       "path": "documentation.md",
       "anchor": "traceability"
     },
-    "wpf": {
-      "title": "WPF startup, paging and creation",
-      "path": "behavioral/index.md",
-      "anchor": "wpf-startup-and-paging"
+    "console-init": {
+      "title": "Console initdb",
+      "path": "behavioral/console.md",
+      "anchor": "initdb"
+    },
+    "console-create": {
+      "title": "Console createsmurf",
+      "path": "behavioral/console.md",
+      "anchor": "createsmurf"
+    },
+    "console-list": {
+      "title": "Console listsmurfs",
+      "path": "behavioral/console.md",
+      "anchor": "listsmurfs"
+    },
+    "wpf-create": {
+      "title": "WPF create a Smurf",
+      "path": "behavioral/wpf.md",
+      "anchor": "create-a-smurf"
+    },
+    "wpf-browse": {
+      "title": "WPF browse Smurfs",
+      "path": "behavioral/wpf.md",
+      "anchor": "browse-smurfs"
     }
   },
   "automated": {

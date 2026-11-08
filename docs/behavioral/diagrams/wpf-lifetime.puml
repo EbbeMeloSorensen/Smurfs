@@ -1,0 +1,23 @@
+@startuml
+title WPF — application lifetime
+actor Operator
+participant "WPF App (UI thread)" as App
+participant "Initialization scope (worker)" as Worker
+participant IAppDataInitializer as Setup
+participant "Host and DI container" as Host
+
+Operator -> App : Launch application
+App -> App : Show splash
+App -> Host : Build host
+App -> Worker : Start database initialization
+Worker -> Setup : MigrateAsync()
+Worker -> Setup : SeedAsync()
+Worker -> Worker : Dispose initialization scope
+Worker --> App : Initialization complete
+App -> Host : Resolve MainWindow
+App -> App : Set and show MainWindow, close splash
+... Application idle ...
+Operator -> App : Close main window
+App -> App : OnExit
+App -> Host : Dispose
+@enduml

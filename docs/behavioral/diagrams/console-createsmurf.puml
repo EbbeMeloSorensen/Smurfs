@@ -1,0 +1,28 @@
+@startuml
+title Console — createsmurf
+actor Operator
+participant "Console Program" as CLI
+participant "Create.Handler" as Create
+participant IBusinessRuleCatalog as Catalog
+participant IUnitOfWork as Write
+
+Operator -> CLI : createsmurf --name <name>
+CLI -> CLI : Build host and open service scope
+ref over CLI : Database setup if missing (initdb operations)
+CLI -> Create : Send Create.Command with proposed name
+Create -> Catalog : ValidateAtomic(name draft)
+opt valid draft
+  Create -> Create : Construct Smurf with age zero
+  Create -> Catalog : ValidateAtomic(smurf)
+end
+alt rule violation
+  Create --> CLI : Failure with first violation
+  CLI --> Operator : Error, exit 1
+else valid Smurf
+  Create -> Write : Open session and stage insert
+  Create -> Write : CompleteAsync()
+  Create -> Write : DisposeAsync()
+  Create --> CLI : Success
+  CLI --> Operator : Creation confirmation, exit 0
+end
+@enduml

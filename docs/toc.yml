@@ -8,6 +8,11 @@
   href: structural/index.md
 - name: Design · Behavioral
   href: behavioral/index.md
+  items:
+  - name: Console workflows
+    href: behavioral/console.md
+  - name: WPF workflows
+    href: behavioral/wpf.md
 - name: Implementation · API reference
   href: api/
 - name: Verification and validation

@@ -1,0 +1,20 @@
+@startuml
+title WPF — browse Smurfs
+actor Operator
+participant MainWindowViewModel as ViewModel
+participant "Load scope" as Load
+participant "List.Handler" as List
+
+Operator -> ViewModel : Load smurfs, Previous or Next
+ViewModel -> ViewModel : Disable paging commands
+ViewModel -> Load : Open scope and resolve sender
+Load -> List : Send List.Query for requested page
+List --> ViewModel : Rows and page metadata, failure or exception
+alt available page or empty catalog
+  ViewModel -> ViewModel : Update rows and page indicator
+else request failed or page disappeared
+  ViewModel --> Operator : Show error, preserve displayed page
+end
+ViewModel -> Load : Dispose scope
+ViewModel -> ViewModel : Restore command availability
+@enduml

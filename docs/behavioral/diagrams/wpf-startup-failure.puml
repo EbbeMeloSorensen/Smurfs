@@ -1,0 +1,18 @@
+@startuml
+title WPF — startup failure
+actor Operator
+participant "WPF App (UI thread)" as App
+participant "Startup operation" as Startup
+participant "Host and DI container" as Host
+
+Operator -> App : Launch application
+App -> App : Show splash
+App -> Startup : Build host, initialize database or open main window
+Startup --> App : Startup exception
+App --> Operator : Show startup error
+Operator -> App : Dismiss error
+App -> App : Shutdown(1), then OnExit
+opt host was built
+  App -> Host : Dispose
+end
+@enduml

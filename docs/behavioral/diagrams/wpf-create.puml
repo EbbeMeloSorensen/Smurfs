@@ -1,0 +1,32 @@
+@startuml
+title WPF — create a Smurf
+actor Operator
+participant MainWindow as Window
+participant "Create dialog view model" as Dialog
+participant IBusinessRuleCatalog as Catalog
+participant "Create.Handler" as Create
+
+Operator -> Window : New Smurf
+Window -> Dialog : Open dialog in a new scope
+Operator -> Dialog : Enter proposed name
+alt operator saves
+  Dialog -> Catalog : ValidateAtomic(name draft)
+  alt invalid draft
+    Dialog --> Operator : Show name error, keep dialog open
+  else valid draft
+    Dialog -> Create : Send Create.Command
+    Create -> Catalog : Validate draft and entity
+    alt creation succeeds
+      Create --> Dialog : Success after commit
+      Dialog --> Window : Close with success
+      Window -> Window : Dispose dialog scope and refresh list
+    else creation fails
+      Create --> Dialog : Failure or exception
+      Dialog --> Operator : Show error, keep dialog open
+    end
+  end
+else operator cancels
+  Dialog --> Window : Close without saving
+  Window -> Window : Dispose dialog scope
+end
+@enduml

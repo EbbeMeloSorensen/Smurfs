@@ -50,6 +50,13 @@ public Guid Id { get; private set; } = Guid.NewGuid();
 - Reconcile only the diagrams affected by a change. Omission from a scoped diagram is not evidence a type or relationship should be deleted.
 - Diagram generation must not depend on sending private content to a public PlantUML server.
 
+### Behavioral views
+
+- Organize behavioral documentation by client when clients have different lifetimes or interaction styles. Keep the use case specifications shared and link each client workflow to the use case it realizes.
+- Give each verb or user workflow its own sequence diagram. Keep application lifetime separate from operator actions. Describe shared setup once and refer to it where needed.
+- Make the success path easy to follow. Keep short alternatives with their workflow and split out alternatives that introduce a substantially different sequence. Keep the diagram, narrative and traceability links aligned.
+
+
 ### Assembly architecture views
 
 - Group selected classes and interfaces by their containing production .NET assembly using UML components (`component` with `skinparam componentStyle uml2`). Verify ownership against project files and any AssemblyName overrides; namespaces do not define assembly boundaries. Explain that components represent assemblies.

@@ -21,6 +21,9 @@ The catalog operator initializes local storage, creates a Smurf and lists stored
 
 ## Architecture intent
 
+For behavioral modeling, document one sequence per console verb and describe shared console setup once. In WPF, model the application lifetime from launch through idle to shutdown without intervening operator actions. Model creation and browsing in separate diagrams, and keep startup failure separate from the successful lifetime. Link both clients to the same use case specifications.
+
+
 - Keep domain and application contracts independent of EF Core infrastructure.
 - The console composes application handlers, the app-data initializer and write session factory, and the Infrastructure read service. The command persists a domain object through the unit of work. The query retrieves projected summaries through an application-owned read contract.
 - Console startup creates the app-data database on first use. The list operation opens an existing database read-only. The Identity adapter has its own context and migration set and is outside the current console workflow.

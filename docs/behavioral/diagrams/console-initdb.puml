@@ -1,0 +1,17 @@
+@startuml
+title Console — initdb
+actor Operator
+participant "Console Program" as CLI
+participant IAppDataInitializer as Setup
+database "SQLite" as DB
+
+Operator -> CLI : initdb
+CLI -> CLI : Build host and open service scope
+CLI -> Setup : MigrateAsync()
+Setup -> DB : Apply outstanding migrations
+CLI -> Setup : SeedAsync()
+Setup -> DB : Seed sample Smurfs if empty
+CLI --> Operator : Print database initialized
+CLI -> CLI : Dispose scope and host
+CLI --> Operator : Exit 0
+@enduml

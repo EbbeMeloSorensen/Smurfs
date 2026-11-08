@@ -7,7 +7,7 @@ Smurfs is a .NET 10 reference solution for AI-assisted model-based software engi
 - [Engineering process](engineering/index.md) explains the V-model and how the [traceability matrix](_generated/traceability.md) connects intent, design and evidence.
 
 - [Structural](structural/index.md): domain relationships, project boundaries and relational storage.
-- [Behavioral](behavioral/index.md): console startup, command and query dispatch, and persistence session behavior.
+- [Behavioral](behavioral/index.md): console verbs, WPF application lifetime and workflows, and shared persistence behavior.
 - [API reference](api-reference.md) opens the generated C# documentation by namespace.
 - [Decisions](decisions/index.md): questions for review and a template for future approved decisions.
 
