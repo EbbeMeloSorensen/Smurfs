@@ -1,9 +1,11 @@
 using System.Windows;
+using Craft.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Smurfs.Application.Core;
 using Smurfs.Application.Smurfs;
+using Smurfs.Domain.BusinessRules;
 using Smurfs.Infrastructure.Pagination;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.Persistence;
@@ -45,6 +47,9 @@ public partial class App
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();
                     services.AddScoped<IPagingHandler<SmurfDto>, PagingHandler<SmurfDto>>();
+                    services.AddScoped<IBusinessRuleCatalog, BusinessRuleCatalog>();
+                    services.AddTransient<CreateSmurfDialogViewModel>();
+                    services.AddTransient<CreateSmurfDialog>();
                     services.AddSingleton<MainWindowViewModel>();
                     services.AddTransient<MainWindow>();
                 })

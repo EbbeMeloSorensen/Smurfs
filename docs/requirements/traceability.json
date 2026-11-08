@@ -18,15 +18,17 @@
       "classification": "Functionality",
       "status": "Proposed",
       "method": "Manual acceptance and repository integration",
-      "implementation": "Implemented in console",
+      "implementation": "Implemented in console and WPF through the shared create command.",
       "design": [
         "console",
-        "catalog"
+        "catalog",
+        "wpf"
       ],
       "automated": [
-        "IT-002"
+        "IT-002",
+        "IT-006"
       ],
-      "note": "Repository insertion is covered. Console dispatch and confirmation need a manual run."
+      "note": "The integration test covers catalog enforcement and persistence. The WPF form and console procedures are manual and unexecuted."
     },
     "FR-003": {
       "classification": "Functionality",
@@ -43,14 +45,17 @@
     "FR-004": {
       "classification": "Functionality",
       "status": "Proposed",
-      "method": "Manual boundary and rejection scenarios",
-      "implementation": "Implemented in console and domain",
+      "method": "Catalog integration and manual boundary and rejection scenarios",
+      "implementation": "Implemented in console and WPF through the shared create command.",
       "design": [
         "catalog",
-        "console"
+        "console",
+        "wpf"
       ],
-      "automated": [],
-      "note": "No automated boundary tests. Manual cases are unexecuted."
+      "automated": [
+        "IT-006"
+      ],
+      "note": "The integration test covers catalog enforcement and persistence. The WPF form and console procedures are manual and unexecuted."
     },
     "RR-001": {
       "classification": "Reliability",
@@ -165,6 +170,15 @@
       "requirements": [
         "FR-003"
       ]
+    },
+    "AT-006": {
+      "useCases": [
+        "UC-002"
+      ],
+      "requirements": [
+        "FR-002",
+        "FR-004"
+      ]
     }
   },
   "design": {
@@ -189,7 +203,7 @@
       "anchor": "traceability"
     },
     "wpf": {
-      "title": "WPF startup and paging",
+      "title": "WPF startup, paging and creation",
       "path": "behavioral/index.md",
       "anchor": "wpf-startup-and-paging"
     }
@@ -224,6 +238,11 @@
       "title": "Traceability validation",
       "file": "docs/validate-traceability.py",
       "symbol": "validate"
+    },
+    "IT-006": {
+      "title": "Create command catalog and SQLite integration",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/CreateSmurfTests.cs",
+      "symbol": "Create_UsesCatalogForDraftAndPersistsOnlyValidSmurfs"
     }
   }
 }

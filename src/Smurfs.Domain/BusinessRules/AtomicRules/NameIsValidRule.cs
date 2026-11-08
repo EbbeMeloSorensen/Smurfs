@@ -5,7 +5,7 @@ namespace Smurfs.Domain.BusinessRules.AtomicRules;
 /// <summary>
 /// Requires a nonblank Smurf name of at most 20 characters.
 /// </summary>
-public class NameIsValidRule : IBusinessRule<Smurf>
+public class NameIsValidRule : IBusinessRule<Smurf>, IBusinessRule<SmurfNameDraft>
 {
     /// <summary>
     /// Checks a proposed name before constructing or updating a Smurf.
@@ -27,4 +27,7 @@ public class NameIsValidRule : IBusinessRule<Smurf>
 
     /// <inheritdoc />
     public BusinessRuleViolation? Validate(Smurf smurf) => ValidateName(smurf.Name);
+
+    /// <inheritdoc />
+    public BusinessRuleViolation? Validate(SmurfNameDraft draft) => ValidateName(draft.Name);
 }

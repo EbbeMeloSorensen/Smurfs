@@ -14,6 +14,8 @@
 
         <StackPanel Grid.Row="0">
             <StackPanel Orientation="Horizontal" Margin="8">
+                <Button Content="_New Smurf…" Click="CreateSmurf" IsEnabled="{Binding CanCreateSmurf}"
+                        Padding="8,3" Margin="0,0,12,0"/>
                 <Button Content="Load smurfs" Command="{Binding LoadSmurfsCommand}" Padding="8,3" Margin="0,0,12,0"/>
                 <Button Content="Previous" Command="{Binding PreviousPageCommand}" Padding="8,3"/>
                 <TextBlock Text="{Binding PageStatus}" VerticalAlignment="Center" Margin="8,0"/>

@@ -13,6 +13,8 @@ public class BusinessRuleCatalog : BusinessRuleCatalogBase
     /// </summary>
     public BusinessRuleCatalog()
     {
-        RegisterAtomicRule(new NameIsValidRule());
+        var nameRule = new NameIsValidRule();
+        RegisterAtomicRule<SmurfNameDraft>(nameRule);
+        RegisterAtomicRule<Smurf>(nameRule);
     }
 }

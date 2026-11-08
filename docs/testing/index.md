@@ -1,6 +1,6 @@
 # Verification and validation
 
-The plan covers local console workflows, WPF paging, Smurf domain rules and app-data persistence. The separate Identity adapter is outside the current acceptance scope. The [traceability matrix](../_generated/traceability.md) records evidence links and limitations.
+The plan covers local console workflows, WPF creation and paging, Smurf domain rules and app-data persistence. The separate Identity adapter is outside the current acceptance scope. The [traceability matrix](../_generated/traceability.md) records evidence links and limitations.
 
 | Level | Scope and current evidence |
 | --- | --- |
@@ -21,4 +21,4 @@ The plan covers local console workflows, WPF paging, Smurf domain rules and app-
 
 ## Existing automated suite
 
-The tests in `tests/Smurf.Persistence.EFCore.AppData.UnitTest` exercise repository predicates, tracking, staged writes, disposal, cancellation, fresh-schema migration, snapshot agreement, Village and Pet round trips, and tracked and untracked Pet deletion. Relevant methods are indexed in the matrix. These tests do not exercise console parsing, command dispatch, name-policy boundaries, initializer reruns, WPF navigation, or user acceptance. A referenced integration test can establish only part of a product requirement.
+The tests in `tests/Smurf.Persistence.EFCore.AppData.UnitTest` exercise repository predicates, tracking, staged writes, disposal, cancellation, fresh-schema migration, snapshot agreement, Village and Pet round trips, and tracked and untracked Pet deletion. Relevant methods are indexed in the matrix. These tests do not exercise console parsing, client command dispatch, initializer reruns, WPF dialogs and navigation, or user acceptance. The create-handler integration test checks catalog rejection at name boundaries, an additional draft rule, and a successful SQLite write. A referenced integration test can establish only part of a product requirement.

@@ -17,11 +17,6 @@ public static class ApplicationServiceCollectionExtensions
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(Smurfs.List.Handler).Assembly));
 
-        //services.AddMediatR(cfg =>
-        //    cfg.RegisterServicesFromAssembly(typeof(Smurfs.Create.Handler).Assembly));
-
-        //services.AddValidatorsFromAssembly(typeof(Smurfs.Create.CommandValidator).Assembly);
-
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         return services;

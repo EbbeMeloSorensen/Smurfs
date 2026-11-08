@@ -11,6 +11,7 @@ component "Craft.Domain" {
 }
 component "Smurfs.Domain" {
   class Smurf
+  class SmurfNameDraft
   class BusinessRuleCatalog
   class NameIsValidRule
 }
@@ -40,7 +41,8 @@ component "Smurfs.UI.Console" {
 }
 
 CreateHandler ..> CreateCommand : handles
-CreateCommand ..> Smurf : carries
+CreateHandler ..> SmurfNameDraft : constructs for validation
+CreateHandler ..> Smurf : constructs
 CreateHandler ..> IBusinessRuleCatalog : validates
 BusinessRuleCatalog --|> BusinessRuleCatalogBase
 BusinessRuleCatalogBase ..|> IBusinessRuleCatalog
@@ -59,10 +61,8 @@ UnitOfWorkFactory ..|> IUnitOfWorkFactory
 AppDataInitializer ..|> IAppDataInitializer
 AppDataInitializer ..> DataContext : context constraint
 Program ..> CreateCommand : dispatches
-Program ..> Smurf : constructs
 Program ..> BusinessRuleCatalog : registers
 Program ..> IBusinessRuleCatalog : registers contract
-Program ..> NameIsValidRule : checks input
 Program ..> ListQuery : dispatches
 Program ..> IAppDataInitializer : runs setup
 Program ..> DataContext : configures

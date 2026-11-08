@@ -77,6 +77,16 @@ public class MainWindowViewModel : ViewModelBase
             () => !_isLoading && _currentPage < _totalPages);
     }
 
+    /// <summary>
+    /// Reloads the displayed page, or loads page one if no page is displayed.
+    /// </summary>
+    public Task RefreshAsync() => LoadSmurfsAsync(Math.Max(1, _currentPage));
+
+    /// <summary>
+    /// Gets whether the creation dialog can be opened.
+    /// </summary>
+    public bool CanCreateSmurf => !_isLoading;
+
     private async Task LoadSmurfsAsync(int pageNumber)
     {
         if (_isLoading)
@@ -132,6 +142,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private void RefreshCommands()
     {
+        RaisePropertyChanged(nameof(CanCreateSmurf));
         LoadSmurfsCommand.RaiseCanExecuteChanged();
         PreviousPageCommand.RaiseCanExecuteChanged();
         NextPageCommand.RaiseCanExecuteChanged();

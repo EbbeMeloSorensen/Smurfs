@@ -4,7 +4,7 @@
 
 [PlantUML source](diagrams/use-cases.puml) · [Use case to requirement mapping](../_generated/traceability.md#use-case-to-requirement)
 
-The external actor is the catalog operator. The following specifications describe candidate intent for workflows already exposed by the console. Automatic first-use setup is an observed startup behavior. The model leaves it out of the actor-goal relationships because explicit initialization is a separate operator goal. The [console workflow](../behavioral/index.md#console-workflow) realizes all three goals. The [WPF workflow](../behavioral/index.md#wpf-startup-and-paging) realizes adjacent-page browsing for UC-003. WPF performs setup automatically during startup.
+The external actor is the catalog operator. The following specifications describe candidate intent for workflows already exposed by the console. Automatic first-use setup is an observed startup behavior. The model leaves it out of the actor-goal relationships because explicit initialization is a separate operator goal. The [console workflow](../behavioral/index.md#console-workflow) realizes all three goals. The [WPF workflow](../behavioral/index.md#wpf-startup-and-paging) realizes the create form for UC-002 and adjacent-page browsing for UC-003. WPF performs setup automatically during startup.
 
 ## UC-001 Initialize local storage
 

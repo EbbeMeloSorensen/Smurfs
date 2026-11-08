@@ -1,5 +1,4 @@
 using Craft.Domain;
-using FluentValidation;
 using MediatR;
 using Smurfs.Application.Core;
 using Smurfs.Domain;
@@ -13,28 +12,14 @@ namespace Smurfs.Application.Smurfs;
 public class Create
 {
     /// <summary>
-    /// Requests persistence of the supplied Smurf.
+    /// Requests creation of a Smurf with the proposed name.
     /// </summary>
     public class Command : IRequest<Result<Unit>>
     {
         /// <summary>
-        /// Gets the Smurf supplied by the caller.
+        /// Gets the proposed name supplied by the caller.
         /// </summary>
-        public required Smurf Smurf { get; init; }
-    }
-
-    /// <summary>
-    /// Adapts Smurf validation for FluentValidation callers.
-    /// </summary>
-    public class CommandValidator : AbstractValidator<Command>
-    {
-        /// <summary>
-        /// Applies the Smurf validator to the command payload.
-        /// </summary>
-        public CommandValidator()
-        {
-            RuleFor(x => x.Smurf).SetValidator(new SmurfValidator());
-        }
+        public required string Name { get; init; }
     }
 
     /// <summary>
@@ -43,6 +28,7 @@ public class Create
     public class Handler : IRequestHandler<Command, Result<Unit>>
     {
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+
         private readonly IBusinessRuleCatalog _businessRuleCatalog;
 
         /// <summary>
@@ -57,22 +43,29 @@ public class Create
         }
 
         /// <summary>
-        /// Validates the supplied Smurf and commits it before returning success.
+        /// Validates the proposed name, constructs a Smurf and commits it before returning success.
         /// Cancellation and persistence exceptions propagate to the caller.
         /// </summary>
         public async Task<Result<Unit>> Handle(
             Command request,
             CancellationToken cancellationToken)
         {
-            var errors = _businessRuleCatalog.ValidateAtomic(request.Smurf);
+            var errors = _businessRuleCatalog.ValidateAtomic(new SmurfNameDraft(request.Name));
 
             if (errors.Count > 0)
             {
-                return Result<Unit>.Failure($"Business rule violations detected. First: {errors[0].Message}");
+                return Result<Unit>.Failure(errors[0].Message);
+            }
+
+            var smurf = new Smurf { Name = request.Name };
+            var entityErrors = _businessRuleCatalog.ValidateAtomic(smurf);
+            if (entityErrors.Count > 0)
+            {
+                return Result<Unit>.Failure(entityErrors[0].Message);
             }
 
             await using var unitOfWork = _unitOfWorkFactory.CreateUnitOfWork();
-            await unitOfWork.Smurfs.AddAsync(request.Smurf, cancellationToken);
+            await unitOfWork.Smurfs.AddAsync(smurf, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
 
             return Result<Unit>.Success(Unit.Value);

@@ -102,3 +102,18 @@ $seed = (Resolve-Path 'scripts/add-random-smurfs.ps1').Path
 5. Close the WPF window and run `Pop-Location` in the setup shell.
 
 **Acceptance criteria** — Page labels and navigation boundaries follow the displayed result. Restarting the list returns to page 1. The separate console case covers direct paging input, the total row count and nonpositive input handling.
+
+## AT-006 Create a Smurf in WPF
+
+**Objective** — Verify catalog feedback, cancel, and successful persistence through the WPF dialog.
+
+**References** — [Use case and requirements](../_generated/traceability.md#at-006).
+
+**Preconditions and data** — Use the WPF build and fresh directory setup in AT-005. Launch WPF with `& $wpf` without copying a database. Use a blank or whitespace-only name, `abcdefghijklmnopqrstu` (21 characters), and `Acceptance WPF`.
+
+1. Select **New Smurf**. Enter three spaces and confirm that no error appears and **Save** is enabled. Select **Save** and expect a required-name message while the dialog stays open. Replace the draft with the 21-character name. The previous message should clear and no new error should appear until **Save** is selected again. On that attempt, expect a length message and the dialog to stay open.
+2. Enter `Acceptance WPF` and select **Cancel**. Select **Load smurfs** and verify the name is absent.
+3. Open **New Smurf** again, enter `Acceptance WPF`, and select **Save**. Expect the dialog to close and the name to appear on the refreshed page.
+4. Close and reopen WPF in the same case directory. Select **Load smurfs** and verify that `Acceptance WPF` is present once. Close WPF and run `Pop-Location`.
+
+**Acceptance criteria** — Validation messages appear only after a save attempt. Invalid drafts and cancellation add no rows. Saving a valid name adds one row visible after restarting WPF.

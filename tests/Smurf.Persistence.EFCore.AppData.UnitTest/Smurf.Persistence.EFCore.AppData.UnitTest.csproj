@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Smurfs.Application\Smurfs.Application.csproj" />
     <ProjectReference Include="..\..\src\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj" />
   </ItemGroup>
 

@@ -8,14 +8,14 @@ Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip 
 
 ## Actors and verification
 
-The catalog operator initializes local storage, creates a Smurf and lists stored Smurfs through the console. The WPF client supports adjacent-page browsing for the same list use case. The [use case specifications](requirements/use-cases.md) distinguish proposed intent from current behavior. Village, Pet and their associations have persistence coverage and no console management workflow. The [test plan](testing/index.md) pairs in-memory SQLite integration tests with manual console and WPF cases in isolated working directories. Use the [requirements specification](requirements/index.md) for approval status and the generated matrix for evidence links.
+The catalog operator initializes local storage, creates a Smurf and lists stored Smurfs through the console. The WPF client supports creating a Smurf and browsing adjacent pages through the same application use cases. The [use case specifications](requirements/use-cases.md) distinguish proposed intent from current behavior. Village, Pet and their associations have persistence coverage and no console management workflow. The [test plan](testing/index.md) pairs in-memory SQLite integration tests with manual console and WPF cases in isolated working directories. Use the [requirements specification](requirements/index.md) for approval status and the generated matrix for evidence links.
 
 ## Domain intent
 
 - `Smurf`, `Village`, and `Pet` are domain concepts.
 - A `Village` can contain zero or many `Smurf` instances; each `Smurf` belongs to zero or one `Village`. This is accepted in [ADR 0001](decisions/0001-village-membership.md). Navigation goes from Village to Smurfs only; Smurf has no Village navigation. The relational model uses nullable `Smurfs.VillageId` referencing `Villages.Id`, explicitly mapped in SmurfConfiguration as an EF shadow property with ClientSetNull.
 - A `Smurf` has zero or one `Pet`; a `Pet` may be shared by multiple `Smurf` instances. [ADR 0002](decisions/0002-pet-configuration.md) records explicit Restrict mapping and its tracked/untracked deletion semantics.
-- Smurf name assignments require non-whitespace text and at most 20 characters. The console checks the proposed name before construction, and the create handler evaluates the domain catalog before persistence.
+- Smurf name assignments require non-whitespace text and at most 20 characters. The WPF dialog and shared create handler validate proposed names through the domain catalog. The handler constructs the Smurf and validates the entity before persistence.
 - Distinguish optional navigation properties from required names or other invariants. Check actual definitions and EF Core mappings before documenting exact field/property names or cascade behavior.
 - Keep conceptual class models free of PK/FK stereotypes where possible. Separate persistence/ER representations may show keys and foreign keys.
 
