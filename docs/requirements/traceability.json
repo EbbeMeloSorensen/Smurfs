@@ -32,12 +32,13 @@
       "classification": "Functionality",
       "status": "Proposed",
       "method": "Manual acceptance",
-      "implementation": "Implemented in console",
+      "implementation": "Console implements the proposed scope. WPF supports adjacent pages and shows page totals.",
       "design": [
-        "console"
+        "console",
+        "wpf"
       ],
       "automated": [],
-      "note": "No automated console paging evidence. Manual case is unexecuted."
+      "note": "WPF shows the number of pages and has no total row count or direct page entry. Manual console and WPF cases are unexecuted. No checked-in automated client paging tests."
     },
     "FR-004": {
       "classification": "Functionality",
@@ -60,7 +61,7 @@
         "console"
       ],
       "automated": [],
-      "note": "No automated paging validation tests. Manual case is unexecuted."
+      "note": "Console accepts explicit paging inputs. WPF uses bounded controls and does not expose numeric paging inputs. The console manual case is unexecuted."
     },
     "CR-001": {
       "classification": "++ Design constraint",
@@ -156,6 +157,14 @@
         "FR-003",
         "RR-001"
       ]
+    },
+    "AT-005": {
+      "useCases": [
+        "UC-003"
+      ],
+      "requirements": [
+        "FR-003"
+      ]
     }
   },
   "design": {
@@ -178,6 +187,11 @@
       "title": "Traceability and publishing workflow",
       "path": "documentation.md",
       "anchor": "traceability"
+    },
+    "wpf": {
+      "title": "WPF startup and paging",
+      "path": "behavioral/index.md",
+      "anchor": "wpf-startup-and-paging"
     }
   },
   "automated": {

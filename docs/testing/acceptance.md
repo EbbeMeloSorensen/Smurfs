@@ -1,10 +1,10 @@
 # Manual acceptance cases
 
-These procedures express expected results from proposed console requirements. Run them for review and record observations separately. See the [test plan](index.md) and [execution record](execution-record.md).
+These procedures cover proposed requirements and their current console and WPF realizations. Run them for review and record observations separately. See the [test plan](index.md) and [execution record](execution-record.md).
 
 ## Isolated setup
 
-Use PowerShell 7. From the repository root, build the app and capture its absolute path. Stop if the build fails.
+Use PowerShell 7. For the console cases, build the app from the repository root and capture its absolute path. Stop if the build fails. The WPF case has its own build and data preparation steps.
 
 ```powershell
 dotnet build src/Smurfs.UI.Console/Smurfs.UI.Console.csproj
@@ -79,3 +79,26 @@ Each `dotnet $app` call starts a new process. Read `$LASTEXITCODE` immediately a
 4. Run `dotnet $app listsmurfs --page ($total + 1) --page-size 1`. Expect exit code 0, the same overall total and no rows.
 
 **Acceptance criteria** — Both invalid values are rejected, corrected requests succeed, and a positive page beyond the last row returns an empty page.
+
+## AT-005 Browse adjacent pages in WPF
+
+**Objective** — Verify the WPF page indicator and adjacent-page controls for the portion of FR-003 realized by WPF.
+
+**References** — [Use case and requirement](../_generated/traceability.md#at-005).
+
+**Preconditions and data** — Use Windows, PowerShell 7, Python 3 and the selected .NET SDK. From the repository root, build WPF and capture the two paths before creating a fresh directory with the isolated setup above.
+
+```powershell
+dotnet build src/Smurfs.UI.WPF/Smurfs.UI.WPF.csproj
+if ($LASTEXITCODE -ne 0) { throw 'WPF build failed.' }
+$wpf = (Resolve-Path 'src/Smurfs.UI.WPF/bin/Debug/net10.0-windows/Smurfs.UI.WPF.exe').Path
+$seed = (Resolve-Path 'scripts/add-random-smurfs.ps1').Path
+```
+
+1. In the fresh case directory, run `& $seed -Count 51`. Once it completes, run `Copy-Item -LiteralPath smurfs.db -Destination babuska.db` and launch WPF with `& $wpf`. Expect the splash to give way to one main window showing **No page loaded**. Both navigation buttons should be disabled.
+2. Select **Load smurfs**. Expect **Page 1 of 3**, 25 rows, **Previous** disabled and **Next** enabled.
+3. Select **Next** twice. Expect **Page 2 of 3**, then **Page 3 of 3** with at least one row. On the last page expect **Next** disabled and **Previous** enabled.
+4. Select **Previous** and expect **Page 2 of 3**. Select **Load smurfs** and expect **Page 1 of 3** again.
+5. Close the WPF window and run `Pop-Location` in the setup shell.
+
+**Acceptance criteria** — Page labels and navigation boundaries follow the displayed result. Restarting the list returns to page 1. The separate console case covers direct paging input, the total row count and nonpositive input handling.

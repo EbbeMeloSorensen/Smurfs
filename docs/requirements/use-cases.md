@@ -1,10 +1,10 @@
 # Use case model
 
-![Smurfs console use cases](../_generated/diagrams/requirements/diagrams/use-cases.svg)
+![Smurfs operator use cases](../_generated/diagrams/requirements/diagrams/use-cases.svg)
 
 [PlantUML source](diagrams/use-cases.puml) · [Use case to requirement mapping](../_generated/traceability.md#use-case-to-requirement)
 
-The external actor is the catalog operator. The following specifications describe candidate intent for workflows already exposed by the console. Automatic first-use setup is an observed startup behavior. The model leaves it out of the actor-goal relationships because explicit initialization is a separate operator goal. The [console workflow](../behavioral/index.md#console-workflow) describes the current realization.
+The external actor is the catalog operator. The following specifications describe candidate intent for workflows already exposed by the console. Automatic first-use setup is an observed startup behavior. The model leaves it out of the actor-goal relationships because explicit initialization is a separate operator goal. The [console workflow](../behavioral/index.md#console-workflow) realizes all three goals. The [WPF workflow](../behavioral/index.md#wpf-startup-and-paging) realizes adjacent-page browsing for UC-003. WPF performs setup automatically during startup.
 
 ## UC-001 Initialize local storage
 
@@ -35,3 +35,5 @@ The external actor is the catalog operator. The following specifications describ
 - **Alternatives and exceptions** — A page past the available rows is empty. Nonpositive paging inputs produce an input error and can be corrected. A storage failure is reported.
 - **Postconditions** — The request does not change stored Smurfs.
 - **Requirements** — See the [UC-003 mapping](../_generated/traceability.md#uc-003).
+
+The console accepts explicit page numbers and sizes and reports the total row count. WPF starts at page 1 and lets the operator step through adjacent pages of 25 rows. WPF displays the current page and number of pages. Direct page entry, page-size selection and the total row count are available in the console. WPF prevents out-of-bound navigation through its controls. These are current client behaviors. The proposed requirements above retain their existing scope and status.

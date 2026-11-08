@@ -8,7 +8,7 @@ Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip 
 
 ## Actors and verification
 
-The catalog operator initializes local storage, creates a Smurf and lists stored Smurfs through the console. The [use case specifications](requirements/use-cases.md) distinguish proposed intent from current behavior. Village, Pet and their associations have persistence coverage and no console management workflow. The [test plan](testing/index.md) pairs in-memory SQLite integration tests with manual console acceptance in a fresh working directory. Use the [requirements specification](requirements/index.md) for approval status and the generated matrix for evidence links.
+The catalog operator initializes local storage, creates a Smurf and lists stored Smurfs through the console. The WPF client supports adjacent-page browsing for the same list use case. The [use case specifications](requirements/use-cases.md) distinguish proposed intent from current behavior. Village, Pet and their associations have persistence coverage and no console management workflow. The [test plan](testing/index.md) pairs in-memory SQLite integration tests with manual console and WPF cases in isolated working directories. Use the [requirements specification](requirements/index.md) for approval status and the generated matrix for evidence links.
 
 ## Domain intent
 

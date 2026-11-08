@@ -19,11 +19,10 @@ alt startup succeeds
   ViewModel -> ViewModel : Disable paging commands
   ViewModel -> Load : Open scope and resolve sender
   Load -> Handler : Send List.Query for requested page
-  alt query succeeds
-    Handler --> ViewModel : Rows and page metadata
+  Handler --> ViewModel : Rows and page metadata, failure or exception
+  alt available page or empty catalog
     ViewModel -> ViewModel : Update rows and page indicator
-  else query fails
-    Handler --> ViewModel : Failure or exception
+  else request failed or page disappeared
     ViewModel -> ViewModel : Show error, preserve rows
   end
   ViewModel -> Load : Dispose scope

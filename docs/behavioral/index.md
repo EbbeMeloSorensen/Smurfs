@@ -37,7 +37,7 @@ Names must contain non-whitespace text and be at most 20 characters. The console
 
 The WPF app shows a splash screen while a background operation migrates and seeds its local `babuska.db` using the shared app-data initializer. The initialization scope is disposed before the main window opens. WPF creates and shows the main window on the dispatcher, then closes the splash. If initialization or window creation fails, the app displays the error and exits.
 
-**Load smurfs** starts at page 1. **Previous** and **Next** request adjacent pages through the same application query as the console. The window shows the current page and total pages, or **No pages** for an empty result. Navigation is disabled at the corresponding boundary and while a request is in progress. Each load resolves a sender in its own scope. Success updates the displayed rows and page indicator. A failure preserves them and shows an error.
+**Load smurfs** starts at page 1. **Previous** and **Next** request adjacent pages through the same application query as the console. The window uses the default page size of 25 and shows the current page and total pages, or **No pages** for an empty result. Navigation is disabled at the corresponding boundary and while a request is in progress. Each load resolves a sender in its own scope. Success updates the displayed rows and page indicator. A failure preserves them and shows an error. If the catalog shrinks and the requested page is no longer available, WPF retains the displayed page and prompts the operator to restart from page 1.
 
 ![WPF startup and paging](../_generated/diagrams/behavioral/diagrams/wpf-workflow.svg)
 
