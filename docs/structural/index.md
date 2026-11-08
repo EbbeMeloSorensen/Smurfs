@@ -44,4 +44,4 @@ Source: [persistence-model.puml](diagrams/persistence-model.puml). [Unresolved q
 
 ## WPF client
 
-The WPF application composes the same application list handler, read adapter and app-data initializer as the console. The main window binds to a view model that depends on an application request and a DI scope factory. The view model resolves the sender per load, so the scoped read adapter and EF context belong to the load operation. The [WPF workflow](../behavioral/index.md#wpf-startup-and-first-page-load) shows the startup and request lifetimes.
+The WPF application composes the same application list handler, read adapter and app-data initializer as the console. The main window binds to a view model that depends on an application request and a DI scope factory. The view model resolves the sender per load, so the scoped read adapter and EF context belong to the load operation. The [WPF workflow](../behavioral/index.md#wpf-startup-and-paging) shows the startup and request lifetimes.

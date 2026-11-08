@@ -1,5 +1,5 @@
 @startuml
-title WPF startup and first-page load
+title WPF startup and paging
 actor Operator
 participant "WPF App" as App
 participant "Startup scope (worker)" as Setup
@@ -15,19 +15,19 @@ Setup -> Setup : Dispose scope
 alt startup succeeds
   Setup --> App : Initialization completed
   App -> App : Show main window, then close splash
-  Operator -> ViewModel : Load smurfs
-  ViewModel -> ViewModel : Disable load command
+  Operator -> ViewModel : Load smurfs, Previous or Next
+  ViewModel -> ViewModel : Disable paging commands
   ViewModel -> Load : Open scope and resolve sender
-  Load -> Handler : Send default List.Query
+  Load -> Handler : Send List.Query for requested page
   alt query succeeds
-    Handler --> ViewModel : First page
-    ViewModel -> ViewModel : Replace displayed rows
+    Handler --> ViewModel : Rows and page metadata
+    ViewModel -> ViewModel : Update rows and page indicator
   else query fails
     Handler --> ViewModel : Failure or exception
     ViewModel -> ViewModel : Show error, preserve rows
   end
   ViewModel -> Load : Dispose scope
-  ViewModel -> ViewModel : Enable load command
+  ViewModel -> ViewModel : Restore command availability
 else startup fails
   Setup --> App : Initialization exception
   App -> App : Report error and shut down
