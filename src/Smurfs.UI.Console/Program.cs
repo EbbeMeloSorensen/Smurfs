@@ -46,6 +46,7 @@ internal class Program
                 {
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Migrations", LogLevel.None);
+                    logging.AddFilter("LuckyPennySoftware.MediatR.License", LogLevel.None);
                 })
                 .ConfigureServices(services =>
                 {
