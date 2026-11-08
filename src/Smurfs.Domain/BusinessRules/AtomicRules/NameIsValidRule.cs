@@ -2,27 +2,29 @@ using Craft.Domain;
 
 namespace Smurfs.Domain.BusinessRules.AtomicRules;
 
+/// <summary>
+/// Requires a nonblank Smurf name of at most 20 characters.
+/// </summary>
 public class NameIsValidRule : IBusinessRule<Smurf>
 {
-    public string RuleName => "Name";
-
-    public string ErrorMessage { get; private set; } = "";
-
-    public bool Validate(
-        Smurf smurf)
+    /// <summary>
+    /// Checks a proposed name before constructing or updating a Smurf.
+    /// </summary>
+    public static BusinessRuleViolation? ValidateName(string? name)
     {
-        if (string.IsNullOrEmpty(smurf.Name))
+        if (string.IsNullOrWhiteSpace(name))
         {
-            ErrorMessage = "Name is required";
-            return false;
+            return new BusinessRuleViolation(nameof(Smurf.Name), "Name is required");
         }
 
-        if (smurf.Name.Length > 20)
+        if (name.Length > 20)
         {
-            ErrorMessage = "Name too long (max 20 characters)";
-            return false;
+            return new BusinessRuleViolation(nameof(Smurf.Name), "Name too long (max 20 characters)");
         }
 
-        return true;
+        return null;
     }
+
+    /// <inheritdoc />
+    public BusinessRuleViolation? Validate(Smurf smurf) => ValidateName(smurf.Name);
 }

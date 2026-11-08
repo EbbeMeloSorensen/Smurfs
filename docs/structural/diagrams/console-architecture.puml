@@ -5,8 +5,14 @@ title Smurfs console use-case architecture
 skinparam componentStyle uml2
 skinparam classAttributeIconSize 0
 
+component "Craft.Domain" {
+  interface IBusinessRuleCatalog
+  abstract class BusinessRuleCatalogBase
+}
 component "Smurfs.Domain" {
   class Smurf
+  class BusinessRuleCatalog
+  class NameIsValidRule
 }
 component "Smurfs.Persistence" {
   interface IUnitOfWorkFactory
@@ -34,7 +40,12 @@ component "Smurfs.UI.Console" {
 }
 
 CreateHandler ..> CreateCommand : handles
-CreateHandler ..> Smurf : constructs
+CreateCommand ..> Smurf : carries
+CreateHandler ..> IBusinessRuleCatalog : validates
+BusinessRuleCatalog --|> BusinessRuleCatalogBase
+BusinessRuleCatalogBase ..|> IBusinessRuleCatalog
+BusinessRuleCatalog ..> NameIsValidRule : registers
+Smurf ..> NameIsValidRule : validates name
 CreateHandler ..> IUnitOfWorkFactory : opens write session
 ListHandler ..> ListQuery : handles
 ListHandler ..> ISmurfReadService : requests page
@@ -48,6 +59,10 @@ UnitOfWorkFactory ..|> IUnitOfWorkFactory
 AppDataInitializer ..|> IAppDataInitializer
 AppDataInitializer ..> DataContext : context constraint
 Program ..> CreateCommand : dispatches
+Program ..> Smurf : constructs
+Program ..> BusinessRuleCatalog : registers
+Program ..> IBusinessRuleCatalog : registers contract
+Program ..> NameIsValidRule : checks input
 Program ..> ListQuery : dispatches
 Program ..> IAppDataInitializer : runs setup
 Program ..> DataContext : configures

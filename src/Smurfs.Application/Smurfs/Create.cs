@@ -18,7 +18,7 @@ public class Create
     public class Command : IRequest<Result<Unit>>
     {
         /// <summary>
-        /// Gets the name supplied by the caller.
+        /// Gets the Smurf supplied by the caller.
         /// </summary>
         public required Smurf Smurf { get; init; }
     }
@@ -51,7 +51,7 @@ public class Create
         }
 
         /// <summary>
-        /// Creates a Smurf with age zero and commits it before returning success.
+        /// Validates the supplied Smurf and commits it before returning success.
         /// Cancellation and persistence exceptions propagate to the caller.
         /// </summary>
         public async Task<Result<Unit>> Handle(
@@ -60,9 +60,9 @@ public class Create
         {
             var errors = _businessRuleCatalog.ValidateAtomic(request.Smurf);
 
-            if (errors.Any())
+            if (errors.Count > 0)
             {
-                return Result<Unit>.Failure($"Business rule violations detected. First: {errors.First().Value}");
+                return Result<Unit>.Failure($"Business rule violations detected. First: {errors[0].Message}");
             }
 
             await using var unitOfWork = _unitOfWorkFactory.CreateUnitOfWork();

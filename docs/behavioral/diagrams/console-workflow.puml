@@ -3,7 +3,9 @@ title Console setup and use-case dispatch
 actor Caller
 participant "Console Program" as CLI
 participant IAppDataInitializer as Setup
+participant NameIsValidRule as NameRule
 participant "Create.Handler" as Create
+participant IBusinessRuleCatalog as Catalog
 participant IUnitOfWork as WriteSession
 participant "List.Handler" as List
 participant SmurfReadService as ReadService
@@ -20,13 +22,23 @@ else listsmurfs with existing database
   CLI -> CLI : Configure SQLite read-only mode
 end
 alt createsmurf
-  CLI -> Create : Send command with name
-  Create -> Create : Construct Smurf with age zero
-  Create -> WriteSession : Stage insert
-  Create -> WriteSession : CompleteAsync()
-  WriteSession -> DB : Save changes
-  Create -> WriteSession : DisposeAsync()
-  Create --> CLI : Success
+  CLI -> NameRule : ValidateName(name)
+  alt invalid name
+    NameRule --> CLI : Violation
+  else valid name
+    CLI -> CLI : Construct Smurf with age zero
+    CLI -> Create : Send command with Smurf
+    Create -> Catalog : ValidateAtomic(smurf)
+    alt business rule violation
+      Create --> CLI : Failure result
+    else valid Smurf
+      Create -> WriteSession : Stage insert
+      Create -> WriteSession : CompleteAsync()
+      WriteSession -> DB : Save changes
+      Create -> WriteSession : DisposeAsync()
+      Create --> CLI : Success
+    end
+  end
 else listsmurfs
   CLI -> List : Send query with paging inputs
   alt nonpositive page or page size

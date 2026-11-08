@@ -26,7 +26,7 @@ dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page 2 --page-size 5
 ```
 
 - **initdb** applies outstanding migrations, then seeds sample data if the Smurfs table is empty.
-- **createsmurf** sends the name to Application. The handler creates a Smurf with age zero, commits it and disposes the write session.
+- **createsmurf** validates the proposed name before constructing a Smurf with age zero. The handler runs the catalog rules before opening a write session, then commits and disposes the session.
 - **listsmurfs** opens an existing database in read-only mode. The read adapter counts rows and retrieves the requested page ordered by name and identifier. Pages start at 1, and the page size defaults to 25 and is capped at 50. An out-of-range page is empty. The identifier breaks ties between equal names. Count and page retrieval run as separate queries, so concurrent writes can change page contents or totals.
 
-The create handler relies on the supplied name and currently has no name validator. The list handler returns a failure for nonpositive paging values. The console returns exit code 1 for use-case failures and caught runtime exceptions. If setup fails after the file is created, run `initdb` to retry setup on the existing file.
+Names must contain non-whitespace text and be at most 20 characters. The console, the domain property and the catalog use the same policy. The list handler returns a failure for nonpositive paging values. The console returns exit code 1 for use-case failures and caught runtime exceptions. If setup fails after the file is created, run `initdb` to retry setup on the existing file.

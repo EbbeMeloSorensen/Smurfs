@@ -1,3 +1,5 @@
+using Smurfs.Domain.BusinessRules.AtomicRules;
+
 namespace Smurfs.Domain;
 
 /// <summary>
@@ -5,15 +7,33 @@ namespace Smurfs.Domain;
 /// </summary>
 public class Smurf
 {
+    private string _name = string.Empty;
+
     /// <summary>
     /// Gets the identifier assigned when this instance is constructed.
     /// </summary>
     public Guid Id { get; private set; } = Guid.NewGuid();
 
     /// <summary>
-    /// Gets or sets the name. Required initialization does not enforce non-empty text at runtime.
+    /// Gets or sets the nonblank name, which can contain at most 20 characters.
     /// </summary>
-    public required string Name { get; set; }
+    /// <exception cref="ArgumentException">
+    /// The assigned name is blank or too long.
+    /// </exception>
+    public required string Name
+    {
+        get => _name;
+        set
+        {
+            var violation = NameIsValidRule.ValidateName(value);
+            if (violation is not null)
+            {
+                throw new ArgumentException(violation.Message, nameof(value));
+            }
+
+            _name = value;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the age; no range validation is applied.

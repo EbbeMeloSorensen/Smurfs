@@ -13,6 +13,7 @@ using Smurfs.Application.Smurfs;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.UI.Console.Verbs;
 using Smurfs.Domain.BusinessRules;
+using Smurfs.Domain.BusinessRules.AtomicRules;
 
 namespace Smurfs.UI.Console;
 
@@ -91,6 +92,13 @@ internal class Program
         IServiceProvider services,
         Verbs.Smurfs.Create options)
     {
+        var violation = NameIsValidRule.ValidateName(options.Name);
+        if (violation is not null)
+        {
+            System.Console.Error.WriteLine(violation.Message);
+            return 1;
+        }
+
         var sender = services.GetRequiredService<ISender>();
         var result = await sender.Send(new Create.Command
         {

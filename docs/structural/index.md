@@ -22,7 +22,7 @@ The console is the composition root for Application, the EF app-data adapter and
 
 ![Console use-case architecture](../_generated/diagrams/structural/diagrams/console-architecture.svg)
 
-The [console architecture source](diagrams/console-architecture.puml) shows selected type dependencies grouped by assembly. The persistence architecture view covers the underlying repository and session types. The generic paging adapter and AutoMapper profile remain available outside the active list path. The validation pipeline is registered, and the console currently registers no request validators.
+The [console architecture source](diagrams/console-architecture.puml) shows selected type dependencies grouped by assembly. The persistence architecture view covers the underlying repository and session types. The generic paging adapter and AutoMapper profile remain available outside the active list path. The validation pipeline is registered, and the console currently registers no FluentValidation request validators. The create handler uses the scoped domain business rule catalog. Rules return violations as values so multiple rules can report failures for the same member. Assigning a Smurf name enforces the same name policy. EF Core can materialize existing names through the backing field, and the SQLite schema does not enforce the name policy.
 
 ## Identity storage
 
