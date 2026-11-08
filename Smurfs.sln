@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Craft.Domain", "src\Craft.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.UI.WPF", "src\Smurfs.UI.WPF\Smurfs.UI.WPF.csproj", "{029AC4EE-0B4C-424C-8C41-219D9D77B3A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.ViewModel", "Smurfs.ViewModel\Smurfs.ViewModel.csproj", "{D44DECBD-B763-4E8E-9F1E-AA4D5F08FB62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{029AC4EE-0B4C-424C-8C41-219D9D77B3A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{029AC4EE-0B4C-424C-8C41-219D9D77B3A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{029AC4EE-0B4C-424C-8C41-219D9D77B3A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D44DECBD-B763-4E8E-9F1E-AA4D5F08FB62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D44DECBD-B763-4E8E-9F1E-AA4D5F08FB62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D44DECBD-B763-4E8E-9F1E-AA4D5F08FB62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D44DECBD-B763-4E8E-9F1E-AA4D5F08FB62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
