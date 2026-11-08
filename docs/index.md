@@ -1,6 +1,10 @@
 # Smurfs documentation
 
-Smurfs is a .NET 10 reference solution for round-trip engineering.
+Smurfs is a .NET 10 reference solution for AI-assisted model-based software engineering. It explores how Codex can maintain engineering artifacts across an iterative lifecycle while the human engineer retains authority over intended behavior and acceptance.
+
+- [Requirements](requirements/index.md) capture intent using FURPS++ and [UML use cases](requirements/use-cases.md).
+- [Verification and validation](testing/index.md) describe automated evidence and [manual acceptance](testing/acceptance.md).
+- [Engineering process](engineering/index.md) explains the V-model and how the [traceability matrix](_generated/traceability.md) connects intent, design and evidence.
 
 - [Structural](structural/index.md): domain relationships, project boundaries and relational storage.
 - [Behavioral](behavioral/index.md): console startup, command and query dispatch, and persistence session behavior.

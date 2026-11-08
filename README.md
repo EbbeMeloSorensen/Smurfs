@@ -1,6 +1,6 @@
 # Smurfs
 
-Smurfs is a small **.NET 10 reference solution for AI-assisted roundtrip engineering**. Its purpose is to establish and evaluate engineering practices that keep source code, architectural models, documentation, and automated tests consistent as the solution evolves.
+Smurfs is a small **.NET 10 reference solution for AI-assisted roundtrip engineering**. It explores how Codex can assist with requirements, modeling, implementation and verification while the human engineer retains authority over intended behavior and acceptance.
 
 The project deliberately uses a simple domain model, allowing attention to remain on software architecture, maintainability, documentation, and the development workflow rather than domain complexity.
 
@@ -24,6 +24,9 @@ The architectural documentation separates structural and behavioral perspectives
 The following documents provide the starting points for understanding and maintaining the solution:
 
 - **[AGENTS.md](AGENTS.md):** Instructions for AI-assisted development and maintaining consistency between code, models, and documentation.
+- **[Requirements and use cases](docs/requirements/index.md):** FURPS++ specification, proposed console goals and approval status.
+- **[Verification and validation](docs/testing/index.md):** integration scope, manual acceptance procedures and execution records.
+- **[Engineering process](docs/engineering/index.md):** iterative V-model and traceability.
 - **Engineering conventions:** Coding, architecture, documentation, and testing standards for the solution.
 - **Project context:** Domain concepts, architectural boundaries, and design rationale.
 - **Baseline review:** Verified architecture, validation results, known limitations, and outstanding decisions.
@@ -77,13 +80,14 @@ Install the following tools:
 | Tool | Purpose |
 |---|---|
 | .NET 10 SDK | Build the .NET projects and generate API metadata |
+| Python 3.10+ | Validate traceability and generate the matrix |
 | DocFX | Generate the documentation website |
 | Java | Execute PlantUML |
 | Graphviz | Render PlantUML diagrams |
 | PlantUML JAR | Generate SVG diagrams from `.puml` files |
 | PowerShell 7 (Windows only) | Execute the Windows documentation build script |
 
-Verify that `dotnet`, `docfx`, `java`, and `dot` are available on your `PATH`.
+Verify that `python` (Windows) or `python3` (Linux), `dotnet`, `docfx`, `java`, and `dot` are available on your `PATH`.
 
 Download a PlantUML JAR from the [official download page](https://plantuml.com/download). The MIT-licensed distribution is recommended.
 
@@ -123,6 +127,8 @@ On Linux, the script also supports invoking `plantuml` directly from `PATH` when
 
 ### Build process
 
+The build scripts validate IDs and links in the traceability manifest and generate the DocFX matrix before rendering PlantUML. To run the check by itself, use `python docs/validate-traceability.py` on Windows or `python3 docs/validate-traceability.py` on Linux.
+
 The build scripts perform the following operations:
 
 1. **Discover PlantUML sources:** Recursively find `.puml` files beneath `docs/`, excluding generated directories.
@@ -135,25 +141,14 @@ The source and generated directories are organized as follows:
 
 ```text
 docs/
-├── structural/
-│   └── diagrams/
-│       └── domain.puml
-├── behavioral/
-│   └── diagrams/
-│       └── lifecycle.puml
-├── _generated/
-│   └── diagrams/
-│       ├── structural/
-│       │   └── diagrams/
-│       │       └── domain.svg
-│       └── behavioral/
-│           └── diagrams/
-│               └── lifecycle.svg
-├── api/
-├── _site/
-├── build-docs.ps1
-├── build-docs.sh
-└── docfx.json
+  requirements/         Requirements, use cases and traceability manifest
+  structural/           Static design and storage models
+  behavioral/           Workflow and interaction models
+  testing/              Test plan, acceptance cases and execution records
+  engineering/          V-model and engineering process
+  api/                  Generated API metadata
+  _generated/           Generated traceability matrix and SVG diagrams
+  _site/                Generated DocFX website
 ```
 
 The `_generated/`, `api/`, and `_site/` directories contain generated artifacts and should normally be excluded from version control.

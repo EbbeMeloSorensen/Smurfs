@@ -6,6 +6,9 @@ The documentation website is organized by viewpoint, not by the capabilities of 
 
 | Perspective | Question answered | Primary sources |
 | --- | --- | --- |
+| Requirements | What behavior, qualities and constraints are expected? | FURPS++, UML use cases, traceability metadata |
+| Verification and validation | How do we verify conformance and validate intended use? | Test plan, manual cases, execution records and evidence links |
+| Engineering process | How do we evolve and align engineering artifacts? | V-model, engineering conventions and publishing workflow |
 | Structural | What exists and how is it related/deployed? | PlantUML class/component/deployment models, Markdown |
 | Behavioral | How does it interact/change over time? | PlantUML sequence/activity/state models, Markdown |
 | API reference | What programming contracts are exposed? | C# signatures and XML documentation, DocFX-generated metadata |
@@ -25,6 +28,9 @@ Document mismatches rather than silently declaring one source universally author
 
 ## Repository layout
 
+- `docs/requirements/` — requirements specification, use cases and traceability manifest.
+- `docs/testing/` — test plan, manual acceptance cases and execution record template.
+- `docs/engineering/` — conceptual V-model and process overview.
 - `docs/structural/` — structural narrative and diagrams.
 - `docs/behavioral/` — behavioral narrative and diagrams.
 - `docs/decisions/` — ADRs.
@@ -45,14 +51,20 @@ Document mismatches rather than silently declaring one source universally author
 
 ## Navigation and linking
 
-- `docs/toc.yml` should expose Home, Structural, Behavioral, API reference and Decisions (without breaking existing links).
+- `docs/toc.yml` should expose Home, Requirements, Use cases, Structural and Behavioral design, API reference, Verification and validation, Traceability, Engineering process and Decisions (without breaking existing links).
 - Structural and behavioral Markdown should explain each diagram's scope, not merely display a picture.
 - Link to generated API reference using DocFX-supported cross-references when stable; verify those links after generation.
 - Empty perspectives can have a short index explaining scope and planned content; do not invent design artifacts.
 
+## Traceability
+
+Markdown owns requirement titles and descriptions, use case specifications and manual procedures. `requirements/traceability.json` owns classification, approval status, verification methods and relationships. It indexes significant design sections and named automated evidence in source. Build-time generation places the matrix at `_generated/traceability.md`. Edit the sources to update the matrix.
+
+Run `python docs/validate-traceability.py` on Windows or `python3 docs/validate-traceability.py` on Linux. Both build entry points run this check. Duplicate IDs, missing definitions, broken relationships or evidence locations, and missing verification methods fail validation. Empty coverage lists are allowed and the matrix exposes the gaps. The validator checks references and declarations. Test execution and human review establish evidence quality and coverage.
+
 ## Local build
 
-Shared prerequisites: .NET SDK supporting net10.0, DocFX on PATH, Java and Graphviz `dot` on PATH, and a local PlantUML installation. The build scripts do not download tools or call a rendering service. Use a trusted local JAR or installation. The existing Windows validation used PlantUML bundled with VS Code extension jebbs.plantuml-2.18.1 and DocFX 2.81.0.
+Shared prerequisites: .NET SDK supporting net10.0, Python 3.10 or later on PATH, DocFX on PATH, Java and Graphviz `dot` on PATH, and a local PlantUML installation. The build scripts do not download tools or call a rendering service. Use a trusted local JAR or installation. The existing Windows validation used PlantUML bundled with VS Code extension jebbs.plantuml-2.18.1 and DocFX 2.81.0.
 
 ### Windows / PowerShell 7
 
@@ -85,7 +97,7 @@ bash docs/build-docs.sh /path/to/plantuml.jar
 
 An explicit JAR argument takes precedence over `PLANTUML_JAR`. If neither is set, the Bash script uses `plantuml` on PATH. If a specified JAR is missing, the build fails instead of falling back. For matching rendering across platforms and CI, use the same PlantUML version. The script locates `docs/` relative to itself, so invoking it from another directory also works; relative JAR paths are resolved from the invoking directory.
 
-Both entry points check documentation `.puml` sources outside `_site`, `_generated` and `api`, render SVGs preserving relative paths under `docs/_generated/diagrams/`, then run `docfx metadata` and `docfx build --warningsAsErrors`. Each external command failure stops the build. The Bash script also checks that each expected SVG was produced, removing only that SVG before rendering so a stale file cannot satisfy the check.
+Both entry points generate the traceability matrix, check documentation `.puml` sources outside `_site`, `_generated` and `api`, render SVGs preserving relative paths under `docs/_generated/diagrams/`, then run `docfx metadata` and `docfx build --warningsAsErrors`. Each external command failure stops the build. The Bash script also checks that each expected SVG was produced, removing only that SVG before rendering so a stale file cannot satisfy the check.
 
 For example, `docs/structural/diagrams/domain-model.puml` produces `docs/_generated/diagrams/structural/diagrams/domain-model.svg`. Keep the existing Markdown links and `build.resource` mapping to `_generated/diagrams/**`. These scripts render diagrams and build the site; they do not generate `docs/structural/index.md`.
 

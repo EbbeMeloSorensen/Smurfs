@@ -16,6 +16,8 @@ See [IUnitOfWork](xref:Smurfs.Persistence.IUnitOfWork), [Repository](xref:Craft.
 
 ![Console setup and use-case dispatch](../_generated/diagrams/behavioral/diagrams/console-workflow.svg)
 
+The [use case model](../requirements/use-cases.md) specifies the proposed operator goals. The sequence below shows their current implementation, including first-use setup.
+
 The [sequence source](diagrams/console-workflow.puml) shows startup and use-case dispatch. The host disposes its service scope after the command completes.
 
 Run these commands from the same working directory so they use the same SQLite file. If the file is missing, either Smurf verb creates the database, applies migrations and seeds sample data before running. Use `initdb` to explicitly apply migrations to an existing database.

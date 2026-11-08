@@ -5,10 +5,12 @@ if (-not $PlantUmlJar -or -not (Test-Path -LiteralPath $PlantUmlJar -PathType Le
     throw 'Set PLANTUML_JAR or pass -PlantUmlJar with a local PlantUML JAR path.'
 }
 $PlantUmlJar = (Resolve-Path -LiteralPath $PlantUmlJar).Path
-foreach ($command in 'java', 'dot', 'docfx') {
+foreach ($command in 'java', 'dot', 'docfx', 'python') {
     $null = Get-Command $command -ErrorAction Stop
 }
 $docsRoot = $PSScriptRoot
+& python (Join-Path $docsRoot 'validate-traceability.py')
+if ($LASTEXITCODE -ne 0) { throw 'Traceability validation failed.' }
 $outputRoot = Join-Path $docsRoot '_generated/diagrams'
 $models = @(Get-ChildItem -LiteralPath $docsRoot -Filter '*.puml' -Recurse -File |
     Where-Object { $_.FullName -notmatch '[\\/](_site|_generated|api)[\\/]' })

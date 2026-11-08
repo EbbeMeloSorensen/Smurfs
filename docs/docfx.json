@@ -30,6 +30,8 @@
           "images/**",
           "_generated/diagrams/**",
           "structural/diagrams/*.puml",
+          "requirements/diagrams/*.puml",
+          "engineering/diagrams/*.puml",
           "behavioral/diagrams/*.puml"
         ]
       }

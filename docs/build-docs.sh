@@ -12,7 +12,7 @@ fi
 docs_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 output_root="$docs_root/_generated/diagrams"
 
-for command_name in java dot docfx find mktemp; do
+for command_name in java dot docfx find mktemp python3; do
     command -v "$command_name" >/dev/null 2>&1 || fail "Required command not found: $command_name"
 done
 [[ -f "$docs_root/docfx.json" ]] || fail "Missing $docs_root/docfx.json"
@@ -29,6 +29,7 @@ else
 fi
 
 cd -- "$docs_root"
+python3 validate-traceability.py || fail 'Traceability validation failed.'
 # A temporary list propagates discovery failures and supports spaces in filenames.
 model_list="$(mktemp)"
 trap 'rm -f -- "$model_list"' EXIT

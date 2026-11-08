@@ -1,11 +1,23 @@
 - name: Home
   href: index.md
-- name: Structural
+- name: Requirements
+  href: requirements/index.md
+- name: Use cases
+  href: requirements/use-cases.md
+- name: Design · Structural
   href: structural/index.md
-- name: Behavioral
+- name: Design · Behavioral
   href: behavioral/index.md
-- name: API reference
+- name: Implementation · API reference
   href: api/
+- name: Verification and validation
+  href: testing/index.md
+- name: Manual acceptance
+  href: testing/acceptance.md
+- name: Traceability
+  href: _generated/traceability.md
+- name: Engineering process
+  href: engineering/index.md
 - name: Decisions
   href: decisions/index.md
 - name: Contributing and publishing

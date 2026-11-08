@@ -1,0 +1,215 @@
+{
+  "requirements": {
+    "FR-001": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "Manual acceptance and migration integration",
+      "implementation": "Implemented in console",
+      "design": [
+        "console",
+        "storage"
+      ],
+      "automated": [
+        "IT-001"
+      ],
+      "note": "Integration covers a fresh schema only. The initializer rerun and preservation scenario need a manual run."
+    },
+    "FR-002": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "Manual acceptance and repository integration",
+      "implementation": "Implemented in console",
+      "design": [
+        "console",
+        "catalog"
+      ],
+      "automated": [
+        "IT-002"
+      ],
+      "note": "Repository insertion is covered. Console dispatch and confirmation need a manual run."
+    },
+    "FR-003": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "Manual acceptance",
+      "implementation": "Implemented in console",
+      "design": [
+        "console"
+      ],
+      "automated": [],
+      "note": "No automated console paging evidence. Manual case is unexecuted."
+    },
+    "FR-004": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "Manual boundary and rejection scenarios",
+      "implementation": "Implemented in console and domain",
+      "design": [
+        "catalog",
+        "console"
+      ],
+      "automated": [],
+      "note": "No automated boundary tests. Manual cases are unexecuted."
+    },
+    "RR-001": {
+      "classification": "Reliability",
+      "status": "Proposed",
+      "method": "Manual invalid input and retry",
+      "implementation": "Implemented in list handler",
+      "design": [
+        "console"
+      ],
+      "automated": [],
+      "note": "No automated paging validation tests. Manual case is unexecuted."
+    },
+    "CR-001": {
+      "classification": "++ Design constraint",
+      "status": "Approved (ADR 0001)",
+      "method": "Model inspection and SQLite integration",
+      "implementation": "Persisted relationship implemented",
+      "design": [
+        "storage"
+      ],
+      "automated": [
+        "IT-003",
+        "IT-004"
+      ],
+      "note": "CLR collections can represent conflicting memberships before persistence."
+    },
+    "CR-002": {
+      "classification": "++ Design constraint",
+      "status": "Approved (ADR 0002)",
+      "method": "SQLite integration",
+      "implementation": "Implemented in EF mapping and database",
+      "design": [
+        "storage"
+      ],
+      "automated": [
+        "IT-004",
+        "IT-005"
+      ],
+      "note": "Tests distinguish tracked and untracked deletion."
+    },
+    "ER-001": {
+      "classification": "Engineering process",
+      "status": "Approved (baseline request)",
+      "method": "Documentation build and validator checks",
+      "implementation": "Implemented in both build entry points",
+      "design": [
+        "process"
+      ],
+      "automated": [
+        "VT-001"
+      ],
+      "note": "Verification checks reference integrity separately from coverage."
+    }
+  },
+  "useCases": {
+    "UC-001": [
+      "FR-001"
+    ],
+    "UC-002": [
+      "FR-002",
+      "FR-004"
+    ],
+    "UC-003": [
+      "FR-003",
+      "RR-001"
+    ]
+  },
+  "acceptance": {
+    "AT-001": {
+      "useCases": [
+        "UC-001",
+        "UC-002",
+        "UC-003"
+      ],
+      "requirements": [
+        "FR-001"
+      ]
+    },
+    "AT-002": {
+      "useCases": [
+        "UC-002",
+        "UC-003"
+      ],
+      "requirements": [
+        "FR-002",
+        "FR-004"
+      ]
+    },
+    "AT-003": {
+      "useCases": [
+        "UC-002",
+        "UC-003"
+      ],
+      "requirements": [
+        "FR-004"
+      ]
+    },
+    "AT-004": {
+      "useCases": [
+        "UC-002",
+        "UC-003"
+      ],
+      "requirements": [
+        "FR-003",
+        "RR-001"
+      ]
+    }
+  },
+  "design": {
+    "console": {
+      "title": "Console workflow",
+      "path": "behavioral/index.md",
+      "anchor": "console-workflow"
+    },
+    "catalog": {
+      "title": "Domain catalog and console architecture",
+      "path": "structural/index.md",
+      "anchor": "console-use-cases"
+    },
+    "storage": {
+      "title": "Relational app-data model",
+      "path": "structural/index.md",
+      "anchor": "relational-model"
+    },
+    "process": {
+      "title": "Traceability and publishing workflow",
+      "path": "documentation.md",
+      "anchor": "traceability"
+    }
+  },
+  "automated": {
+    "IT-001": {
+      "title": "Fresh migration",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/PersistenceBaselineTests.cs",
+      "symbol": "InitialMigration_CreatesUsableSchemaInFreshDatabase"
+    },
+    "IT-002": {
+      "title": "Repository insert",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/SmurfRepositoryTests.cs",
+      "symbol": "Add_ShouldPersistSmurf"
+    },
+    "IT-003": {
+      "title": "Relationship round trip",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/PersistenceBaselineTests.cs",
+      "symbol": "VillageMembership_AndSharedPet_RoundTrip"
+    },
+    "IT-004": {
+      "title": "Runtime model and snapshot agreement",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/PersistenceBaselineTests.cs",
+      "symbol": "Model_IncludesVillageAndPets_AndMatchesMigrationSnapshot"
+    },
+    "IT-005": {
+      "title": "Tracked and untracked Pet deletion",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/PersistenceBaselineTests.cs",
+      "symbol": "PetDeletion_RespectsTrackedAndUntrackedReferences"
+    },
+    "VT-001": {
+      "title": "Traceability validation",
+      "file": "docs/validate-traceability.py",
+      "symbol": "validate"
+    }
+  }
+}

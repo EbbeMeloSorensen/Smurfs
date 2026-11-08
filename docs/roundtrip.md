@@ -8,6 +8,15 @@
 - Distinguish `Implemented`, `Proposed` and `Needs reconciliation` descriptions in explanatory text when needed. Do not present proposed design as current implementation.
 - Keep design diagrams selective and intelligible; document important public/protected surfaces and relevant associations, not every private helper.
 
+## Requirements and verification
+
+- Use the V-model to pair stakeholder needs with acceptance, system requirements and design with system tests, architecture with integration tests, and component design with unit tests. Iterate across these artifacts as the design changes.
+- Classify requirements with FURPS++. Use stable `FR`, `UR`, `RR`, `PR`, `SR`, and `CR` IDs with three-digit numbers, and `ER` for engineering process. Record description, classification, status and verification method. Preserve retired IDs in project history and never assign them to new requirements.
+- Model externally meaningful goals as UML use cases with actors and a system boundary. Give each use case a stable ID, scenarios, exceptions and a traceable relationship to requirements.
+- Keep intended requirements separate from observed code. Mark proposed intent for review and record the human approval source for material changes.
+- Keep verification methods and evidence links current. Document automated scope and gaps, and give manual cases stable IDs, isolated setup, expected results and separate execution records. Manual acceptance requires recorded human execution against the approved baseline.
+- Validate trace references during documentation builds. Report unimplemented or uncovered work as a gap and keep the engineering documents consistent with the implemented design.
+
 ## C# style
 
 - C# files use LF line endings. Git applies this on checkout via `.gitattributes`, and `.editorconfig` sets the same convention for editors. Existing working copies may retain their old line endings until rewritten.

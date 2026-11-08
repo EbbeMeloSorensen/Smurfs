@@ -1,0 +1,29 @@
+@startuml
+title Conceptual V-model for iterative engineering
+skinparam linetype polyline
+rectangle "Stakeholder needs and\nacceptance requirements" as Needs
+rectangle "System requirements\nand system design" as System
+rectangle "Architectural design and\nsubsystem interactions" as Architecture
+rectangle "Detailed component design" as Detail
+rectangle "Implementation" as Code
+rectangle "Unit testing" as Unit
+rectangle "Integration testing" as Integration
+rectangle "System testing" as SystemTest
+rectangle "Acceptance testing" as Acceptance
+
+Needs -down-> System
+System -down-> Architecture
+Architecture -down-> Detail
+Detail -down-> Code
+Code -up-> Unit
+Unit -up-> Integration
+Integration -up-> SystemTest
+SystemTest -up-> Acceptance
+Needs .right.> Acceptance : acceptance criteria
+System .right.> SystemTest : system behavior
+Architecture .right.> Integration : interactions
+Detail .right.> Unit : component behavior
+legend bottom
+  Conceptual alignment. Test levels and artifacts may be planned or incomplete.
+endlegend
+@enduml

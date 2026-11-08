@@ -6,6 +6,10 @@
 
 Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip engineering. It deliberately exercises code-first domain modeling, PlantUML design models, repositories, unit of work, XML documentation and DocFX. Keep the solution understandable; do not add frameworks or complexity merely to demonstrate tooling.
 
+## Actors and verification
+
+The catalog operator initializes local storage, creates a Smurf and lists stored Smurfs through the console. The [use case specifications](requirements/use-cases.md) distinguish proposed intent from current behavior. Village, Pet and their associations have persistence coverage and no console management workflow. The [test plan](testing/index.md) pairs in-memory SQLite integration tests with manual console acceptance in a fresh working directory. Use the [requirements specification](requirements/index.md) for approval status and the generated matrix for evidence links.
+
 ## Domain intent
 
 - `Smurf`, `Village`, and `Pet` are domain concepts.
