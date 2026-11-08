@@ -17,6 +17,12 @@
 - Keep verification methods and evidence links current. Document automated scope and gaps, and give manual cases stable IDs, isolated setup, expected results and separate execution records. Manual acceptance requires recorded human execution against the approved baseline.
 - Validate trace references during documentation builds. Report unimplemented or uncovered work as a gap and keep the engineering documents consistent with the implemented design.
 
+## Documentation link checks
+
+- Build the documentation with warnings treated as errors. Check affected links from their actual pages in the generated site, including navigation entries, heading anchors, diagrams and API cross-references. Verify that an API link opens the intended HTML page.
+- When a page supports local Markdown browsing, check its affected links separately from that view. A successful DocFX build does not establish that a source preview can resolve a cross-reference.
+- Report the views checked and any links or targets that could not be verified.
+
 ## C# style
 
 - C# files use LF line endings. Git applies this on checkout via `.gitattributes`, and `.editorconfig` sets the same convention for editors. Existing working copies may retain their old line endings until rewritten.
