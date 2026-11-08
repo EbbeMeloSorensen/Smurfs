@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Craft.Domain;
+using Smurfs.Domain;
+using Smurfs.Persistence;
+using Smurfs.Persistence.EFCore.AppData;
 using Smurfs.Application.Core;
 using Smurfs.Application.Smurfs;
 using Smurfs.Infrastructure.Smurfs;
-using Smurfs.Persistence;
-using Smurfs.Persistence.EFCore.AppData;
 using Smurfs.UI.Console.Verbs;
+using Smurfs.Domain.BusinessRules;
 
 namespace Smurfs.UI.Console;
 
@@ -55,6 +58,7 @@ internal class Program
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();
+                    services.AddScoped<IBusinessRuleCatalog, BusinessRuleCatalog>();
                 })
                 .Build();
 
@@ -87,7 +91,10 @@ internal class Program
         Verbs.Smurfs.Create options)
     {
         var sender = services.GetRequiredService<ISender>();
-        var result = await sender.Send(new Create.Command { Name = options.Name });
+        var result = await sender.Send(new Create.Command
+        {
+            Smurf = new Smurf { Name = options.Name, Age = 0 }
+        });
 
         if (!result.IsSuccess)
         {

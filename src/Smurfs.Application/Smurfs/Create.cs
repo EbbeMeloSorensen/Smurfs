@@ -1,7 +1,9 @@
+using Craft.Domain;
+using FluentValidation;
 using MediatR;
+using Smurfs.Application.Core;
 using Smurfs.Domain;
 using Smurfs.Persistence;
-using Smurfs.Application.Core;
 
 namespace Smurfs.Application.Smurfs;
 
@@ -18,7 +20,15 @@ public class Create
         /// <summary>
         /// Gets the name supplied by the caller.
         /// </summary>
-        public required string Name { get; init; }
+        public required Smurf Smurf { get; init; }
+    }
+
+    public class CommandValidator : AbstractValidator<Command>
+    {
+        public CommandValidator()
+        {
+            RuleFor(x => x.Smurf).SetValidator(new SmurfValidator());
+        }
     }
 
     /// <summary>
@@ -27,14 +37,17 @@ public class Create
     public class Handler : IRequestHandler<Command, Result<Unit>>
     {
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+        private readonly IBusinessRuleCatalog _businessRuleCatalog;
 
         /// <summary>
         /// Uses the supplied factory to open a write session for each command.
         /// </summary>
         public Handler(
-            IUnitOfWorkFactory unitOfWorkFactory)
+            IUnitOfWorkFactory unitOfWorkFactory,
+            IBusinessRuleCatalog businessRuleCatalog)
         {
             _unitOfWorkFactory = unitOfWorkFactory;
+            _businessRuleCatalog = businessRuleCatalog;
         }
 
         /// <summary>
@@ -45,10 +58,15 @@ public class Create
             Command request,
             CancellationToken cancellationToken)
         {
-            var smurf = new Smurf { Name = request.Name, Age = 0 };
+            var errors = _businessRuleCatalog.ValidateAtomic(request.Smurf);
+
+            if (errors.Any())
+            {
+                return Result<Unit>.Failure($"Business rule violations detected. First: {errors.First().Value}");
+            }
 
             await using var unitOfWork = _unitOfWorkFactory.CreateUnitOfWork();
-            await unitOfWork.Smurfs.AddAsync(smurf, cancellationToken);
+            await unitOfWork.Smurfs.AddAsync(request.Smurf, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
 
             return Result<Unit>.Success(Unit.Value);
