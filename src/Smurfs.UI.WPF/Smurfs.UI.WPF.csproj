@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Smurfs.ViewModel\Smurfs.ViewModel.csproj" />
     <ProjectReference Include="..\Smurfs.Infrastructure\Smurfs.Infrastructure.csproj" />
     <ProjectReference Include="..\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj" />
+    <ProjectReference Include="..\Smurfs.ViewModel\Smurfs.ViewModel.csproj" />
   </ItemGroup>
 
 </Project>
