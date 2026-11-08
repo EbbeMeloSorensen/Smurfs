@@ -23,7 +23,9 @@ note bottom of Village
   see the separate relational model.
 end note
 note bottom of Smurf
-  No age or name validation in source.
+  Name assignments require non-whitespace text
+  and at most 20 characters.
+  Age has no range validation.
   Pet may be shared; no reverse collection on Pet.
 end note
 @enduml

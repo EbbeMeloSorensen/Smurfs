@@ -10,6 +10,7 @@
 
 ## C# style
 
+- C# files use LF line endings. Git applies this on checkout via `.gitattributes`, and `.editorconfig` sets the same convention for editors. Existing working copies may retain their old line endings until rewritten.
 - Follow repository `.editorconfig`: four spaces, Allman braces, file-scoped namespaces and approved naming conventions.
 - Preferred member sequence: constants; static fields; instance fields; static properties; instance properties; events; static constructor; instance constructors; public methods; protected methods; internal methods; private methods; nested types. This is a **source convention**, not a UML requirement.
 - Separate every pair of adjacent members in handwritten classes, interfaces, structs and records by exactly one blank line, including consecutive properties, fields, constants, events, constructors, methods and nested types. Place the separator before the next member's XML comments and attributes; keep those comments and attributes together with the declaration. Do not add blank lines immediately inside type braces. Leave generated migrations, snapshots and other generated code under their generator's formatting. Standard `dotnet format` does not reliably enforce member separation; inspect it explicitly during review, especially after adding properties or fields.

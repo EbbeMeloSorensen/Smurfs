@@ -11,6 +11,7 @@ Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip 
 - `Smurf`, `Village`, and `Pet` are domain concepts.
 - A `Village` can contain zero or many `Smurf` instances; each `Smurf` belongs to zero or one `Village`. This is accepted in [ADR 0001](decisions/0001-village-membership.md). Navigation goes from Village to Smurfs only; Smurf has no Village navigation. The relational model uses nullable `Smurfs.VillageId` referencing `Villages.Id`, explicitly mapped in SmurfConfiguration as an EF shadow property with ClientSetNull.
 - A `Smurf` has zero or one `Pet`; a `Pet` may be shared by multiple `Smurf` instances. [ADR 0002](decisions/0002-pet-configuration.md) records explicit Restrict mapping and its tracked/untracked deletion semantics.
+- Smurf name assignments require non-whitespace text and at most 20 characters. The console checks the proposed name before construction, and the create handler evaluates the domain catalog before persistence.
 - Distinguish optional navigation properties from required names or other invariants. Check actual definitions and EF Core mappings before documenting exact field/property names or cascade behavior.
 - Keep conceptual class models free of PK/FK stereotypes where possible. Separate persistence/ER representations may show keys and foreign keys.
 

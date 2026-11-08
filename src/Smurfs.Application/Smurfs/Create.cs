@@ -13,7 +13,7 @@ namespace Smurfs.Application.Smurfs;
 public class Create
 {
     /// <summary>
-    /// Requests creation of a Smurf using the supplied name.
+    /// Requests persistence of the supplied Smurf.
     /// </summary>
     public class Command : IRequest<Result<Unit>>
     {
@@ -23,8 +23,14 @@ public class Create
         public required Smurf Smurf { get; init; }
     }
 
+    /// <summary>
+    /// Adapts Smurf validation for FluentValidation callers.
+    /// </summary>
     public class CommandValidator : AbstractValidator<Command>
     {
+        /// <summary>
+        /// Applies the Smurf validator to the command payload.
+        /// </summary>
         public CommandValidator()
         {
             RuleFor(x => x.Smurf).SetValidator(new SmurfValidator());
