@@ -24,6 +24,8 @@ public sealed class CreateSmurfDialogViewModel : ViewModelBase
 
     private bool _isSaving;
 
+    private bool _hasSaved;
+
     /// <summary>
     /// Raised after the create command succeeds.
     /// </summary>
@@ -69,7 +71,7 @@ public sealed class CreateSmurfDialogViewModel : ViewModelBase
     public bool CanEdit => !_isSaving;
 
     /// <summary>
-    /// Validates and submits the draft while preventing overlapping saves.
+    /// Validates and submits the draft. A successful save ends further submissions from this dialog.
     /// </summary>
     public RelayCommand SaveCommand { get; }
 
@@ -80,12 +82,14 @@ public sealed class CreateSmurfDialogViewModel : ViewModelBase
     {
         _catalog = catalog;
         _sender = sender;
-        SaveCommand = new RelayCommand(async () => await SaveAsync(), () => CanEdit);
+        SaveCommand = new RelayCommand(async () => await SaveAsync(), () => CanSave);
     }
+
+    private bool CanSave => CanEdit && !_hasSaved;
 
     private async Task SaveAsync()
     {
-        if (!SaveCommand.CanExecute(null))
+        if (!CanSave)
         {
             return;
         }
@@ -109,6 +113,8 @@ public sealed class CreateSmurfDialogViewModel : ViewModelBase
                 SaveError = result.Error;
                 return;
             }
+
+            _hasSaved = true;
         }
         catch (Exception exception)
         {

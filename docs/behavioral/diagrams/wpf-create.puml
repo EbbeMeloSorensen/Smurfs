@@ -15,9 +15,11 @@ alt operator saves
     Dialog --> Operator : Show name error, keep dialog open
   else valid draft
     Dialog -> Create : Send Create.Command
+    note right of Dialog: Save is disabled while the request is pending.
     Create -> Catalog : Validate draft and entity
     alt creation succeeds
       Create --> Dialog : Success after commit
+      Dialog -> Dialog : Keep further submissions disabled
       Dialog --> Window : Close with success
       Window -> Window : Dispose dialog scope and refresh list
     else creation fails

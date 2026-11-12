@@ -18,7 +18,7 @@ If startup fails, WPF shows an error and shuts down with exit code 1. The host i
 
 ## Create a Smurf
 
-**New Smurf** opens an owned modal dialog in its own scope. Editing the draft clears any prior message. **Save** checks the draft through the catalog and displays any name error. A valid draft is submitted through the same create command as the console. Editing and dismissal are disabled during a save. A failure keeps the draft open. On success, the dialog closes and the list refreshes the displayed page, or page 1 if none has been loaded. **Cancel** discards the draft. This realizes [UC-002 Create a Smurf](../requirements/use-cases.md#uc-002-create-a-smurf).
+**New Smurf** opens an owned modal dialog in its own scope. Editing the draft clears any prior message. **Save** checks the draft through the catalog and displays any name error. A valid draft is submitted through the same create command as the console. Saving, editing, and dismissal are disabled while a request is in progress. A failure keeps the draft open and allows another attempt. A successful request disables further submissions from that dialog. On success, the dialog closes and the list refreshes the displayed page, or page 1 if none has been loaded. **Cancel** discards the draft. This realizes [UC-002 Create a Smurf](../requirements/use-cases.md#uc-002-create-a-smurf).
 
 ![WPF create sequence](../_generated/diagrams/behavioral/diagrams/wpf-create.svg)
 
