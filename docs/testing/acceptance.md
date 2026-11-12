@@ -2,6 +2,10 @@
 
 These procedures cover proposed requirements and their current console and WPF realizations. Run them for review and record observations separately. See the [test plan](index.md) and [execution record](execution-record.md).
 
+## Solution-wide acceptance criterion
+
+Each NuGet package ID used as a direct dependency must have one declared version across all production and test projects in `Smurfs.sln`. Before accepting a baseline, compare the effective direct `PackageReference` versions, including centrally declared versions if used. Compare package IDs case-insensitively. Record any conflicting versions and the projects that declare them in the execution record. Acceptance requires zero conflicts.
+
 ## Isolated setup
 
 Use PowerShell 7. For the console cases, build the app from the repository root and capture its absolute path. Stop if the build fails. The WPF case has its own build and data preparation steps.
