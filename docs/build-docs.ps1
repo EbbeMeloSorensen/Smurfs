@@ -11,6 +11,8 @@ foreach ($command in 'java', 'dot', 'docfx', 'python') {
 $docsRoot = $PSScriptRoot
 & python (Join-Path $docsRoot 'prepare-site-pages.py')
 if ($LASTEXITCODE -ne 0) { throw 'Site page preparation failed.' }
+& python (Join-Path $docsRoot 'generate-project-pages.py')
+if ($LASTEXITCODE -ne 0) { throw 'Project documentation generation failed.' }
 & python (Join-Path $docsRoot 'validate-traceability.py')
 if ($LASTEXITCODE -ne 0) { throw 'Traceability validation failed.' }
 $outputRoot = Join-Path $docsRoot '_generated/diagrams'

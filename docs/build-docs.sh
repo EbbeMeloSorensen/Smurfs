@@ -30,6 +30,7 @@ fi
 
 cd -- "$docs_root"
 python3 prepare-site-pages.py || fail 'Site page preparation failed.'
+python3 generate-project-pages.py || fail 'Project documentation generation failed.'
 python3 validate-traceability.py || fail 'Traceability validation failed.'
 # A temporary list propagates discovery failures and supports spaces in filenames.
 model_list="$(mktemp)"

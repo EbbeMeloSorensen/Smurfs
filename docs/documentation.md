@@ -99,6 +99,8 @@ An explicit JAR argument takes precedence over `PLANTUML_JAR`. If neither is set
 
 Both entry points generate the traceability matrix, check documentation `.puml` sources outside `_site`, `_generated` and `api`, render SVGs preserving relative paths under `docs/_generated/diagrams/`, then run `docfx metadata` and `docfx build --warningsAsErrors`. Each external command failure stops the build. The Bash script also checks that each expected SVG was produced, removing only that SVG before rendering so a stale file cannot satisfy the check.
 
+Both build entry points also generate the Projects section. Edit the project descriptions in `docs/project-descriptions.json`. The generator reads project membership from `Smurfs.sln` and direct references and declared versions from the project files. It writes the pages and navigation to `docs/_generated/projects/`.
+
 For example, `docs/structural/diagrams/domain-model.puml` produces `docs/_generated/diagrams/structural/diagrams/domain-model.svg`. Keep the existing Markdown links and `build.resource` mapping to `_generated/diagrams/**`. These scripts render diagrams and build the site; they do not generate `docs/structural/index.md`.
 
 Generated diagrams, metadata and site are ignored; source models, scripts and configuration are tracked. After renaming/removing diagrams, obsolete generated assets can be removed from that dedicated output directory.
