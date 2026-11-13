@@ -36,6 +36,12 @@ The console is the composition root for Application, the EF app-data adapter and
 
 The [console architecture source](diagrams/console-architecture.puml) shows selected type dependencies grouped by assembly. The persistence architecture view covers the underlying repository and session types. The generic paging adapter and AutoMapper profile remain available outside the active list path. The validation pipeline is registered, and the console currently registers no FluentValidation request validators. The create handler uses the scoped domain business rule catalog. Craft.Domain supplies the rule contracts and catalog base. Smurfs.Domain registers the name rule. The catalog evaluates atomic rules for a single entity and supports rules over related entities. The current Smurfs catalog registers the same name rule for drafts and entities. Rules return [violation values](xref:Craft.Domain.BusinessRuleViolation), so multiple rules can report failures for the same member.
 
+## Application logging
+
+The create and list handlers use typed `ILogger<T>` instances from the host. Successful operations log at Information, and handled input rejections log at Debug. A MediatR behavior logs unexpected handler exceptions at Error and propagates them to the caller. The handlers log operational details such as page and row counts and omit draft names and request payloads.
+
+The console sends diagnostics to standard error, leaving command results on standard output. WPF uses the Generic Host providers, including Debug output when a debugger is attached. Both hosts can configure logging levels through the standard `Logging` configuration.
+
 ## Identity storage
 
 The separate Identity adapter defines an EF context for ASP.NET Core Identity and adds a required `DisplayName` to `AspNetUsers`. The initial Identity migration `20261105171045_InitialMigration` creates the user and role tables and their related claim, login, membership and token tables. The design-time factory targets `smurfs-identity.db`. The console currently uses app-data services only and does not register the Identity context, user accessor or sample account seeder.

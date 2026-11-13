@@ -1,5 +1,7 @@
 using Craft.Domain;
 using MediatR;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Smurfs.Application.Core;
 using Smurfs.Domain;
 using Smurfs.Persistence;
@@ -31,15 +33,19 @@ public class Create
 
         private readonly IBusinessRuleCatalog _businessRuleCatalog;
 
+        private readonly ILogger<Handler> _logger;
+
         /// <summary>
         /// Uses the supplied factory to open a write session for each command.
         /// </summary>
         public Handler(
             IUnitOfWorkFactory unitOfWorkFactory,
-            IBusinessRuleCatalog businessRuleCatalog)
+            IBusinessRuleCatalog businessRuleCatalog,
+            ILogger<Handler>? logger = null)
         {
             _unitOfWorkFactory = unitOfWorkFactory;
             _businessRuleCatalog = businessRuleCatalog;
+            _logger = logger ?? NullLogger<Handler>.Instance;
         }
 
         /// <summary>
@@ -54,6 +60,7 @@ public class Create
 
             if (errors.Count > 0)
             {
+                _logger.LogDebug("Smurf creation rejected by draft validation.");
                 return Result<Unit>.Failure(errors[0].Message);
             }
 
@@ -61,6 +68,7 @@ public class Create
             var entityErrors = _businessRuleCatalog.ValidateAtomic(smurf);
             if (entityErrors.Count > 0)
             {
+                _logger.LogDebug("Smurf creation rejected by entity validation.");
                 return Result<Unit>.Failure(entityErrors[0].Message);
             }
 
@@ -68,6 +76,7 @@ public class Create
             await unitOfWork.Smurfs.AddAsync(smurf, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
 
+            _logger.LogInformation("Smurf created.");
             return Result<Unit>.Success(Unit.Value);
         }
     }

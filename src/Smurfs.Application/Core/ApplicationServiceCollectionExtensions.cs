@@ -9,7 +9,7 @@ namespace Smurfs.Application.Core;
 public static class ApplicationServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the assembly's MediatR handlers and the validation pipeline behavior.
+    /// Registers the assembly's MediatR handlers and the request failure logging and validation pipeline behaviors.
     /// </summary>
     public static IServiceCollection AddApplication(
         this IServiceCollection services)
@@ -18,6 +18,8 @@ public static class ApplicationServiceCollectionExtensions
             cfg.RegisterServicesFromAssembly(typeof(Smurfs.List.Handler).Assembly));
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestFailureLoggingBehavior<,>));
 
         return services;
     }

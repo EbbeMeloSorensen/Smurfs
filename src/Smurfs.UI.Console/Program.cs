@@ -43,6 +43,7 @@ internal class Program
             using var host = Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging =>
                 {
+                    logging.AddConsole(options => options.LogToStandardErrorThreshold = LogLevel.Trace);
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Migrations", LogLevel.None);
                     logging.AddFilter("LuckyPennySoftware.MediatR.License", LogLevel.None);

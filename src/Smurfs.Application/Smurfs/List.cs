@@ -1,4 +1,6 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Smurfs.Application.Core;
 
 namespace Smurfs.Application.Smurfs;
@@ -26,12 +28,15 @@ public class List
     {
         private readonly ISmurfReadService _readService;
 
+        private readonly ILogger<Handler> _logger;
+
         /// <summary>
         /// Uses the supplied read service to retrieve pages.
         /// </summary>
-        public Handler(ISmurfReadService readService)
+        public Handler(ISmurfReadService readService, ILogger<Handler>? logger = null)
         {
             _readService = readService;
+            _logger = logger ?? NullLogger<Handler>.Instance;
         }
 
         /// <summary>
@@ -46,10 +51,12 @@ public class List
             var pageSize = request.Params.PageSize;
             if (pageNumber < 1 || pageSize < 1)
             {
+                _logger.LogDebug("Smurf list rejected invalid paging values. Page {PageNumber}, size {PageSize}.", pageNumber, pageSize);
                 return Result<PagedList<SmurfDto>>.Failure("Page number and page size must be positive.");
             }
 
             var page = await _readService.GetPageAsync(pageNumber, pageSize, cancellationToken);
+            _logger.LogInformation("Listed page {PageNumber} of Smurfs with {RowCount} rows.", pageNumber, page.Count);
             return Result<PagedList<SmurfDto>>.Success(page);
         }
     }
