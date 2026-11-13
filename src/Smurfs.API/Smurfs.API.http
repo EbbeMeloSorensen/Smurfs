@@ -1,0 +1,6 @@
+@Smurfs.API_HostAddress = http://localhost:5040
+
+GET {{Smurfs.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
