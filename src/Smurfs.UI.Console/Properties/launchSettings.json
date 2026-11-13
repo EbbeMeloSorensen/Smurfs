@@ -2,7 +2,7 @@
   "profiles": {
     "Smurfs.UI.Console": {
       "commandName": "Project",
-      "commandLineArgs": "createsmurf -n BamseBamseBamseBamseBamse"
+      "commandLineArgs": "listsmurfs"
     }
   }
 }
