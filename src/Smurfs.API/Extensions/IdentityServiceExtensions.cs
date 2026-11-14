@@ -41,13 +41,13 @@ public static class IdentityServiceExtensions
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = key,
-                    ValidAlgorithms = [SecurityAlgorithms.HmacSha512Signature],
+                    ValidAlgorithms = [SecurityAlgorithms.HmacSha512],
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
             });
 
-        services.AddSingleton(new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature));
+        services.AddSingleton(new SigningCredentials(key, SecurityAlgorithms.HmacSha512));
         services.AddScoped<TokenService>();
 
         return services;
