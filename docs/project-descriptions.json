@@ -5,7 +5,7 @@
   "Smurfs.API": "Provides the ASP.NET Core API host with OpenAPI setup and a sample weather forecast endpoint.",
   "Smurfs.Application": "Defines the MediatR create and list use cases, their request and result models, and the read-service contract. Create evaluates domain rules and writes through a unit of work. List delegates the paged query to the read service.",
   "Smurfs.Domain": "Defines Smurf, Pet, and Village and the domain rules that apply to them. It owns the name validation rule and registers it in the Smurfs business-rule catalog.",
-  "Smurfs.Infrastructure": "Implements the application's Smurf read service against the app-data EF Core context. It orders, pages, and projects results for the list use case.",
+  "Smurfs.Infrastructure": "Implements the application's Smurf read service against the app-data EF Core context. It orders, pages, and projects results for the list use case. It also provides the shared Serilog rolling file setup used by the console and WPF.",
   "Smurfs.Persistence": "Defines the Smurfs persistence contracts for the Smurf repository, app-data initialization, and unit-of-work creation and lifetime.",
   "Smurfs.Persistence.EFCore.AppData": "Stores Smurfs, Pets, and Villages in SQLite through EF Core. It owns the app-data context, mappings, migrations, repository, unit of work, initialization, and seed data.",
   "Smurfs.Persistence.EFCore.Identity": "Owns the separate ASP.NET Core Identity store, including the user model, EF Core context, SQLite migrations, and sample-account seeding.",

@@ -10,6 +10,7 @@ package "Production projects (src)" {
   component "Craft.Domain" as Craft_Domain
   component "Craft.Persistence" as Craft_Persistence
   component "Craft.Persistence.EFCore" as Craft_Persistence_EFCore
+  component "Smurfs.API" as Smurfs_API
   component "Smurfs.Application" as Smurfs_Application
   component "Smurfs.Domain" as Smurfs_Domain
   component "Smurfs.Infrastructure" as Smurfs_Infrastructure
@@ -17,6 +18,7 @@ package "Production projects (src)" {
   component "Smurfs.Persistence.EFCore.AppData" as Smurfs_Persistence_EFCore_AppData
   component "Smurfs.Persistence.EFCore.Identity" as Smurfs_Persistence_EFCore_Identity
   component "Smurfs.UI.Console" as Smurfs_UI_Console
+  component "Smurfs.UI.WinForms" as Smurfs_UI_WinForms
   component "Smurfs.UI.WPF" as Smurfs_UI_WPF
   component "Smurfs.ViewModel" as Smurfs_ViewModel
 }

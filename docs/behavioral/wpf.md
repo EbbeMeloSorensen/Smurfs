@@ -2,7 +2,7 @@
 
 ## Application lifetime
 
-This sequence covers launching the application, leaving it idle and closing the main window. The splash remains on the UI thread while a worker uses the shared app-data initializer to migrate and seed `babuska.db` in the current working directory. Startup disposes the initialization scope before showing the main window. On exit, WPF disposes the host. The first list request is an operator action described under [Browse Smurfs](#browse-smurfs).
+This sequence covers launching the application, leaving it idle and closing the main window. WPF opens its rolling file logger before showing the splash or building the host. The splash remains on the UI thread while a worker uses the shared app-data initializer to migrate and seed `babuska.db` in the current working directory. Startup disposes the initialization scope before showing the main window. On exit, WPF disposes the host and then the file logger. See [Application logging](../structural/index.md#application-logging). The first list request is an operator action described under [Browse Smurfs](#browse-smurfs).
 
 ![WPF application lifetime sequence](../_generated/diagrams/behavioral/diagrams/wpf-lifetime.svg)
 
@@ -10,7 +10,7 @@ This sequence covers launching the application, leaving it idle and closing the 
 
 ### Startup failure
 
-If startup fails, WPF shows an error and shuts down with exit code 1. The host is disposed if it was built.
+If startup fails, WPF writes the exception to the file when the logger is available, shows an error, and shuts down with exit code 1. It disposes any host and file logger that were created.
 
 ![WPF startup failure sequence](../_generated/diagrams/behavioral/diagrams/wpf-startup-failure.svg)
 

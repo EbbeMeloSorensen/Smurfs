@@ -7,6 +7,7 @@ participant SmurfReadService as Read
 database "SQLite" as DB
 
 Operator -> CLI : listsmurfs [page and page size]
+CLI -> CLI : Open console rolling file logger
 CLI -> CLI : Build host and open scope
 ref over CLI : Database setup if missing (initdb operations)
 CLI -> List : Send List.Query
@@ -23,4 +24,5 @@ else valid paging inputs
   List --> CLI : Success
   CLI --> Operator : Page and row count, exit 0
 end
+CLI -> CLI : Dispose scope, host, and then file logger
 @enduml

@@ -6,8 +6,8 @@ participant "Startup operation" as Startup
 participant "Host and DI container" as Host
 
 Operator -> App : Launch application
-App -> App : Show splash
-App -> Startup : Build host, initialize database or open main window
+App -> Startup : Start WPF
+note right of Startup: Open file logger, show splash, build host, initialize database, or open main window
 Startup --> App : Startup exception
 App -> App : Record startup exception in the WPF log if available
 App --> Operator : Show startup error
@@ -15,5 +15,8 @@ Operator -> App : Dismiss error
 App -> App : Shutdown(1), then OnExit
 opt host was built
   App -> Host : Dispose
+end
+opt file logger was created
+  App -> App : Dispose file logger
 end
 @enduml

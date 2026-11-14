@@ -6,12 +6,13 @@ participant IAppDataInitializer as Setup
 database "SQLite" as DB
 
 Operator -> CLI : initdb
+CLI -> CLI : Open console rolling file logger
 CLI -> CLI : Build host and open service scope
 CLI -> Setup : MigrateAsync()
 Setup -> DB : Apply outstanding migrations
 CLI -> Setup : SeedAsync()
 Setup -> DB : Seed sample Smurfs if empty
 CLI --> Operator : Print database initialized
-CLI -> CLI : Dispose scope and host
+CLI -> CLI : Dispose scope, host, and then file logger
 CLI --> Operator : Exit 0
 @enduml

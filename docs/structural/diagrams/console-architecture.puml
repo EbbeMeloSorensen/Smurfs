@@ -34,6 +34,7 @@ component "Smurfs.Persistence.EFCore.AppData" {
   class "AppDataInitializer<TContext>" as AppDataInitializer
 }
 component "Smurfs.Infrastructure" {
+  class FrontendFileLogging
   class SmurfReadService
 }
 component "Smurfs.UI.Console" {
@@ -68,4 +69,5 @@ Program ..> IAppDataInitializer : runs setup
 Program ..> DataContext : configures
 Program ..> SmurfReadService : registers
 Program ..> UnitOfWorkFactory : registers
+Program ..> FrontendFileLogging : creates and disposes
 @enduml

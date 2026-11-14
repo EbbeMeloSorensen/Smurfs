@@ -1,6 +1,6 @@
 # Console workflows
 
-The console runs one verb per process. Each diagram assumes argument parsing has selected the verb. The program builds a host, opens a service scope, and disposes both after execution. All verbs use `smurfs.db` in the current working directory. If that file is missing, `createsmurf` and `listsmurfs` run the same migration and seeding operations as `initdb` before dispatch. The diagrams refer to that shared behavior as database setup.
+The console runs one verb per process. Each diagram assumes argument parsing has selected the verb. After argument parsing selects a verb, the program opens its rolling file logger, builds the host, and opens a service scope. It disposes the scope and host before disposing the logger. Failures during startup are written to the file when the logger is available and reported to stderr with exit code 1. See [Application logging](../structural/index.md#application-logging). All verbs use `smurfs.db` in the current working directory. If that file is missing, `createsmurf` and `listsmurfs` run the same migration and seeding operations as `initdb` before dispatch. The diagrams refer to that shared behavior as database setup.
 
 A use-case failure or caught runtime exception is printed to standard error and returns exit code 1. If first-use setup fails after creating the file, run `initdb` to retry. The console filters the MediatR license log category.
 

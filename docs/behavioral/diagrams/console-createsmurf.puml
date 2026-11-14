@@ -7,6 +7,7 @@ participant IBusinessRuleCatalog as Catalog
 participant IUnitOfWork as Write
 
 Operator -> CLI : createsmurf --name <name>
+CLI -> CLI : Open console rolling file logger
 CLI -> CLI : Build host and open service scope
 ref over CLI : Database setup if missing (initdb operations)
 CLI -> Create : Send Create.Command with proposed name
@@ -25,4 +26,5 @@ else valid Smurf
   Create --> CLI : Success
   CLI --> Operator : Creation confirmation, exit 0
 end
+CLI -> CLI : Dispose scope, host, and then file logger
 @enduml

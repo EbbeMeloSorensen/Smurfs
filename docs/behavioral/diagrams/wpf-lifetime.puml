@@ -7,6 +7,7 @@ participant IAppDataInitializer as Setup
 participant "Host and DI container" as Host
 
 Operator -> App : Launch application
+App -> App : Open WPF rolling file logger
 App -> App : Show splash
 App -> Host : Build host
 App -> Worker : Start database initialization
@@ -20,4 +21,5 @@ App -> App : Set and show MainWindow, close splash
 Operator -> App : Close main window
 App -> App : OnExit
 App -> Host : Dispose
+App -> App : Dispose file logger
 @enduml
