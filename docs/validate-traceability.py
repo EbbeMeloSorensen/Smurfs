@@ -33,7 +33,7 @@ def unique_object(pairs):
 def definitions(path, pattern):
     titles = {}
     for identifier, title in re.findall(
-        rf"^#{{2,3}} ({pattern}) (.+)$", path.read_text(encoding="utf-8"), re.MULTILINE
+        rf"^#{{2,6}} ({pattern}) (.+)$", path.read_text(encoding="utf-8"), re.MULTILINE
     ):
         if identifier in titles:
             raise ValueError(f"{path.name}: duplicate definition {identifier}")
@@ -100,7 +100,9 @@ def validate(docs):
         realized = {
             requirement for use_case in entry["useCases"] for requirement in data["useCases"][use_case]
         }
-        references(identifier, entry["requirements"], dict.fromkeys(realized))
+        # Quality attributes can be verified by scenarios without a use-case mapping.
+        allowed = realized | {key for key in requirements if key[:2] in {"UR", "RR", "PR", "SR"}}
+        references(identifier, entry["requirements"], dict.fromkeys(allowed))
 
     for identifier, entry in data["design"].items():
         required_text(identifier, entry, ("title", "path", "anchor"))

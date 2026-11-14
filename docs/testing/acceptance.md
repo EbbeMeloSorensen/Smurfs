@@ -121,3 +121,20 @@ $seed = (Resolve-Path 'scripts/add-random-smurfs.ps1').Path
 4. Close and reopen WPF in the same case directory. Select **Load smurfs** and verify that `Acceptance WPF` is present once. Close WPF and run `Pop-Location`.
 
 **Acceptance criteria** — Validation messages appear only after a save attempt. Invalid drafts and cancellation add no rows. Saving a valid name adds one row visible after restarting WPF.
+
+
+## AT-007 Diagnose frontend failures after exit
+
+**Objective** — Verify that startup failures and unexpected list request failures remain diagnosable after each frontend exits.
+
+**References** — [Diagnosability requirement](../requirements/index.md#sr-001-diagnose-failures-after-exit) and [logging design](../structural/index.md#application-logging).
+
+**Preconditions and data** — Build both frontends and use absolute paths to their binaries. Use four separate fresh working directories as described in the isolated setup. Install the SQLite command-line tool for the request-failure scenarios. Use only the disposable databases created by this case. Record the start time of each scenario so existing log entries cannot satisfy the check.
+
+1. **Console startup failure.** In a fresh working directory, create a directory named `smurfs.db`. Run the console with `initdb`. Expect an error and exit code 1.
+2. **WPF startup failure.** In a fresh working directory, create a directory named `babuska.db`. Launch WPF and dismiss the startup error. Expect the process to exit with code 1.
+3. **Console request failure.** In a fresh working directory, run the console with `initdb` and confirm it succeeds. Run `sqlite3 smurfs.db "DROP TABLE Smurfs;"` and confirm it succeeds. Run the console with `listsmurfs --page 1 --page-size 50`. Expect an error and exit code 1.
+4. **WPF request failure.** Launch WPF in a fresh working directory and wait for the main window. From a separate shell in the same directory run `sqlite3 babuska.db "DROP TABLE Smurfs;"` and confirm it succeeds. Select **Load smurfs**, observe the error, and close WPF.
+5. After each process exits, inspect its `console-*.log` or `wpf-*.log` under `%LOCALAPPDATA%\Smurfs\Logs`. Find the new entry for that run. Expect a startup failure for steps 1 and 2 and a failed list query for steps 3 and 4. Record the filename, timestamp, operation, and exception type in the [execution record](execution-record.md).
+
+**Acceptance criteria** — All four scenarios leave a readable entry after exit. Each entry identifies the frontend by its log file, gives the failure time and failed operation, and includes the exception details.

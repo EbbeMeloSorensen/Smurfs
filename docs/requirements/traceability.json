@@ -108,6 +108,17 @@
         "VT-001"
       ],
       "note": "Verification checks reference integrity separately from coverage."
+    },
+    "SR-001": {
+      "classification": "Supportability",
+      "status": "Approved (diagnosability requirement request)",
+      "method": "Manual startup and unexpected request failure checks in console and WPF",
+      "implementation": "Implemented through shared rolling file logging and the MediatR failure behavior when the local log is writable.",
+      "design": [
+        "application-logging"
+      ],
+      "automated": [],
+      "note": "AT-007 defines the four failure scenarios. Formal manual acceptance has not been recorded."
     }
   },
   "useCases": {
@@ -179,6 +190,12 @@
         "FR-002",
         "FR-004"
       ]
+    },
+    "AT-007": {
+      "useCases": [],
+      "requirements": [
+        "SR-001"
+      ]
     }
   },
   "design": {
@@ -221,6 +238,11 @@
       "title": "WPF browse Smurfs",
       "path": "behavioral/wpf.md",
       "anchor": "browse-smurfs"
+    },
+    "application-logging": {
+      "title": "Application logging",
+      "path": "structural/index.md",
+      "anchor": "application-logging"
     }
   },
   "automated": {
