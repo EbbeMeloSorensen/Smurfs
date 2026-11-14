@@ -17,6 +17,7 @@ package "Production projects (src)" {
   component "Smurfs.Persistence" as Smurfs_Persistence
   component "Smurfs.Persistence.EFCore.AppData" as Smurfs_Persistence_EFCore_AppData
   component "Smurfs.Persistence.EFCore.Identity" as Smurfs_Persistence_EFCore_Identity
+  component "Smurfs.UI.Avalonia" as Smurfs_UI_Avalonia
   component "Smurfs.UI.Console" as Smurfs_UI_Console
   component "Smurfs.UI.WinForms" as Smurfs_UI_WinForms
   component "Smurfs.UI.WPF" as Smurfs_UI_WPF
@@ -37,6 +38,9 @@ Smurfs_Persistence -up-> Craft_Persistence
 Smurfs_Persistence -up-> Smurfs_Domain
 Smurfs_Persistence_EFCore_AppData -up-> Craft_Persistence_EFCore
 Smurfs_Persistence_EFCore_AppData -up-> Smurfs_Persistence
+Smurfs_UI_Avalonia -up-> Smurfs_Infrastructure
+Smurfs_UI_Avalonia -up-> Smurfs_Persistence_EFCore_AppData
+Smurfs_UI_Avalonia -up-> Smurfs_ViewModel
 Smurfs_UI_Console -up-> Smurfs_Application
 Smurfs_UI_Console -up-> Smurfs_Infrastructure
 Smurfs_UI_Console -up-> Smurfs_Persistence_EFCore_AppData

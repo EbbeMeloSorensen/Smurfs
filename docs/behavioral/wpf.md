@@ -1,5 +1,7 @@
 # WPF workflows
 
+Avalonia shares the WPF browse view model. Its window starts with no page loaded. **Load smurfs** opens page 1. **Previous** and **Next** load adjacent pages when available, and a failed load displays an error. Avalonia migrates and seeds `babuska.db` in its working directory at startup, using the same database filename as WPF.
+
 ## Application lifetime
 
 This sequence covers launching the application, leaving it idle and closing the main window. WPF opens its rolling file logger before showing the splash or building the host. The splash remains on the UI thread while a worker uses the shared app-data initializer to migrate and seed `babuska.db` in the current working directory. Startup disposes the initialization scope before showing the main window. On exit, WPF disposes the host and then the file logger. See [Application logging](../structural/index.md#application-logging). The first list request is an operator action described under [Browse Smurfs](#browse-smurfs).

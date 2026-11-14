@@ -9,6 +9,7 @@
   "Smurfs.Persistence": "Defines the Smurfs persistence contracts for the Smurf repository, app-data initialization, and unit-of-work creation and lifetime.",
   "Smurfs.Persistence.EFCore.AppData": "Stores Smurfs, Pets, and Villages in SQLite through EF Core. It owns the app-data context, mappings, migrations, repository, unit of work, initialization, and seed data.",
   "Smurfs.Persistence.EFCore.Identity": "Owns the separate ASP.NET Core Identity store, including the user model, EF Core context, SQLite migrations, and sample-account seeding.",
+  "Smurfs.UI.Avalonia": "Hosts the Avalonia desktop interface for loading and paging through Smurfs using the shared view model.",
   "Smurfs.UI.Console": "Hosts the command-line interface. It composes the application and persistence services and exposes commands to initialize the app database, create a Smurf, and list Smurfs with paging.",
   "Smurfs.UI.WinForms": "Starts a Windows Forms desktop host and opens its initial form.",
   "Smurfs.UI.WPF": "Hosts the Windows desktop interface. It composes services at startup and supplies the windows and dialogs for browsing the catalog and creating a Smurf.",
