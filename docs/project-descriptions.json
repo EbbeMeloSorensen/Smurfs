@@ -11,7 +11,7 @@
   "Smurfs.Persistence.EFCore.Identity": "Owns the separate ASP.NET Core Identity store, including the user model, EF Core context, SQLite migrations, and sample-account seeding.",
   "Smurfs.UI.Avalonia": "Hosts the Avalonia desktop interface for loading and paging through Smurfs using the shared view model.",
   "Smurfs.UI.Console": "Hosts the command-line interface. It composes the application and persistence services and exposes commands to initialize the app database, create a Smurf, and list Smurfs with paging.",
-  "Smurfs.UI.WinForms": "Starts a Windows Forms desktop host and opens its initial form.",
+  "Smurfs.UI.WinForms": "Hosts the Windows Forms catalog browser and adapts the shared paging commands and state to WinForms controls.",
   "Smurfs.UI.WPF": "Hosts the Windows desktop interface. It composes services at startup and supplies the windows and dialogs for browsing the catalog and creating a Smurf.",
   "Smurfs.ViewModel": "Provides the presentation state and commands for the WPF catalog and create dialog. It dispatches application requests through MediatR and exposes results and validation feedback to the views.",
   "Smurf.Persistence.EFCore.AppData.UnitTest": "Exercises the app-data EF Core mappings, migrations, repository, and unit of work against isolated SQLite databases. It also verifies that the create handler honors rules from the registered catalog."

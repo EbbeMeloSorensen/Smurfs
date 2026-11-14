@@ -44,6 +44,9 @@ Smurfs_UI_Avalonia -up-> Smurfs_ViewModel
 Smurfs_UI_Console -up-> Smurfs_Application
 Smurfs_UI_Console -up-> Smurfs_Infrastructure
 Smurfs_UI_Console -up-> Smurfs_Persistence_EFCore_AppData
+Smurfs_UI_WinForms -up-> Smurfs_Infrastructure
+Smurfs_UI_WinForms -up-> Smurfs_Persistence_EFCore_AppData
+Smurfs_UI_WinForms -up-> Smurfs_ViewModel
 Smurfs_UI_WPF -up-> Smurfs_Infrastructure
 Smurfs_UI_WPF -up-> Smurfs_Persistence_EFCore_AppData
 Smurfs_UI_WPF -up-> Smurfs_ViewModel
