@@ -23,13 +23,14 @@ public static class ApplicationServiceExtensions
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv5", Version = "v1" });
         });
 
+        var connectionString = config.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Configure ConnectionStrings:DefaultConnection.");
+
         services.AddDbContext<Smurfs.Persistence.EFCore.Identity.DataContext>(options =>
-            options.UseSqlite(config.GetConnectionString("Identity")
-                ?? throw new InvalidOperationException("Configure ConnectionStrings:Identity.")));
+            options.UseSqlite(connectionString));
 
         services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.DataContext>(options =>
-            options.UseSqlite(config.GetConnectionString("AppData")
-                ?? throw new InvalidOperationException("Configure ConnectionStrings:AppData.")));
+            options.UseSqlite(connectionString));
 
         services.AddCors(opt =>
         {
