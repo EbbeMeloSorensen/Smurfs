@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Smurfs.Application.Core;
 using Smurfs.Application.Interfaces;
-using Smurfs.Application.Smurfs;
 using Smurfs.Infrastructure.Security;
 using Smurfs.Persistence.EFCore.Identity;
 
@@ -79,7 +78,7 @@ public static class ApplicationServiceExtensions
             });
         });
 
-        services.AddMediatR(assemblies: typeof(List.Handler).Assembly);
+        services.AddApplication();
         services.AddAutoMapper(assemblies: typeof(MappingProfiles).Assembly);
         services.AddScoped<IUserAccessor, UserAccessor>();
 
