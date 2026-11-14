@@ -9,6 +9,7 @@ using Smurfs.Persistence;
 using Smurfs.Persistence.EFCore.AppData;
 using Smurfs.Application.Core;
 using Smurfs.Application.Smurfs;
+using Smurfs.Infrastructure.Logging;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.UI.Console.Verbs;
 using Smurfs.Domain.BusinessRules;
@@ -37,12 +38,16 @@ internal class Program
         Func<IServiceProvider, Task<int>> run,
         bool initialize = false)
     {
+        FrontendFileLogging? fileLogging = null;
+        var startupComplete = false;
         try
         {
+            fileLogging = new FrontendFileLogging("console");
             var initializeDatabase = initialize || !File.Exists(DatabaseFile);
             using var host = Host.CreateDefaultBuilder()
-                .ConfigureLogging(logging =>
+                .ConfigureLogging((context, logging) =>
                 {
+                    fileLogging.Configure(context.Configuration, logging);
                     logging.AddConsole(options => options.LogToStandardErrorThreshold = LogLevel.Trace);
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Migrations", LogLevel.None);
@@ -69,12 +74,22 @@ internal class Program
                 await InitializeAsync(scope.ServiceProvider);
             }
 
+            startupComplete = true;
             return await run(scope.ServiceProvider);
         }
         catch (Exception exception)
         {
+            if (!startupComplete)
+            {
+                fileLogging?.LogStartupFailure<Program>(exception);
+            }
+
             System.Console.Error.WriteLine(exception.Message);
             return 1;
+        }
+        finally
+        {
+            fileLogging?.Dispose();
         }
     }
 

@@ -2,6 +2,7 @@
   "Craft.Domain": "Provides reusable business-rule contracts, a catalog base for evaluating rules, and violation values that identify the failed rule and affected member.",
   "Craft.Persistence": "Defines reusable read, write, and combined repository contracts for persistence providers.",
   "Craft.Persistence.EFCore": "Implements the generic Craft repository contracts over an EF Core context. The Smurfs app-data adapter builds its Smurf repository on this implementation.",
+  "Smurfs.API": "Provides the ASP.NET Core API host with OpenAPI setup and a sample weather forecast endpoint.",
   "Smurfs.Application": "Defines the MediatR create and list use cases, their request and result models, and the read-service contract. Create evaluates domain rules and writes through a unit of work. List delegates the paged query to the read service.",
   "Smurfs.Domain": "Defines Smurf, Pet, and Village and the domain rules that apply to them. It owns the name validation rule and registers it in the Smurfs business-rule catalog.",
   "Smurfs.Infrastructure": "Implements the application's Smurf read service against the app-data EF Core context. It orders, pages, and projects results for the list use case.",
@@ -9,6 +10,7 @@
   "Smurfs.Persistence.EFCore.AppData": "Stores Smurfs, Pets, and Villages in SQLite through EF Core. It owns the app-data context, mappings, migrations, repository, unit of work, initialization, and seed data.",
   "Smurfs.Persistence.EFCore.Identity": "Owns the separate ASP.NET Core Identity store, including the user model, EF Core context, SQLite migrations, and sample-account seeding.",
   "Smurfs.UI.Console": "Hosts the command-line interface. It composes the application and persistence services and exposes commands to initialize the app database, create a Smurf, and list Smurfs with paging.",
+  "Smurfs.UI.WinForms": "Starts a Windows Forms desktop host and opens its initial form.",
   "Smurfs.UI.WPF": "Hosts the Windows desktop interface. It composes services at startup and supplies the windows and dialogs for browsing the catalog and creating a Smurf.",
   "Smurfs.ViewModel": "Provides the presentation state and commands for the WPF catalog and create dialog. It dispatches application requests through MediatR and exposes results and validation feedback to the views.",
   "Smurf.Persistence.EFCore.AppData.UnitTest": "Exercises the app-data EF Core mappings, migrations, repository, and unit of work against isolated SQLite databases. It also verifies that the create handler honors rules from the registered catalog."

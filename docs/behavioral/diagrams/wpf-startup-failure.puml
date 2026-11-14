@@ -9,6 +9,7 @@ Operator -> App : Launch application
 App -> App : Show splash
 App -> Startup : Build host, initialize database or open main window
 Startup --> App : Startup exception
+App -> App : Record startup exception in the WPF log if available
 App --> Operator : Show startup error
 Operator -> App : Dismiss error
 App -> App : Shutdown(1), then OnExit

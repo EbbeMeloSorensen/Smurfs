@@ -1,4 +1,5 @@
 using System.Windows;
+using Microsoft.Extensions.Logging;
 using Craft.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Smurfs.Application.Core;
 using Smurfs.Application.Smurfs;
 using Smurfs.Domain.BusinessRules;
+using Smurfs.Infrastructure.Logging;
 using Smurfs.Infrastructure.Pagination;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.Persistence;
@@ -21,6 +23,8 @@ public partial class App
 {
     private IHost? _host;
 
+    private FrontendFileLogging? _fileLogging;
+
     /// <summary>
     /// Prepares the database before replacing the splash screen with the main window.
     /// </summary>
@@ -30,13 +34,16 @@ public partial class App
 
         var shutdownMode = ShutdownMode;
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
-        var splash = new SplashScreenWindow();
 
         try
         {
+            _fileLogging = new FrontendFileLogging("wpf");
+
+            var splash = new SplashScreenWindow();
             splash.Show();
 
             var host = Host.CreateDefaultBuilder()
+                .ConfigureLogging((context, logging) => _fileLogging.Configure(context.Configuration, logging))
                 .ConfigureServices(services =>
                 {
                     const string connectionString = "Data Source=babuska.db";
@@ -69,9 +76,11 @@ public partial class App
             mainWindow.Show();
             ShutdownMode = shutdownMode;
             splash.Close();
+            host.Services.GetRequiredService<ILogger<App>>().LogInformation("Smurfs WPF started.");
         }
         catch (Exception exception)
         {
+            _fileLogging?.LogStartupFailure<App>(exception);
             MessageBox.Show(
                 $"Smurfs could not start. {exception.Message}",
                 "Smurfs startup error",
@@ -92,7 +101,14 @@ public partial class App
         }
         finally
         {
-            base.OnExit(e);
+            try
+            {
+                _fileLogging?.Dispose();
+            }
+            finally
+            {
+                base.OnExit(e);
+            }
         }
     }
 }

@@ -40,7 +40,7 @@ The [console architecture source](diagrams/console-architecture.puml) shows sele
 
 The create and list handlers use typed `ILogger<T>` instances from the host. Successful operations log at Information, and handled input rejections log at Debug. A MediatR behavior logs unexpected handler exceptions at Error and propagates them to the caller. The handlers log operational details such as page and row counts and omit draft names and request payloads.
 
-The console sends diagnostics to standard error, leaving command results on standard output. WPF uses the Generic Host providers, including Debug output when a debugger is attached. Both hosts can configure logging levels through the standard `Logging` configuration.
+WPF and the console initialize the shared file logger in `Smurfs.Infrastructure` before building their hosts. The logger records startup failures and writes plain-text files under `%LOCALAPPDATA%\Smurfs\Logs` with the prefixes `wpf-` and `console-`. Each frontend rolls files daily or at 5 MiB and retains its latest 14 files. Smurfs categories default to Information and other categories to Warning. Set `Logging__LogLevel__Smurfs=Debug` before launching either frontend for more detail. WPF keeps debugger output, and the console keeps diagnostics on stderr and command results on stdout.
 
 ## Identity storage
 
