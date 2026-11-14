@@ -37,3 +37,5 @@ The external actor is the catalog operator. The following specifications describ
 - **Requirements** — See the [UC-003 mapping](../_generated/traceability.md#uc-003).
 
 The console accepts explicit page numbers and sizes and reports the total row count. WPF starts at page 1 and lets the operator step through adjacent pages of 25 rows. WPF displays the current page and number of pages. Direct page entry, page-size selection and the total row count are available in the console. WPF prevents out-of-bound navigation through its controls. These are current client behaviors. The proposed requirements above retain their existing scope and status.
+
+Avalonia and WinForms use the shared desktop paging view model. The [HTTP API](../behavioral/http-api.md#list-smurfs) realizes UC-003 through an authenticated GET and returns totals in the pagination header.

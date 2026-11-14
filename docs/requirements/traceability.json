@@ -34,10 +34,11 @@
       "classification": "Functionality",
       "status": "Proposed",
       "method": "Manual acceptance",
-      "implementation": "Console implements the proposed scope. WPF supports adjacent pages and shows page totals.",
+      "implementation": "Console and HTTP API return a page and total row count. WPF, Avalonia and WinForms support adjacent pages.",
       "design": [
         "console-list",
-        "wpf-browse"
+        "wpf-browse",
+        "api-list"
       ],
       "automated": [],
       "note": "WPF shows the number of pages and has no total row count or direct page entry. Manual console and WPF cases are unexecuted. No checked-in automated client paging tests."
@@ -63,7 +64,8 @@
       "method": "Manual invalid input and retry",
       "implementation": "Implemented in list handler",
       "design": [
-        "console-list"
+        "console-list",
+        "api-list"
       ],
       "automated": [],
       "note": "Console accepts explicit paging inputs. WPF uses bounded controls and does not expose numeric paging inputs. The console manual case is unexecuted."
@@ -191,6 +193,10 @@
         "FR-004"
       ]
     },
+    "AT-008": {
+      "useCases": ["UC-003"],
+      "requirements": ["FR-003", "RR-001"]
+    },
     "AT-007": {
       "useCases": [],
       "requirements": [
@@ -238,6 +244,11 @@
       "title": "WPF browse Smurfs",
       "path": "behavioral/wpf.md",
       "anchor": "browse-smurfs"
+    },
+    "api-list": {
+      "title": "HTTP API list Smurfs",
+      "path": "behavioral/http-api.md",
+      "anchor": "list-smurfs"
     },
     "application-logging": {
       "title": "Application logging",

@@ -1,0 +1,26 @@
+@startuml
+title HTTP API - List Smurfs
+actor Operator
+participant "JWT bearer authentication" as Auth
+participant SmurfsController as Controller
+participant MediatR
+participant "List.Handler" as Handler
+participant "Smurf read service" as Reader
+Operator -> Auth : GET /api/smurfs
+alt Missing or invalid token
+  Auth --> Operator : 401 Unauthorized
+else Authenticated
+  Auth -> Controller : Dispatch with query parameters
+  Controller -> MediatR : Send List.Query
+  MediatR -> Handler : Handle query
+  alt Invalid paging values
+    Handler --> Controller : Failed result via MediatR
+    Controller --> Operator : 400 Bad Request
+  else Valid paging
+    Handler -> Reader : GetPageAsync
+    Reader --> Handler : Page of Smurf summaries
+    Handler --> Controller : Successful result via MediatR
+    Controller --> Operator : 200 JSON array and Pagination header
+  end
+end
+@enduml

@@ -63,3 +63,7 @@ Source: [persistence-model.puml](diagrams/persistence-model.puml). [Unresolved q
 ## WPF client
 
 The WPF application composes the same list and create handlers, read adapter, domain rule catalog and app-data initializer as the console. Its create dialog uses a scoped view model to validate the draft through the catalog and send the application command. The main window binds to a view model that depends on an application request and a DI scope factory. The view model resolves the sender per load, so the scoped read adapter and EF context belong to the load operation. The [WPF workflows](../behavioral/wpf.md) show the startup and request lifetimes.
+
+## HTTP API storage
+
+Identity owns the account tables and AppData owns the catalog tables. Smurfs.API applies both migration sets to the same SQLite file, `smurfs.db` by default. Console and desktop clients configure their own catalog storage.

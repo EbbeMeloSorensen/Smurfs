@@ -14,3 +14,5 @@ Copy one record per case and run. A proposed requirement can be explored before 
 | Defect reference or approved disposition | |
 
 No manual acceptance execution is recorded in this baseline.
+
+The project owner reported successful sign-in and a successful Get Smurfs request in Postman after the HS512 fix on 2026-11-14. This was a development smoke check. The exact commit, negative cases and formal acceptance were not recorded.

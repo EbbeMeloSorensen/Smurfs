@@ -29,6 +29,7 @@ package "Test projects (tests)" {
 }
 
 Craft_Persistence_EFCore -up-> Craft_Persistence
+Smurfs_API -up-> Smurfs_Infrastructure
 Smurfs_Application -up-> Smurfs_Persistence
 Smurfs_Domain -up-> Craft_Domain
 Smurfs_Infrastructure -up-> Smurfs_Application

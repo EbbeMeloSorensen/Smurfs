@@ -3,9 +3,12 @@
 - [Console workflows](console.md) shows one sequence per verb.
 - [WPF workflows](wpf.md) separates application lifetime from operator actions.
 
+- [WinForms browsing](winforms.md) and Avalonia use the shared desktop paging view model.
+- [HTTP API workflows](http-api.md) cover startup, sign-in, and protected paging.
+
 ## Shared persistence behavior
 
-The generic repository and unit-of-work behavior below is covered by the SQLite integration tests. Both clients use a separate read service for listing.
+The generic repository and unit-of-work behavior below is covered by the SQLite integration tests. The console, desktop clients, and HTTP API use a separate read service for listing.
 
 1. A caller obtains a UnitOfWork owning a DataContext and its SmurfRepository. The runtime factory creates a context per session. The console registers the factory in its composition root.
 2. CountAsync and FindAsync apply successive predicates using logical AND. An empty sequence selects all persisted rows. Results have no guaranteed ordering. Find uses configured tracking (tracking by default), with no explicit navigation Includes. A read-only result list contains mutable entities.

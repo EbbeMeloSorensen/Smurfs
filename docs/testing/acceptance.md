@@ -138,3 +138,12 @@ $seed = (Resolve-Path 'scripts/add-random-smurfs.ps1').Path
 5. After each process exits, inspect its `console-*.log` or `wpf-*.log` under `%LOCALAPPDATA%\Smurfs\Logs`. Find the new entry for that run. Expect a startup failure for steps 1 and 2 and a failed list query for steps 3 and 4. Record the filename, timestamp, operation, and exception type in the [execution record](execution-record.md).
 
 **Acceptance criteria** — All four scenarios leave a readable entry after exit. Each entry identifies the frontend by its log file, gives the failure time and failed operation, and includes the exception details.
+
+## AT-008 List Smurfs through the HTTP API
+
+Use a fresh SQLite file by setting `ConnectionStrings__DefaultConnection` to an isolated path. Start the API with the Development HTTPS profile. Use the request sequence in `src/Smurfs.API/Smurfs.API.http` or Postman.
+
+1. Confirm startup creates one SQLite database with Identity and catalog tables.
+2. Request `GET /api/smurfs?pageNumber=1&pageSize=2` without credentials. Expect 401.
+3. Sign in as a seeded development user. Send the returned bearer token with the same GET. Expect 200, up to two Smurf summaries, and a `Pagination` header with the page number, page size, row count, and page count.
+4. Send `pageNumber=0` with the bearer token. Expect 400. Correct the page number and expect 200.
