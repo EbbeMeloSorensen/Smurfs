@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.UI.WinForms", "src\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.API", "src\Smurfs.API\Smurfs.API.csproj", "{84B61D7E-B53B-49D5-82D1-F6330D11F0FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smurfs.UI.Avalonia", "src\Smurfs.UI.Avalonia\Smurfs.UI.Avalonia.csproj", "{1D426AE1-E308-481B-BF38-D8FFB7D76F7F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,10 @@ Global
 		{84B61D7E-B53B-49D5-82D1-F6330D11F0FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84B61D7E-B53B-49D5-82D1-F6330D11F0FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84B61D7E-B53B-49D5-82D1-F6330D11F0FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D426AE1-E308-481B-BF38-D8FFB7D76F7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D426AE1-E308-481B-BF38-D8FFB7D76F7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D426AE1-E308-481B-BF38-D8FFB7D76F7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D426AE1-E308-481B-BF38-D8FFB7D76F7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -146,6 +152,7 @@ Global
 		{D999588A-BA6C-E35F-E469-B49711F1E788} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 		{B6B5720F-EBA3-46B0-B8D6-8429AF1DB138} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 		{84B61D7E-B53B-49D5-82D1-F6330D11F0FA} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
+		{1D426AE1-E308-481B-BF38-D8FFB7D76F7F} = {10FB5530-BDB1-4FBB-AD36-72DB77FC0C2E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33F3668F-2253-40DD-ACEE-2BFCCE9FE7E7}
