@@ -5,3 +5,5 @@ In Development, the API generates a signing key at startup if `TokenKey` is abse
 Run `dotnet run --project src/Smurfs.API --launch-profile https` with a trusted local development certificate. Startup applies both sets of migrations and seeds the catalog before accepting requests.
 
 The requests in `src/Smurfs.API/Smurfs.API.http` can also be sent from Postman. Register once, sign in, and send the returned `token` as a bearer token. Verify that `GET /api/smurfs?pageNumber=1&pageSize=2` returns 401 without the token and 200 with it. The authorized response includes the page as JSON and its metadata in the `Pagination` header.
+
+In Development, startup also seeds Bob (`bob@test.com`), Jane (`jane@test.com`), and Tom (`tom@test.com`). Sign in with any of these email addresses and the sample password `Pa$$w0rd` to test the protected endpoint. Existing accounts with a matching user name or email are preserved.
