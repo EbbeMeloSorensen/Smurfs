@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Smurfs.Persistence.EFCore.Identity;
 
@@ -8,10 +7,11 @@ namespace Smurfs.API.Services;
 
 public class TokenService
 {
-    private readonly IConfiguration _config;
-    public TokenService(IConfiguration config)
+    private readonly SigningCredentials _signingCredentials;
+
+    public TokenService(SigningCredentials signingCredentials)
     {
-        _config = config;
+        _signingCredentials = signingCredentials;
     }
 
     public string CreateToken(AppUser user)
@@ -23,14 +23,11 @@ public class TokenService
             new Claim(ClaimTypes.Email, user.Email)
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = creds
+            SigningCredentials = _signingCredentials
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

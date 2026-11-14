@@ -1,26 +1,32 @@
-using Smurfs.Application.Core;
+using Microsoft.EntityFrameworkCore;
+using Smurfs.API;
+using Smurfs.Persistence;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace API;
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-builder.Services.AddApplication();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+public class Program
 {
-    app.MapOpenApi();
+    public static async Task Main(string[] args)
+    {
+        var host = CreateHostBuilder(args).Build();
+        await using (var scope = host.Services.CreateAsyncScope())
+        {
+            var services = scope.ServiceProvider;
+            var identityContext = services.GetRequiredService<Smurfs.Persistence.EFCore.Identity.DataContext>();
+            await identityContext.Database.MigrateAsync();
+
+            var initializer = services.GetRequiredService<IAppDataInitializer>();
+            await initializer.MigrateAsync();
+            await initializer.SeedAsync();
+        }
+
+        await host.RunAsync();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();

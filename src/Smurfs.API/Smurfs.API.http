@@ -1,6 +1,31 @@
-@Smurfs.API_HostAddress = http://localhost:5040
+@host = https://localhost:7231
+@email = baseline@example.test
+@password = Test1234
 
-GET {{Smurfs.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### Register once on a fresh database (200)
+POST {{host}}/api/account/register
+Content-Type: application/json
 
-###
+{
+  "email": "{{email}}",
+  "username": "baseline",
+  "displayName": "Baseline",
+  "password": "{{password}}"
+}
+
+### Sign in (200)
+# @name login
+POST {{host}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Anonymous access (401)
+GET {{host}}/api/smurfs?pageNumber=1&pageSize=2
+
+### Authenticated page (200 with a Pagination header)
+GET {{host}}/api/smurfs?pageNumber=1&pageSize=2
+Authorization: Bearer {{login.response.body.$.token}}

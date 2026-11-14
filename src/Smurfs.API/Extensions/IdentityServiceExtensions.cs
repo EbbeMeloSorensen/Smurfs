@@ -1,5 +1,8 @@
+using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Smurfs.API.Services;
 using Microsoft.IdentityModel.Tokens;
 using Smurfs.Persistence.EFCore.Identity;
 
@@ -9,7 +12,8 @@ public static class IdentityServiceExtensions
 {
     public static IServiceCollection AddIdentityServices(
         this IServiceCollection services,
-        IConfiguration config)
+        IConfiguration config,
+        IWebHostEnvironment environment)
     {
         services.AddIdentityCore<AppUser>(opt => {
             opt.Password.RequireNonAlphanumeric = false;
@@ -18,20 +22,33 @@ public static class IdentityServiceExtensions
             .AddEntityFrameworkStores<DataContext>()
             .AddSignInManager<SignInManager<AppUser>>();
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
+        var tokenKey = config["TokenKey"];
+        if (tokenKey is null && environment.IsDevelopment())
+        {
+            tokenKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
 
-        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        //    .AddJwtBearer(opt => {
-        //        opt.TokenValidationParameters = new TokenValidationParameters
-        //        {
-        //            ValidateIssuerSigningKey = true,
-        //            IssuerSigningKey = key,
-        //            ValidateIssuer = false,
-        //            ValidateAudience = false
-        //        };
-        //    });
+        if (string.IsNullOrWhiteSpace(tokenKey) || Encoding.UTF8.GetByteCount(tokenKey) < 64)
+        {
+            throw new InvalidOperationException("Configure TokenKey with at least 64 bytes.");
+        }
 
-        //services.AddScoped<TokenService>();
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    ValidAlgorithms = [SecurityAlgorithms.HmacSha512Signature],
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+        services.AddSingleton(new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature));
+        services.AddScoped<TokenService>();
 
         return services;
     }

@@ -9,9 +9,12 @@ public class Startup
 {
     private readonly IConfiguration _config;
 
-    public Startup(IConfiguration config)
+    private readonly IWebHostEnvironment _environment;
+
+    public Startup(IConfiguration config, IWebHostEnvironment environment)
     {
         _config = config;
+        _environment = environment;
     }
 
     // This method gets called by the runtime. Use this method to add services to the container.
@@ -25,7 +28,7 @@ public class Startup
         });
 
         services.AddApplicationServices(_config);
-        services.AddIdentityServices(_config);
+        services.AddIdentityServices(_config, _environment);
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,8 +46,6 @@ public class Startup
 
         app.UseRouting();
 
-        app.UseDefaultFiles();
-        app.UseStaticFiles();
 
         app.UseCors("CorsPolicy");
 
@@ -54,7 +55,6 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            endpoints.MapFallbackToController("Index", "Fallback");
         });
     }
 }
