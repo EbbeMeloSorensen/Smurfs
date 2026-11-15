@@ -185,3 +185,23 @@ dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page 2 --page-size 25
 ```
 
 The script uses Python 3 on PATH for SQLite bulk inserts and the .NET console app to initialize a missing `smurfs.db`. It appends exactly the requested count in one transaction, in addition to the sample rows created on first use. Names can repeat so paging tests exercise the identifier tie-breaker.
+
+## Generate migrations for a different database provider
+
+Generate a separate migration set for each EF Core context when switching providers, for example from SQLite to PostgreSQL. Configure both design-time `DataContextFactory` classes to use the target provider (`UseNpgsql` for PostgreSQL), and configure the API's runtime contexts and connection string for the same provider.
+
+The commands below assume you are starting a new migration set for a fresh database. If you need to continue supporting SQLite, retain its migrations and snapshots separately. If you are replacing the old provider's migration set, remove its migration files and model snapshot from each project before generating the new initial migrations. Generate migrations from the repository root in PowerShell with `dotnet ef` installed.
+
+### AppData
+
+```powershell
+dotnet ef migrations add InitialMigration --project .\src\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj --startup-project .\src\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj --context DataContext
+```
+
+### Identity
+
+```powershell
+dotnet ef migrations add InitialMigration --project .\src\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj --startup-project .\src\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj --context DataContext
+```
+
+These commands scaffold the schema migrations. Moving existing data from SQLite to PostgreSQL requires a separate data transfer.
