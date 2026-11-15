@@ -75,8 +75,20 @@ const requests = {
 }
 
 const People = {
-    list: (params: URLSearchParams) => axios.get<PaginatedResult<Person[]>>('/people', {params})
-        .then(responseBody),
+    // list: (params: URLSearchParams) => axios.get<PaginatedResult<Person[]>>('/people', {params})
+    //     .then(responseBody),
+    list: (params: URLSearchParams) =>
+        axios.get<PaginatedResult<{ id: string; name: string }[]>>('/smurfs', { params })
+            .then(responseBody)
+            .then(result => new PaginatedResult(
+                result.data.map(smurf => ({
+                    id: smurf.id,
+                    firstName: smurf.name,
+                    surname: null,
+                    birthday: null,
+                } as Person)),
+                result.pagination
+            )),    
     details: (id: string) => requests.get<Person>(`/people/${id}`),
     create: (person: PersonFormValues) => requests.post<void>('/people', person),
     update: (person: PersonFormValues) => requests.put<void>(`/people/${person.id}`, person),
