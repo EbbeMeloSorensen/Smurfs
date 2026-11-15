@@ -1,7 +1,7 @@
-using Smurfs.Persistence.EFCore.AppData;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi;
 using Craft.Domain;
+using Microsoft.EntityFrameworkCore;
+//using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
 using Smurfs.Application.Core;
 using Smurfs.Application.Interfaces;
 using Smurfs.Application.Smurfs;
@@ -9,6 +9,7 @@ using Smurfs.Domain.BusinessRules;
 using Smurfs.Infrastructure.Security;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.Persistence;
+using Smurfs.Persistence.EFCore.AppData;
 
 namespace Smurfs.API.Extensions;
 
@@ -27,10 +28,12 @@ public static class ApplicationServiceExtensions
             ?? throw new InvalidOperationException("Configure ConnectionStrings:DefaultConnection.");
 
         services.AddDbContext<Smurfs.Persistence.EFCore.Identity.DataContext>(options =>
-            options.UseSqlite(connectionString));
+            //options.UseSqlite(connectionString));
+            options.UseNpgsql(connectionString));
 
         services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.DataContext>(options =>
-            options.UseSqlite(connectionString));
+            //options.UseSqlite(connectionString));
+            options.UseNpgsql(connectionString));
 
         services.AddCors(opt =>
         {

@@ -16,7 +16,8 @@ public sealed class DataContextFactory
     public DataContext CreateDbContext(string[] args)
     {
         var options = new DbContextOptionsBuilder<DataContext>()
-            .UseSqlite("Data Source=smurfs-identity.db")
+            //.UseSqlite("Data Source=smurfs-identity.db")
+            .UseNpgsql("Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_API")
             .Options;
 
         return new DataContext(options);

@@ -23,7 +23,8 @@ public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
     public DataContext CreateDbContext(string[] args)
     {
         var options = new DbContextOptionsBuilder<DataContext>()
-            .UseSqlite("Data Source=smurfs.db")
+            //.UseSqlite("Data Source=smurfs.db")
+            .UseNpgsql("Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_API")
             .Options;
 
         return new DataContext(options);
