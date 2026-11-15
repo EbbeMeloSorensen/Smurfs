@@ -6,7 +6,7 @@ A use-case failure or caught runtime exception is printed to standard error and 
 
 ## initdb
 
-Explicitly applies outstanding migrations and seeds sample data when the Smurfs table is empty. It also runs against an existing database. This realizes [UC-001 Initialize local storage](../requirements/use-cases.md#uc-001-initialize-local-storage).
+Explicitly applies outstanding migrations and seeds seven named samples and 1,000 randomly named Smurfs when the Smurfs table is empty. It also runs against an existing database. This realizes [UC-001 Initialize local storage](../requirements/use-cases.md#uc-001-initialize-local-storage).
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- initdb
