@@ -19,13 +19,13 @@ export default observer(function NavBar() {
                     />
                     Smurfs
                 </Menu.Item>
-                <Menu.Item as={NavLink} to="/people" name="SMurf Overview" />
+                <Menu.Item as={NavLink} to="/people" name="Smurf Overview" />
                 <Menu.Item>
                     <Button
                         as={NavLink}
                         to="/createPerson"
                         positive
-                        content="Create Person"
+                        content="Create Smurf"
                     />
                 </Menu.Item>
                 <Menu.Item as={NavLink} to="/errors" name="Errors" />
