@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Craft.Domain\Craft.Domain.csproj" />
+    <PackageReference Include="Craft.Domain" Version="1.0.46" />
   </ItemGroup>
 
 </Project>

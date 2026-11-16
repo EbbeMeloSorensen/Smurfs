@@ -55,12 +55,17 @@ internal class Program
                 })
                 .ConfigureServices(services =>
                 {
-                    var connectionString = $"Data Source={DatabaseFile}";
-                    if (readOnly && !initializeDatabase)
-                    {
-                        connectionString += ";Mode=ReadOnly";
-                    }
-                    services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
+                    //var connectionString = $"Data Source={DatabaseFile}";
+
+                    //if (readOnly && !initializeDatabase)
+                    //{
+                    //    connectionString += ";Mode=ReadOnly";
+                    //}
+
+                    var connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_ConsoleApp";
+
+                    //services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
+                    services.AddAppDataPersistence<DataContext>(options => options.UseNpgsql(connectionString));
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();

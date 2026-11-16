@@ -46,9 +46,11 @@ public partial class App
                 .ConfigureLogging((context, logging) => _fileLogging.Configure(context.Configuration, logging))
                 .ConfigureServices(services =>
                 {
-                    const string connectionString = "Data Source=babuska.db";
+                    //const string connectionString = "Data Source=babuska.db";
+                    const string connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_WPF";
 
-                    services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
+                    //services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
+                    services.AddAppDataPersistence<DataContext>(options => options.UseNpgsql(connectionString));
                     services.AddAutoMapper(assemblies: typeof(MappingProfiles).Assembly);
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();

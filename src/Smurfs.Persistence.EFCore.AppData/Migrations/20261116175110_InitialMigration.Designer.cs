@@ -12,7 +12,7 @@ using Smurfs.Persistence.EFCore.AppData;
 namespace Smurfs.Persistence.EFCore.AppData.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20261115132859_InitialMigration")]
+    [Migration("20261116175110_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
