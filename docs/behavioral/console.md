@@ -1,8 +1,8 @@
 # Console workflows
 
-The console runs one verb per process. Each diagram assumes argument parsing has selected the verb. After argument parsing selects a verb, the program opens its rolling file logger, builds the host, and opens a service scope. It disposes the scope and host before disposing the logger. Failures during startup are written to the file when the logger is available and reported to stderr with exit code 1. See [Application logging](../structural/index.md#application-logging). All verbs use `smurfs.db` in the current working directory. If that file is missing, `createsmurf` and `listsmurfs` run the same migration and seeding operations as `initdb` before dispatch. The diagrams refer to that shared behavior as database setup.
+The console runs one verb per process. Each diagram assumes argument parsing has selected the verb. After argument parsing selects a verb, the program opens its rolling file logger, builds the host, and opens a service scope. It disposes the scope and host before disposing the logger. Failures during startup are written to the file when the logger is available and reported to stderr with exit code 1. See [Application logging](../structural/index.md#application-logging). All verbs use the configured PostgreSQL database. If that database is missing, `createsmurf` and `listsmurfs` run the same migration and seeding operations as `initdb` before dispatch. The diagrams refer to that shared behavior as database setup.
 
-A use-case failure or caught runtime exception is printed to standard error and returns exit code 1. If first-use setup fails after creating the file, run `initdb` to retry. The console filters the MediatR license log category.
+A use-case failure or caught runtime exception is printed to standard error and returns exit code 1. If first-use setup fails after creating the database, run `initdb` to retry. The console filters the MediatR license log category.
 
 ## initdb
 
@@ -30,7 +30,7 @@ dotnet run --project src/Smurfs.UI.Console -- createsmurf --name "New Smurf"
 
 ## listsmurfs
 
-Opens an existing database in read-only mode. Pages start at 1, with a default size of 25 and a maximum of 50. The read adapter counts rows and fetches the requested page ordered by name, then identifier. An out-of-range page is empty. Because count and page retrieval use separate queries, concurrent writes can change page contents or totals. This realizes [UC-003 List Smurfs](../requirements/use-cases.md#uc-003-list-smurfs).
+Pages start at 1, with a default size of 25 and a maximum of 50. The read adapter counts rows and fetches the requested page ordered by name, then identifier. An out-of-range page is empty. Because count and page retrieval use separate queries, concurrent writes can change page contents or totals. This realizes [UC-003 List Smurfs](../requirements/use-cases.md#uc-003-list-smurfs).
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page 2 --page-size 5

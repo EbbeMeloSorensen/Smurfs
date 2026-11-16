@@ -1,6 +1,8 @@
 using CommandLine;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,8 +20,6 @@ namespace Smurfs.UI.Console;
 
 internal class Program
 {
-    private const string DatabaseFile = "smurfs.db";
-
     private static Task<int> Main(string[] args)
     {
         return Parser.Default.ParseArguments<
@@ -27,14 +27,13 @@ internal class Program
                 Verbs.Smurfs.List,
                 InitializeDatabase>(args)
             .MapResult(
-                (Verbs.Smurfs.Create options) => RunAsync(false, services => CreateSmurf(services, options)),
-                (Verbs.Smurfs.List options) => RunAsync(true, services => ListSmurfs(services, options)),
-                (InitializeDatabase _) => RunAsync(false, _ => Task.FromResult(0), initialize: true),
+                (Verbs.Smurfs.Create options) => RunAsync(services => CreateSmurf(services, options)),
+                (Verbs.Smurfs.List options) => RunAsync(services => ListSmurfs(services, options)),
+                (InitializeDatabase _) => RunAsync(_ => Task.FromResult(0), initialize: true),
                 errors => Task.FromResult(errors.All(error => error.StopsProcessing) ? 0 : 2));
     }
 
     private static async Task<int> RunAsync(
-        bool readOnly,
         Func<IServiceProvider, Task<int>> run,
         bool initialize = false)
     {
@@ -43,7 +42,6 @@ internal class Program
         try
         {
             fileLogging = new FrontendFileLogging("console");
-            var initializeDatabase = initialize || !File.Exists(DatabaseFile);
             using var host = Host.CreateDefaultBuilder()
                 .ConfigureLogging((context, logging) =>
                 {
@@ -55,16 +53,8 @@ internal class Program
                 })
                 .ConfigureServices(services =>
                 {
-                    //var connectionString = $"Data Source={DatabaseFile}";
-
-                    //if (readOnly && !initializeDatabase)
-                    //{
-                    //    connectionString += ";Mode=ReadOnly";
-                    //}
-
                     var connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_ConsoleApp";
 
-                    //services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
                     services.AddAppDataPersistence<DataContext>(options => options.UseNpgsql(connectionString));
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
@@ -74,7 +64,9 @@ internal class Program
                 .Build();
 
             await using var scope = host.Services.CreateAsyncScope();
-            if (initializeDatabase)
+            var databaseCreator = scope.ServiceProvider.GetRequiredService<DataContext>()
+                .GetService<IRelationalDatabaseCreator>();
+            if (initialize || !await databaseCreator.ExistsAsync())
             {
                 await InitializeAsync(scope.ServiceProvider);
             }
