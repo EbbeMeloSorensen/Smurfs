@@ -12,6 +12,8 @@ const sleep = (delay: number) => {
     })
 }
 
+const currentAccountUrl = '/account';
+
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 axios.interceptors.request.use(config => {
@@ -52,7 +54,9 @@ axios.interceptors.response.use(async response => {
             }
             break;
         case 401:
-            toast.error('unauthorized');
+            if (config.method !== 'get' || config.url !== currentAccountUrl) {
+                toast.error('unauthorized');
+            }
             break;
         case 404:
             history.push('/not-found');
@@ -96,7 +100,7 @@ const People = {
 }
 
 const Account = {
-    current: () => requests.get<User>('/account'), 
+    current: () => requests.get<User>(currentAccountUrl),
     login: (user: UserFormValues) => requests.post<User>('/account/login', user),
     register: (user: UserFormValues) => requests.post<User>('/account/register', user),
 }

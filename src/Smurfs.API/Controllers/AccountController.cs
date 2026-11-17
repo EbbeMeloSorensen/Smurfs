@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -85,8 +84,11 @@ public class AccountController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
-        var user = await _userManager.Users
-            .FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
 
         return CreateUserObject(user);
     }

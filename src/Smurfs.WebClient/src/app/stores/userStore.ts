@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
 import { User, UserFormValues } from "../models/user";
@@ -39,6 +40,14 @@ export default class UserStore {
             const user = await agent.Account.current();
             runInAction(() => this.user = user);
         } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+                runInAction(() => {
+                    store.commonStore.setToken(null);
+                    this.user = null;
+                });
+                return;
+            }
+
             console.log(error);
         }
     }

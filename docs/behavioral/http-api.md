@@ -10,6 +10,8 @@ The API reads the SQLite path from `ConnectionStrings:DefaultConnection`. In Dev
 
 Send email and password to `POST /api/account/login`. Identity checks the credentials and returns a user DTO with a `token` on success. The API signs and validates the JWT with HS512. Registration at `POST /api/account/register` also returns a token on success. Use the token from the Smurfs login response for requests to that API.
 
+On startup, the WebClient uses its saved token to call `GET /api/account`. The API looks up the Identity account by the user ID in the token and returns 401 if the account is missing. If session restoration returns 401, the WebClient clears the saved token and continues signed out.
+
 ## List Smurfs
 
 For [UC-003](../requirements/use-cases.md#uc-003-list-smurfs), send `GET /api/smurfs?pageNumber=1&pageSize=2` with the `Authorization: Bearer <token>` header. The API authenticates the request before dispatching the shared list query through MediatR. The read service projects the requested page into Smurf summaries.
