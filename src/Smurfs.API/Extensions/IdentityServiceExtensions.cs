@@ -21,9 +21,9 @@ public static class IdentityServiceExtensions
         IConfiguration config,
         IWebHostEnvironment environment)
     {
-        services.AddIdentityCore<AppUser>(opt => {
+        services.AddIdentityCore<AppUser>(opt =>
+        {
             opt.Password.RequireNonAlphanumeric = false;
-
         })
             .AddEntityFrameworkStores<DataContext>()
             .AddSignInManager<SignInManager<AppUser>>();
