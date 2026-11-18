@@ -44,8 +44,9 @@ public class Startup
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
         //}
 
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
         app.UseRouting();
-
 
         app.UseCors("CorsPolicy");
 
@@ -55,6 +56,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapFallbackToFile("index.html").AllowAnonymous();
         });
     }
 }
