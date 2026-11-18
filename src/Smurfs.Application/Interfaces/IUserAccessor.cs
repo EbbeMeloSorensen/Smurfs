@@ -6,7 +6,7 @@ namespace Smurfs.Application.Interfaces;
 public interface IUserAccessor
 {
     /// <summary>
-    /// Returns the current username supplied by the host.
+    /// Returns the current username supplied by the host, or null when unavailable.
     /// </summary>
-    string GetUsername();
+    string? GetUsername();
 }

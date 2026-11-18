@@ -20,10 +20,10 @@ public class UserAccessor : IUserAccessor
     }
 
     /// <summary>
-    /// Reads the account username from the current principal's name claim.
+    /// Returns the current principal's name claim, or null if the request or claim is missing.
     /// </summary>
-    public string GetUsername()
+    public string? GetUsername()
     {
-        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
     }
 }
