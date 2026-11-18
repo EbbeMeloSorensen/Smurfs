@@ -12,7 +12,7 @@
       "automated": [
         "IT-001"
       ],
-      "note": "Integration covers a fresh schema only. The initializer rerun and preservation scenario need a manual run."
+      "note": "The fresh-schema test uses SQLite with the PostgreSQL migration and currently fails. The initializer rerun and preservation scenario still need a PostgreSQL acceptance run."
     },
     "FR-002": {
       "classification": "Functionality",

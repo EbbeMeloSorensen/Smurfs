@@ -4,7 +4,7 @@ actor Operator
 participant "Console Program" as CLI
 participant "List.Handler" as List
 participant SmurfReadService as Read
-database "SQLite" as DB
+database "PostgreSQL" as DB
 
 Operator -> CLI : listsmurfs [page and page size]
 CLI -> CLI : Open console rolling file logger

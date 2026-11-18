@@ -31,7 +31,7 @@ end note
 note bottom of PetTable
   Initial migration 20261104192233_InitialMigration
   and snapshot match these tables, columns and indexes.
-  SQLite uses TEXT for Guid/string, INTEGER for Age.
+  PostgreSQL uses uuid for Guid, text for string, and integer for Age.
   Pet FK: ON DELETE RESTRICT; Village FK: no cascade.
   No existing database was updated during reconciliation.
 end note

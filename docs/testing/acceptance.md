@@ -8,7 +8,7 @@ Each NuGet package ID used as a direct dependency must have one declared version
 
 ## Isolated setup
 
-Use PowerShell 7. For the console cases, build the app from the repository root and capture its absolute path. Stop if the build fails. The WPF case has its own build and data preparation steps.
+Use PowerShell 7. For the console cases, build the app from the repository root and capture its absolute path. Stop if the build fails. The WPF case has its own build steps. Run these cases against a disposable local PostgreSQL instance. The console and WPF currently expect their configured credentials at localhost:5432 and use `Smurfs_ConsoleApp` and `Smurfs_WPF` respectively. Start each data-dependent case with its target database absent on that test instance. The applications create and seed it.
 
 ```powershell
 dotnet build src/Smurfs.UI.Console/Smurfs.UI.Console.csproj
@@ -16,7 +16,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Console build failed.' }
 $app = (Resolve-Path 'src/Smurfs.UI.Console/bin/Debug/net10.0/Smurfs.UI.Console.dll').Path
 ```
 
-Before **each** case, run this from the same PowerShell session. The fresh directory ensures the relative database path points to test data. Record the directory path.
+Before **each** case, run this from the same PowerShell session. Record the directory and test database name. The directory isolates file artifacts. PostgreSQL data is isolated by the test instance.
 
 ```powershell
 $caseDir = Join-Path ([IO.Path]::GetTempPath()) ("smurfs-acceptance-" + [guid]::NewGuid())
@@ -24,7 +24,7 @@ New-Item -ItemType Directory -Path $caseDir -ErrorAction Stop | Out-Null
 Push-Location $caseDir
 ```
 
-Each `dotnet $app` call starts a new process. Read `$LASTEXITCODE` immediately after each call. After each case run `Pop-Location`. Keep the directory if evidence is needed. To reset, create another fresh directory using the setup above. No database deletion is needed.
+Each `dotnet $app` call starts a new process. Read `$LASTEXITCODE` immediately after each call. After each case run `Pop-Location`. Keep the directory if evidence is needed. To reset, use another disposable instance or reset the target database on the disposable instance. Use a fresh directory for file artifacts.
 
 ## AT-001 Initialize and preserve a catalog
 
@@ -37,7 +37,7 @@ Each `dotnet $app` call starts a new process. Read `$LASTEXITCODE` immediately a
 1. Run `dotnet $app initdb`. Expect a readiness confirmation and exit code 0.
 2. Run `dotnet $app createsmurf --name 'Acceptance Init'`. Expect creation confirmation and exit code 0.
 3. Run `dotnet $app initdb` again. Expect readiness confirmation and exit code 0.
-4. Run `dotnet $app listsmurfs --page 1 --page-size 50`. Expect exit code 0 and one row with the exact test name.
+4. Run `dotnet $app listsmurfs --page 1 --page-size 50` and advance through the pages as needed. Expect exit code 0 and one row with the exact test name.
 
 **Acceptance criteria** — Both initialization requests succeed and the previously saved record is still present once.
 
@@ -50,7 +50,7 @@ Each `dotnet $app` call starts a new process. Read `$LASTEXITCODE` immediately a
 **Preconditions and data** — Fresh isolated directory initialized with `dotnet $app initdb` (exit code 0). Use `abcdefghijklmnopqrst` (20 ASCII characters).
 
 1. Run `dotnet $app createsmurf --name abcdefghijklmnopqrst`. Expect exit code 0 and a creation confirmation naming the Smurf.
-2. Run `dotnet $app listsmurfs --page 1 --page-size 50`. Expect exit code 0 and exactly one row with the submitted name.
+2. Run `dotnet $app listsmurfs --page 1 --page-size 50` and advance through the pages as needed. Expect exit code 0 and exactly one row with the submitted name.
 
 **Acceptance criteria** — The boundary name is accepted and the exact record is visible in a later process.
 
@@ -90,19 +90,18 @@ Each `dotnet $app` call starts a new process. Read `$LASTEXITCODE` immediately a
 
 **References** — [Use case and requirement](../_generated/traceability.md#at-005).
 
-**Preconditions and data** — Use Windows, PowerShell 7, Python 3 and the selected .NET SDK. From the repository root, build WPF and capture the two paths before creating a fresh directory with the isolated setup above.
+**Preconditions and data** — Use Windows, PowerShell 7 and the selected .NET SDK. From the repository root, build WPF and capture its path before creating a fresh directory with the isolated setup above.
 
 ```powershell
 dotnet build src/Smurfs.UI.WPF/Smurfs.UI.WPF.csproj
 if ($LASTEXITCODE -ne 0) { throw 'WPF build failed.' }
 $wpf = (Resolve-Path 'src/Smurfs.UI.WPF/bin/Debug/net10.0-windows/Smurfs.UI.WPF.exe').Path
-$seed = (Resolve-Path 'scripts/add-random-smurfs.ps1').Path
 ```
 
-1. In the fresh case directory, run `& $seed -Count 51`. Once it completes, run `Copy-Item -LiteralPath smurfs.db -Destination babuska.db` and launch WPF with `& $wpf`. Expect the splash to give way to one main window showing **No page loaded**. Both navigation buttons should be disabled.
-2. Select **Load smurfs**. Expect **Page 1 of 3**, 25 rows, **Previous** disabled and **Next** enabled.
-3. Select **Next** twice. Expect **Page 2 of 3**, then **Page 3 of 3** with at least one row. On the last page expect **Next** disabled and **Previous** enabled.
-4. Select **Previous** and expect **Page 2 of 3**. Select **Load smurfs** and expect **Page 1 of 3** again.
+1. On the disposable PostgreSQL instance with `Smurfs_WPF` absent, launch WPF with `& $wpf`. Startup creates and seeds the catalog. Expect the main window to show **No page loaded** with both navigation buttons disabled.
+2. Select **Load smurfs**. With the 1,007 sample rows, expect **Page 1 of 41**, 25 rows, **Previous** disabled and **Next** enabled.
+3. Select **Next** until the final page. Expect the page number to advance each time. The last page should contain seven rows, with **Next** disabled and **Previous** enabled.
+4. Select **Previous** and expect **Page 40 of 41**. Select **Load smurfs** and expect **Page 1 of 41** again.
 5. Close the WPF window and run `Pop-Location` in the setup shell.
 
 **Acceptance criteria** — Page labels and navigation boundaries follow the displayed result. Restarting the list returns to page 1. The separate console case covers direct paging input, the total row count and nonpositive input handling.
@@ -113,7 +112,7 @@ $seed = (Resolve-Path 'scripts/add-random-smurfs.ps1').Path
 
 **References** — [Use case and requirements](../_generated/traceability.md#at-006).
 
-**Preconditions and data** — Use the WPF build and fresh directory setup in AT-005. Launch WPF with `& $wpf` without copying a database. Use a blank or whitespace-only name, `abcdefghijklmnopqrstu` (21 characters), and `Acceptance WPF`.
+**Preconditions and data** — Use the WPF build and fresh directory setup in AT-005. Launch WPF with `& $wpf` with a fresh `Smurfs_WPF` catalog on the disposable instance. Use a blank or whitespace-only name, `abcdefghijklmnopqrstu` (21 characters), and `Acceptance WPF`.
 
 1. Select **New Smurf**. Enter three spaces and confirm that no error appears and **Save** is enabled. Select **Save** and expect a required-name message while the dialog stays open. Replace the draft with the 21-character name. The previous message should clear and no new error should appear until **Save** is selected again. On that attempt, expect a length message and the dialog to stay open.
 2. Enter `Acceptance WPF` and select **Cancel**. Select **Load smurfs** and verify the name is absent.
@@ -129,21 +128,23 @@ $seed = (Resolve-Path 'scripts/add-random-smurfs.ps1').Path
 
 **References** — [Diagnosability requirement](../requirements/index.md#sr-001-diagnose-failures-after-exit) and [logging design](../structural/index.md#application-logging).
 
-**Preconditions and data** — Build both frontends and use absolute paths to their binaries. Use four separate fresh working directories as described in the isolated setup. Install the SQLite command-line tool for the request-failure scenarios. Use only the disposable databases created by this case. Record the start time of each scenario so existing log entries cannot satisfy the check.
+**Preconditions and data** — Build both frontends, use absolute paths to their binaries, and record each scenario's start time. Use the disposable local PostgreSQL instance and a PostgreSQL client for the request-failure scenarios.
 
-1. **Console startup failure.** In a fresh working directory, create a directory named `smurfs.db`. Run the console with `initdb`. Expect an error and exit code 1.
-2. **WPF startup failure.** In a fresh working directory, create a directory named `babuska.db`. Launch WPF and dismiss the startup error. Expect the process to exit with code 1.
-3. **Console request failure.** In a fresh working directory, run the console with `initdb` and confirm it succeeds. Run `sqlite3 smurfs.db "DROP TABLE Smurfs;"` and confirm it succeeds. Run the console with `listsmurfs --page 1 --page-size 50`. Expect an error and exit code 1.
-4. **WPF request failure.** Launch WPF in a fresh working directory and wait for the main window. From a separate shell in the same directory run `sqlite3 babuska.db "DROP TABLE Smurfs;"` and confirm it succeeds. Select **Load smurfs**, observe the error, and close WPF.
+1. **Console startup failure.** Stop the disposable PostgreSQL instance. Run the console with `initdb`. Expect an error and exit code 1.
+2. **WPF startup failure.** Keep the disposable PostgreSQL instance stopped. Launch WPF and dismiss the startup error. Expect exit code 1.
+3. **Console request failure.** Restart the instance and run `initdb` successfully. In the disposable `Smurfs_ConsoleApp` database, temporarily rename the table with `ALTER TABLE "Smurfs" RENAME TO "Smurfs_TestHidden";`. Run `listsmurfs --page 1 --page-size 50` and expect an error and exit code 1. Restore the table with `ALTER TABLE "Smurfs_TestHidden" RENAME TO "Smurfs";`.
+4. **WPF request failure.** Launch WPF and wait for the main window. Temporarily rename the table in the disposable `Smurfs_WPF` database using the same SQL. Select **Load smurfs**, observe the error, close WPF, and restore the table.
 5. After each process exits, inspect its `console-*.log` or `wpf-*.log` under `%LOCALAPPDATA%\Smurfs\Logs`. Find the new entry for that run. Expect a startup failure for steps 1 and 2 and a failed list query for steps 3 and 4. Record the filename, timestamp, operation, and exception type in the [execution record](execution-record.md).
 
 **Acceptance criteria** — All four scenarios leave a readable entry after exit. Each entry identifies the frontend by its log file, gives the failure time and failed operation, and includes the exception details.
 
 ## AT-008 List Smurfs through the HTTP API
 
-Use a fresh SQLite file by setting `ConnectionStrings__DefaultConnection` to an isolated path. Start the API with the Development HTTPS profile. Use the request sequence in `src/Smurfs.API/Smurfs.API.http` or Postman.
+Set `ConnectionStrings__DefaultConnection` to a connection string for a fresh disposable PostgreSQL database. Start the API with the Development HTTPS profile. Use the request sequence in `src/Smurfs.API/Smurfs.API.http` or Postman.
 
-1. Confirm startup creates one SQLite database with Identity and catalog tables.
+1. Confirm startup prepares one PostgreSQL database with Identity and catalog tables.
 2. Request `GET /api/smurfs?pageNumber=1&pageSize=2` without credentials. Expect 401.
 3. Sign in as a seeded development user. Send the returned bearer token with the same GET. Expect 200, up to two Smurf summaries, and a `Pagination` header with the page number, page size, row count, and page count.
 4. Send `pageNumber=0` with the bearer token. Expect 400. Correct the page number and expect 200.
+
+For the hosted WebClient, reload `/people` and confirm it loads the client. Request an unknown path such as `/api/typo` and expect 404. Request `GET /api/account` without a bearer token and expect 401.

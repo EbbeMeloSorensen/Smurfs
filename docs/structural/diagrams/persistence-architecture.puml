@@ -75,7 +75,7 @@ IUnitOfWorkFactory ..> IUnitOfWork : creates
 UnitOfWork --> SmurfRepository : constructs
 UnitOfWork --> DataContext : owns / saves / disposes
 UnitOfWorkFactory ..> UnitOfWork : constructs with fresh context
-DataContextFactory ..> DataContext : creates with SQLite options
+DataContextFactory ..> DataContext : creates with PostgreSQL options
 DataContext ..> SmurfConfiguration : applies during model creation
 legend bottom left
   UML components represent production .NET assemblies.

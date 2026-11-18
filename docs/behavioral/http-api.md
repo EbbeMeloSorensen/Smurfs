@@ -2,9 +2,11 @@
 
 ## Startup
 
-The API migrates Identity and AppData in the same SQLite file, then seeds the catalog. In Development it creates missing Bob, Jane and Tom sample accounts and exposes [Swagger UI](https://localhost:7231/swagger) on the HTTPS launch profile.
+The API migrates Identity and AppData in the same PostgreSQL database, then seeds the catalog. In Development it also creates missing Bob, Jane and Tom sample accounts. Swagger UI is served at `/swagger` in all environments.
 
-The API reads the SQLite path from `ConnectionStrings:DefaultConnection`. In Development, an absent `TokenKey` generates a key for the current process. Sign in again after a restart if the API generated the key. A configured key of at least 64 UTF-8 bytes is required outside Development.
+In Development, the API reads `ConnectionStrings:DefaultConnection`. Outside Development, it reads `DATABASE_URL` and requires TLS for PostgreSQL. In Development, an absent `TokenKey` generates a key for the current process. Sign in again after a restart if the API generated the key. A configured key of at least 64 UTF-8 bytes is required outside Development.
+
+The API serves the production WebClient from `wwwroot`. Browser routes such as `/people` load `index.html`, and unmatched `/api` routes return 404.
 
 ## Sign in
 

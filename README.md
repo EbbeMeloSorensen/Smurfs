@@ -67,7 +67,7 @@ dotnet test Smurfs.sln
 
 The test project retains its historical `UnitTest` name, although its current tests exercise persistence against real, in-memory SQLite databases. These tests therefore cover database integration rather than only isolated units of code.
 
-The tests do not access `smurfs.db` or production data.
+The tests use in-memory databases. Tests that apply or compare migrations currently fail because they use SQLite with the checked-in PostgreSQL migrations.
 
 ## Build the documentation
 
@@ -177,14 +177,16 @@ Both scripts should produce equivalent documentation on Windows and Linux. For r
 - [November 2026 persistence baseline](docs/baseline-2026-11-04.md)
 ## Populate a database for paging tests
 
-Run from the directory where you want the local test database. From the repository root, for example:
+The console seeds 1,007 sample rows on first initialization of an empty PostgreSQL catalog. Use a disposable local PostgreSQL instance for paging checks.
 
 ```powershell
-./scripts/add-random-smurfs.ps1 -Count 1000
+dotnet run --project src/Smurfs.UI.Console -- initdb
 dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page 2 --page-size 25
 ```
 
-The script uses Python 3 on PATH for SQLite bulk inserts and the .NET console app to initialize a missing `smurfs.db`. It appends exactly the requested count in one transaction, in addition to the sample rows created on first use. Names can repeat so paging tests exercise the identifier tie-breaker.
+The legacy `scripts/add-random-smurfs.ps1` inserts into a SQLite file. It cannot provision or populate the current PostgreSQL catalogs.
+
+For API and WebClient deployment, see the API README at `src/Smurfs.API/README.md`.
 
 ## Generate migrations for a different database provider
 

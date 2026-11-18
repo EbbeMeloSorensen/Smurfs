@@ -7,9 +7,6 @@ skinparam nodesep 18
 skinparam ranksep 35
 
 package "Production projects (src)" {
-  component "Craft.Domain" as Craft_Domain
-  component "Craft.Persistence" as Craft_Persistence
-  component "Craft.Persistence.EFCore" as Craft_Persistence_EFCore
   component "Smurfs.API" as Smurfs_API
   component "Smurfs.Application" as Smurfs_Application
   component "Smurfs.Domain" as Smurfs_Domain
@@ -28,16 +25,12 @@ package "Test projects (tests)" {
   component "Smurf.Persistence.EFCore.AppData.UnitTest" as Smurf_Persistence_EFCore_AppData_UnitTest
 }
 
-Craft_Persistence_EFCore -up-> Craft_Persistence
 Smurfs_API -up-> Smurfs_Infrastructure
 Smurfs_Application -up-> Smurfs_Persistence
-Smurfs_Domain -up-> Craft_Domain
 Smurfs_Infrastructure -up-> Smurfs_Application
 Smurfs_Infrastructure -up-> Smurfs_Persistence_EFCore_AppData
 Smurfs_Infrastructure -up-> Smurfs_Persistence_EFCore_Identity
-Smurfs_Persistence -up-> Craft_Persistence
 Smurfs_Persistence -up-> Smurfs_Domain
-Smurfs_Persistence_EFCore_AppData -up-> Craft_Persistence_EFCore
 Smurfs_Persistence_EFCore_AppData -up-> Smurfs_Persistence
 Smurfs_UI_Avalonia -up-> Smurfs_Infrastructure
 Smurfs_UI_Avalonia -up-> Smurfs_Persistence_EFCore_AppData
