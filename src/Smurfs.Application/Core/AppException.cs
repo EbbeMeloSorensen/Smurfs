@@ -8,7 +8,7 @@ public class AppException
     /// <summary>
     /// Creates an error response payload with a status code, message, and optional details.
     /// </summary>
-    public AppException(int statusCode, string message, string details = null)
+    public AppException(int statusCode, string message, string? details = null)
     {
         StatusCode = statusCode;
         Message = message;
@@ -28,5 +28,5 @@ public class AppException
     /// <summary>
     /// Gets or sets additional diagnostic details when available.
     /// </summary>
-    public string Details { get; set; }
+    public string? Details { get; set; }
 }
