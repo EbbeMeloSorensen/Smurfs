@@ -22,7 +22,7 @@ public class BaseApiController : ControllerBase
     /// <summary>
     /// Converts an application result to a success, not-found, or bad-request response.
     /// </summary>
-    protected ActionResult HandleResult<T>(Result<T> result)
+    protected ActionResult HandleResult<T>(Result<T> result) where T : notnull
     {
         if (result == null)
         {
