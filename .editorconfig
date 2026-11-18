@@ -119,6 +119,9 @@ dotnet_diagnostic.IDE0055.severity = warning
 [src/Smurfs.Persistence.EFCore.*/Migrations/*.cs]
 generated_code = true
 
+[src/Smurfs.Persistence.EFCore.AppData/Migrations/**/*.cs]
+generated_code = true
+
 [*.{json,jsonc,yml,yaml,md,xml,props,targets}]
 end_of_line = lf
 indent_size = 2

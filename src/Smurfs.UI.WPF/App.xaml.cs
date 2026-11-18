@@ -49,8 +49,8 @@ public partial class App
                     //const string connectionString = "Data Source=babuska.db";
                     const string connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_WPF";
 
-                    //services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
-                    services.AddAppDataPersistence<DataContext>(options => options.UseNpgsql(connectionString));
+                    //services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString));
+                    services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(connectionString));
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();

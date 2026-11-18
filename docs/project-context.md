@@ -31,6 +31,7 @@ For behavioral modeling, document one sequence per console verb and describe sha
 - The Smurfs persistence boundary includes repository interfaces and a unit-of-work abstraction/factory. Check the actual current interfaces and names rather than inventing method signatures.
 - Preserve project boundaries among Smurfs.Domain, Smurfs.Persistence, Smurfs.Persistence.EFCore.AppData and Craft dependencies as actually present.
 - Scope the persistence architecture diagram to solution-owned types grouped by assembly components. Keep relevant direct dependencies between these types; omit standalone EF Core/BCL types and their arrows. Framework names may remain in member signatures. Do not add a shared external framework hub as the solution grows.
+- AppData uses an abstract DataContext with sibling PostgresDataContext and SqliteDataContext types. Each provider owns a migration set and snapshot in the AppData assembly. Production hosts select PostgresDataContext, and SQLite tests select SqliteDataContext.
 - DataContext.OnModelCreating calls Configure to apply SmurfConfiguration; Smurf key, Pet and Village relationship rules belong in that configuration.
 - EF Core is code-first. No migrations, database schema or storage behavior should be inferred purely from PlantUML.
 

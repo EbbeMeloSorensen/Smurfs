@@ -42,8 +42,8 @@ public partial class App : global::Avalonia.Application
                     .ConfigureLogging((context, logging) => fileLogging.Configure(context.Configuration, logging))
                     .ConfigureServices(services =>
                     {
-                        //services.AddAppDataPersistence<DataContext>(options => options.UseSqlite("Data Source=babuska.db"));
-                        services.AddAppDataPersistence<DataContext>(options => options.UseNpgsql("Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_Avalonia"));
+                        //services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite("Data Source=babuska.db"));
+                        services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql("Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_Avalonia"));
                         services.AddApplication();
                         services.AddScoped<ISmurfReadService, SmurfReadService>();
                         services.AddSingleton<MainWindowViewModel>();

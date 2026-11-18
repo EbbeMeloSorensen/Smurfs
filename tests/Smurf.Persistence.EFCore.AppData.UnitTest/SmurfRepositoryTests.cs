@@ -20,11 +20,11 @@ public class SmurfRepositoryTests
         using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
 
-        var options = new DbContextOptionsBuilder<DataContext>()
+        var options = new DbContextOptionsBuilder<SqliteDataContext>()
             .UseSqlite(connection)
             .Options;
 
-        await using (var context = new DataContext(options))
+        await using (var context = new SqliteDataContext(options))
         {
             await context.Database.EnsureCreatedAsync();
 
@@ -41,7 +41,7 @@ public class SmurfRepositoryTests
         }
 
         // Assert - use a fresh DbContext
-        await using (var context = new DataContext(options))
+        await using (var context = new SqliteDataContext(options))
         {
             var savedSmurf = await context.Set<Smurfs.Domain.Smurf>()
                 .SingleAsync();

@@ -14,7 +14,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
 {
     private readonly SqliteConnection _connection = new("Data Source=:memory:");
 
-    private DbContextOptions<DataContext> Options => new DbContextOptionsBuilder<DataContext>()
+    private DbContextOptions<SqliteDataContext> Options => new DbContextOptionsBuilder<SqliteDataContext>()
         .UseSqlite(_connection).Options;
 
     private static readonly Expression<Func<SmurfEntity, bool>>[] _all = [];
@@ -25,7 +25,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await _connection.OpenAsync();
-        await using var context = new DataContext(Options);
+        await using var context = new SqliteDataContext(Options);
         await context.Database.EnsureCreatedAsync();
     }
 
@@ -40,7 +40,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     [Fact]
     public async Task Queries_CombinePredicatesWithAnd_AndAcceptEmptyFilters()
     {
-        await using var context = new DataContext(Options);
+        await using var context = new SqliteDataContext(Options);
         context.AddRange(new SmurfEntity { Name = "Papa", Age = 100 },
             new SmurfEntity { Name = "Papa", Age = 20 },
             new SmurfEntity { Name = "Other", Age = 100 });
@@ -62,19 +62,19 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     [Fact]
     public async Task Find_TracksByDefault_AndTrackedEditsAreCommitted()
     {
-        await using (var seed = new DataContext(Options))
+        await using (var seed = new SqliteDataContext(Options))
         {
             seed.Add(new SmurfEntity { Name = "Before" });
             await seed.SaveChangesAsync();
         }
-        await using (var context = new DataContext(Options))
+        await using (var context = new SqliteDataContext(Options))
         {
             var entity = Assert.Single(await new SmurfRepository(context).FindAsync(_all));
             Assert.Equal(EntityState.Unchanged, context.Entry(entity).State);
             entity.Name = "After";
             await context.SaveChangesAsync();
         }
-        await using var verify = new DataContext(Options);
+        await using var verify = new SqliteDataContext(Options);
         Assert.Equal("After", (await verify.Smurfs.SingleAsync()).Name);
     }
 
@@ -85,24 +85,24 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     public async Task DetachedUpdate_IsStagedUntilComplete_AndPersistsThroughUnitOfWork()
     {
         SmurfEntity entity;
-        await using (var seed = new DataContext(Options))
+        await using (var seed = new SqliteDataContext(Options))
         {
             entity = new SmurfEntity { Name = "Before" };
             seed.Add(entity);
             await seed.SaveChangesAsync();
         }
         entity.Name = "After";
-        await using (var unit = new UnitOfWork(new DataContext(Options)))
+        await using (var unit = new UnitOfWork(new SqliteDataContext(Options)))
         {
             await unit.Smurfs.UpdateAsync(entity);
-            await using (var beforeCommit = new DataContext(Options))
+            await using (var beforeCommit = new SqliteDataContext(Options))
             {
                 Assert.Equal("Before", (await beforeCommit.Smurfs.SingleAsync()).Name);
             }
 
             await unit.CompleteAsync();
         }
-        await using var verify = new DataContext(Options);
+        await using var verify = new SqliteDataContext(Options);
         Assert.Equal("After", (await verify.Smurfs.SingleAsync()).Name);
     }
 
@@ -113,22 +113,22 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     public async Task AddAndRemove_DoNotSaveUntilComplete()
     {
         var entity = new SmurfEntity { Name = "Papa" };
-        await using var unit = new UnitOfWork(new DataContext(Options));
+        await using var unit = new UnitOfWork(new SqliteDataContext(Options));
         await unit.Smurfs.AddAsync(entity);
-        await using (var beforeCommit = new DataContext(Options))
+        await using (var beforeCommit = new SqliteDataContext(Options))
         {
             Assert.Empty(await beforeCommit.Smurfs.ToListAsync());
         }
 
         await unit.CompleteAsync();
         await unit.Smurfs.RemoveAsync(entity);
-        await using (var beforeDelete = new DataContext(Options))
+        await using (var beforeDelete = new SqliteDataContext(Options))
         {
             Assert.Single(await beforeDelete.Smurfs.ToListAsync());
         }
 
         await unit.CompleteAsync();
-        await using var verify = new DataContext(Options);
+        await using var verify = new SqliteDataContext(Options);
         Assert.Empty(await verify.Smurfs.ToListAsync());
     }
 
@@ -138,14 +138,14 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     [Fact]
     public async Task Disposal_DiscardsUncommittedInsert_AndDisposesOwnedContext()
     {
-        var context = new DataContext(Options);
+        var context = new SqliteDataContext(Options);
         await using (var unit = new UnitOfWork(context))
         {
             await unit.Smurfs.AddAsync(new SmurfEntity { Name = "Unsaved" });
         }
 
         Assert.Throws<ObjectDisposedException>(() => context.Smurfs.ToList());
-        await using var verify = new DataContext(Options);
+        await using var verify = new SqliteDataContext(Options);
         Assert.Empty(await verify.Smurfs.ToListAsync());
     }
 
@@ -161,7 +161,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     [InlineData("Remove")]
     public async Task CancelledMutation_DoesNotAttachEntity(string operation)
     {
-        await using var context = new DataContext(Options);
+        await using var context = new SqliteDataContext(Options);
         var repository = new SmurfRepository(context);
         var entity = new SmurfEntity { Name = "Cancelled" };
         using var cancellation = new CancellationTokenSource();
@@ -181,7 +181,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     [Fact]
     public async Task Model_IncludesVillageAndPets_AndMatchesMigrationSnapshot()
     {
-        await using var context = new DataContext(Options);
+        await using var context = new SqliteDataContext(Options);
         Assert.False(context.Database.HasPendingModelChanges());
         Assert.Equal(3, context.Model.GetEntityTypes().Count());
         Assert.Equal("Pets", context.Model.FindEntityType(typeof(Smurfs.Domain.Pet))!.GetTableName());
@@ -216,7 +216,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     [Fact]
     public async Task VillageMembership_AndSharedPet_RoundTrip()
     {
-        await using (var context = new DataContext(Options))
+        await using (var context = new SqliteDataContext(Options))
         {
             var pet = new Smurfs.Domain.Pet { Name = "Shared" };
             var village = new Smurfs.Domain.Village { Name = "Home" };
@@ -227,7 +227,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
             await context.SaveChangesAsync();
         }
 
-        await using var verify = new DataContext(Options);
+        await using var verify = new SqliteDataContext(Options);
         var saved = await verify.Villages.Include(v => v.Smurfs).ThenInclude(s => s.Pet).SingleAsync();
         Assert.Equal(2, saved.Smurfs.Count);
         var petId = (await verify.Pets.SingleAsync()).Id;
@@ -253,8 +253,8 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
-        var options = new DbContextOptionsBuilder<DataContext>().UseSqlite(connection).Options;
-        await using (var seed = new DataContext(options))
+        var options = new DbContextOptionsBuilder<SqliteDataContext>().UseSqlite(connection).Options;
+        await using (var seed = new SqliteDataContext(options))
         {
             await seed.Database.MigrateAsync();
             var pet = new Smurfs.Domain.Pet { Name = "Shared" };
@@ -263,7 +263,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
             await seed.SaveChangesAsync();
         }
 
-        await using (var context = new DataContext(options))
+        await using (var context = new SqliteDataContext(options))
         {
             var pet = await context.Pets.SingleAsync();
             if (trackSmurfs)
@@ -284,7 +284,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
             }
         }
 
-        await using var verify = new DataContext(options);
+        await using var verify = new SqliteDataContext(options);
         Assert.Equal(2, await verify.Smurfs.CountAsync());
         Assert.Equal(trackSmurfs ? 0 : 1, await verify.Pets.CountAsync());
         var smurfs = await verify.Smurfs.ToListAsync();
@@ -299,8 +299,8 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
-        var options = new DbContextOptionsBuilder<DataContext>().UseSqlite(connection).Options;
-        await using var context = new DataContext(options);
+        var options = new DbContextOptionsBuilder<SqliteDataContext>().UseSqlite(connection).Options;
+        await using var context = new SqliteDataContext(options);
         await context.Database.MigrateAsync();
         Assert.Equal(context.Database.GetMigrations(), await context.Database.GetAppliedMigrationsAsync());
         var pet = new Smurfs.Domain.Pet { Name = "Shared" };

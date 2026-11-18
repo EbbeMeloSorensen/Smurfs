@@ -55,7 +55,7 @@ internal class Program
                 {
                     var connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_ConsoleApp";
 
-                    services.AddAppDataPersistence<DataContext>(options => options.UseNpgsql(connectionString));
+                    services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(connectionString));
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();

@@ -9,7 +9,7 @@ namespace Smurfs.Persistence.EFCore.AppData;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the context factory and scoped application database initializer.
+    /// Registers the selected provider context, shared context and factory contracts, and scoped database initializer.
     /// </summary>
     public static IServiceCollection AddAppDataPersistence<TContext>(
         this IServiceCollection services,
@@ -17,6 +17,8 @@ public static class ServiceCollectionExtensions
         where TContext : DataContext
     {
         services.AddDbContextFactory<TContext>(optionsAction);
+        services.AddSingleton<IDbContextFactory<DataContext>, AppDataContextFactory<TContext>>();
+        services.AddScoped<DataContext>(provider => provider.GetRequiredService<TContext>());
         services.AddScoped<IAppDataInitializer, AppDataInitializer<TContext>>();
 
         // register repositories, unit of work, etc.

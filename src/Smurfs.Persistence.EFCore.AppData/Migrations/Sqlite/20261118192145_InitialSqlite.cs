@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Smurfs.Persistence.EFCore.AppData.Migrations
+namespace Smurfs.Persistence.EFCore.AppData.Migrations.Sqlite
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialSqlite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,8 +15,8 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
                 name: "Pets",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,8 +27,8 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
                 name: "Villages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -39,11 +39,11 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations
                 name: "Smurfs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Age = table.Column<int>(type: "integer", nullable: false),
-                    PetId = table.Column<Guid>(type: "uuid", nullable: true),
-                    VillageId = table.Column<Guid>(type: "uuid", nullable: true)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Age = table.Column<int>(type: "INTEGER", nullable: false),
+                    PetId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    VillageId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

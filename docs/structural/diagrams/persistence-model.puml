@@ -29,9 +29,10 @@ note bottom of VillageTable
   Village FK: explicit ClientSetNull.
 end note
 note bottom of PetTable
-  Initial migration 20261104192233_InitialMigration
-  and snapshot match these tables, columns and indexes.
+  PostgreSQL baseline 20261116175110_InitialMigration
+  and the SQLite baseline share these tables and relationships.
   PostgreSQL uses uuid for Guid, text for string, and integer for Age.
+  SQLite uses TEXT for Guid/string and INTEGER for Age.
   Pet FK: ON DELETE RESTRICT; Village FK: no cascade.
   No existing database was updated during reconciliation.
 end note

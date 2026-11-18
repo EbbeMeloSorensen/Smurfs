@@ -23,7 +23,7 @@ public sealed class CreateSmurfTests
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
         var services = new ServiceCollection();
-        services.AddDbContextFactory<DataContext>(options => options.UseSqlite(connection));
+        services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connection));
         await using var provider = services.BuildServiceProvider();
         var factory = provider.GetRequiredService<IDbContextFactory<DataContext>>();
         await using var context = await factory.CreateDbContextAsync();

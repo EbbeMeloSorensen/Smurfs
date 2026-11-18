@@ -67,7 +67,7 @@ dotnet test Smurfs.sln
 
 The test project retains its historical `UnitTest` name, although its current tests exercise persistence against real, in-memory SQLite databases. These tests therefore cover database integration rather than only isolated units of code.
 
-The tests use in-memory databases. Tests that apply or compare migrations currently fail because they use SQLite with the checked-in PostgreSQL migrations.
+The tests use in-memory databases. SQLite migration tests use the AppData SQLite context and migration set. PostgreSQL migration discovery and snapshot agreement are checked without opening a database connection.
 
 ## Build the documentation
 
@@ -188,22 +188,20 @@ The legacy `scripts/add-random-smurfs.ps1` inserts into a SQLite file. It cannot
 
 For API and WebClient deployment, see the API README at `src/Smurfs.API/README.md`.
 
-## Generate migrations for a different database provider
+## AppData providers and migrations
 
-Generate a separate migration set for each EF Core context when switching providers, for example from SQLite to PostgreSQL. Configure both design-time `DataContextFactory` classes to use the target provider (`UseNpgsql` for PostgreSQL), and configure the API's runtime contexts and connection string for the same provider.
+AppData keeps its shared model in the abstract `DataContext`. `PostgresDataContext` and `SqliteDataContext` each have their own migrations and model snapshot in the same assembly, under `Migrations/Postgres` and `Migrations/Sqlite`.
 
-The commands below assume you are starting a new migration set for a fresh database. If you need to continue supporting SQLite, retain its migrations and snapshots separately. If you are replacing the old provider's migration set, remove its migration files and model snapshot from each project before generating the new initial migrations. Generate migrations from the repository root in PowerShell with `dotnet ef` installed.
+Production clients currently select `PostgresDataContext`. To compose an AppData host with SQLite, register `AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))`. The registration also exposes the selected context and its factory through the shared `DataContext` contract. Identity retains its PostgreSQL context and migrations.
 
-### AppData
-
-```powershell
-dotnet ef migrations add InitialMigration --project .\src\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj --startup-project .\src\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj --context DataContext
-```
-
-### Identity
+For each AppData model change, generate one migration per provider from the repository root with the EF Core CLI:
 
 ```powershell
-dotnet ef migrations add InitialMigration --project .\src\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj --startup-project .\src\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj --context DataContext
+$project = 'src/Smurfs.Persistence.EFCore.AppData'
+dotnet ef migrations add DescribePostgresChange --project $project --startup-project $project --context PostgresDataContext --output-dir Migrations/Postgres
+dotnet ef migrations add DescribeSqliteChange --project $project --startup-project $project --context SqliteDataContext --output-dir Migrations/Sqlite
 ```
 
-These commands scaffold the schema migrations. Moving existing data from SQLite to PostgreSQL requires a separate data transfer.
+The design-time factories use local development settings and do not open a connection when generating migrations. To apply a migration explicitly, pass `--connection` to `dotnet ef database update` with the chosen context. SQLite's design-time default is `Data Source=smurfs-sqlite.db`; start with a fresh file for its new baseline.
+
+The existing PostgreSQL migration ID is preserved. Generating or switching migration sets does not transfer data between providers. Identity migration commands still use its `DataContext` in `src/Smurfs.Persistence.EFCore.Identity`.

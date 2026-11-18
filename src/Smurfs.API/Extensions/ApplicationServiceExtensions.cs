@@ -62,7 +62,7 @@ public static class ApplicationServiceExtensions
                 //options.UseSqlite(connectionString));
                 options.UseNpgsql(connectionString));
 
-        services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.DataContext>(options =>
+        services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.PostgresDataContext>(options =>
             //options.UseSqlite(connectionString));
             options.UseNpgsql(connectionString));
 

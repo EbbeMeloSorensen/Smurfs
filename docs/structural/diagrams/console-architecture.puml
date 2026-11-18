@@ -29,7 +29,8 @@ component "Smurfs.Application" {
   class "PagedList<T>" as PagedList
 }
 component "Smurfs.Persistence.EFCore.AppData" {
-  class DataContext
+  abstract class DataContext
+  class PostgresDataContext
   class UnitOfWorkFactory
   class "AppDataInitializer<TContext>" as AppDataInitializer
 }
@@ -66,7 +67,9 @@ Program ..> BusinessRuleCatalog : registers
 Program ..> IBusinessRuleCatalog : registers contract
 Program ..> ListQuery : dispatches
 Program ..> IAppDataInitializer : runs setup
-Program ..> DataContext : configures
+PostgresDataContext --|> DataContext
+Program ..> PostgresDataContext : selects provider
+Program ..> DataContext : resolves shared contract
 Program ..> SmurfReadService : registers
 Program ..> UnitOfWorkFactory : registers
 Program ..> FrontendFileLogging : creates and disposes

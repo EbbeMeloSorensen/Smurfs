@@ -10,7 +10,7 @@ namespace Smurfs.Persistence.EFCore.AppData;
 /// <remarks>
 /// Village membership uses an optional shadow VillageId foreign key on Smurf. OnModelCreating invokes Configure to apply the explicit Smurf mapping.
 /// </remarks>
-public class DataContext : DbContext
+public abstract class DataContext : DbContext
 {
     /// <summary>
     /// Gets or sets the Smurf entity set; queries track by default.
@@ -33,7 +33,7 @@ public class DataContext : DbContext
     /// <param name="options">
     /// The EF Core configuration for this context.
     /// </param>
-    public DataContext(DbContextOptions<DataContext> options)
+    protected DataContext(DbContextOptions options)
         : base(options)
     {
     }

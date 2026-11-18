@@ -41,8 +41,8 @@ internal static class Program
                 .ConfigureLogging((context, builder) => logging.Configure(context.Configuration, builder))
                 .ConfigureServices(services =>
                 {
-                    //services.AddAppDataPersistence<DataContext>(options => options.UseSqlite("Data Source=babuska.db"));
-                    services.AddAppDataPersistence<DataContext>(options => options.UseNpgsql("Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_WinForms"));
+                    //services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite("Data Source=babuska.db"));
+                    services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql("Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_WinForms"));
                     services.AddApplication();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();
                     services.AddSingleton<MainWindowViewModel>();

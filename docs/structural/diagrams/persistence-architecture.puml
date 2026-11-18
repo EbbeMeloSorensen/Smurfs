@@ -32,14 +32,18 @@ component "Smurfs.Persistence.EFCore.AppData" as AppData {
   class SmurfRepository
   class UnitOfWork <<sealed>>
   class UnitOfWorkFactory
-  class DataContext {
+  abstract class DataContext {
     +Smurfs : DbSet<Smurf> {get; set;}
     +Villages : DbSet<Village> {get; set;}
     +Pets : DbSet<Pet> {get; set;}
     {static} +Configure(modelBuilder) : void
     #OnModelCreating(modelBuilder) : void
   }
-  class DataContextFactory <<design-time>>
+  class PostgresDataContext
+  class SqliteDataContext
+  class PostgresDataContextFactory <<design-time>>
+  class SqliteDataContextFactory <<design-time>>
+  class "AppDataContextFactory<TContext>" as AppDataContextFactory
   class SmurfConfiguration
 }
 component "Smurfs.Domain" as Domain {
@@ -75,7 +79,11 @@ IUnitOfWorkFactory ..> IUnitOfWork : creates
 UnitOfWork --> SmurfRepository : constructs
 UnitOfWork --> DataContext : owns / saves / disposes
 UnitOfWorkFactory ..> UnitOfWork : constructs with fresh context
-DataContextFactory ..> DataContext : creates with PostgreSQL options
+DataContext <|-- PostgresDataContext
+DataContext <|-- SqliteDataContext
+PostgresDataContextFactory ..> PostgresDataContext : creates
+SqliteDataContextFactory ..> SqliteDataContext : creates
+AppDataContextFactory ..> DataContext : returns / context constraint
 DataContext ..> SmurfConfiguration : applies during model creation
 legend bottom left
   UML components represent production .NET assemblies.
