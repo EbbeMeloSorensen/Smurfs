@@ -2,6 +2,7 @@ using Craft.Domain;
 using Microsoft.EntityFrameworkCore;
 //using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
+using Npgsql;
 using Smurfs.Application.Core;
 using Smurfs.Application.Interfaces;
 using Smurfs.Application.Smurfs;
@@ -48,21 +49,7 @@ public static class ApplicationServiceExtensions
         {
             Console.WriteLine("\nReading connection string from Heroku config variable: DATABASE_URL\n");
 
-            // Use connection string provided at runtime by Heroku.
-            var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-
-            // Parse connection URL to connection string for Npgsql
-            connUrl = connUrl.Replace("postgres://", string.Empty);
-            var pgUserPass = connUrl.Split("@")[0];
-            var pgHostPortDb = connUrl.Split("@")[1];
-            var pgHostPort = pgHostPortDb.Split("/")[0];
-            var pgDb = pgHostPortDb.Split("/")[1];
-            var pgUser = pgUserPass.Split(":")[0];
-            var pgPass = pgUserPass.Split(":")[1];
-            var pgHost = pgHostPort.Split(":")[0];
-            var pgPort = pgHostPort.Split(":")[1];
-
-            connectionString = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb}; SSL Mode=Require; Trust Server Certificate=true";
+            connectionString = GetHerokuConnectionString(Environment.GetEnvironmentVariable("DATABASE_URL"));
         }
 
         services.AddDbContext<Smurfs.Persistence.EFCore.Identity.DataContext>(options =>
@@ -94,5 +81,39 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IBusinessRuleCatalog, BusinessRuleCatalog>();
 
         return services;
+    }
+
+    private static string GetHerokuConnectionString(string? databaseUrl)
+    {
+        if (string.IsNullOrWhiteSpace(databaseUrl))
+        {
+            throw new InvalidOperationException("Configure the DATABASE_URL environment variable.");
+        }
+
+        if (!Uri.TryCreate(databaseUrl, UriKind.Absolute, out var uri)
+            || uri.Scheme is not ("postgres" or "postgresql")
+            || string.IsNullOrEmpty(uri.Host)
+            || uri.Port == 0
+            || uri.AbsolutePath.Length <= 1
+            || !string.IsNullOrEmpty(uri.Fragment))
+        {
+            throw new InvalidOperationException("DATABASE_URL must be a PostgreSQL URL with a host and database name.");
+        }
+
+        var credentials = uri.UserInfo.Split(':', 2);
+        if (credentials.Length != 2 || string.IsNullOrEmpty(credentials[0]) || string.IsNullOrEmpty(credentials[1]))
+        {
+            throw new InvalidOperationException("DATABASE_URL must include a PostgreSQL username and password.");
+        }
+
+        return new NpgsqlConnectionStringBuilder
+        {
+            Host = uri.IdnHost,
+            Port = uri.IsDefaultPort ? 5432 : uri.Port,
+            Database = Uri.UnescapeDataString(uri.AbsolutePath[1..]),
+            Username = Uri.UnescapeDataString(credentials[0]),
+            Password = Uri.UnescapeDataString(credentials[1]),
+            SslMode = SslMode.Require
+        }.ConnectionString;
     }
 }
