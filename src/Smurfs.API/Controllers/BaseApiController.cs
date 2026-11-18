@@ -5,14 +5,23 @@ using Smurfs.Application.Core;
 
 namespace Smurfs.API.Controllers;
 
+/// <summary>
+/// Provides shared routing and application result handling for API controllers.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class BaseApiController : ControllerBase
 {
     private IMediator? _mediator;
 
+    /// <summary>
+    /// Gets the MediatR dispatcher for the current request.
+    /// </summary>
     protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
 
+    /// <summary>
+    /// Converts an application result to a success, not-found, or bad-request response.
+    /// </summary>
     protected ActionResult HandleResult<T>(Result<T> result)
     {
         if (result == null)
@@ -33,6 +42,9 @@ public class BaseApiController : ControllerBase
         return BadRequest(result.Error);
     }
 
+    /// <summary>
+    /// Converts a paged application result to an HTTP response with pagination metadata on success.
+    /// </summary>
     protected ActionResult HandlePagedResult<T>(Result<PagedList<T>> result)
     {
         if (result == null)

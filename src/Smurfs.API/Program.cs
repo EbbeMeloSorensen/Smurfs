@@ -6,8 +6,14 @@ using Smurfs.Persistence.EFCore.Identity;
 
 namespace API;
 
+/// <summary>
+/// Defines the API entry point and host configuration.
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// Migrates the databases, seeds initial data, and runs the API host.
+    /// </summary>
     public static async Task Main(string[] args)
     {
         var host = CreateHostBuilder(args).Build();
@@ -30,6 +36,9 @@ public class Program
         await host.RunAsync();
     }
 
+    /// <summary>
+    /// Creates the default web host builder configured to use the Smurfs startup class.
+    /// </summary>
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>

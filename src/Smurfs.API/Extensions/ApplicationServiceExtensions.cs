@@ -14,8 +14,14 @@ using Smurfs.Persistence.EFCore.AppData;
 
 namespace Smurfs.API.Extensions;
 
+/// <summary>
+/// Provides service registration for the Smurfs API.
+/// </summary>
 public static class ApplicationServiceExtensions
 {
+    /// <summary>
+    /// Registers persistence, application handlers, and HTTP support services using the API configuration.
+    /// </summary>
     public static IServiceCollection AddApplicationServices(
         this IServiceCollection services,
         IConfiguration config)

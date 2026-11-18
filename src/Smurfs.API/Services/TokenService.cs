@@ -5,15 +5,24 @@ using Smurfs.Persistence.EFCore.Identity;
 
 namespace Smurfs.API.Services;
 
+/// <summary>
+/// Issues signed JWTs for Smurfs accounts.
+/// </summary>
 public class TokenService
 {
     private readonly SigningCredentials _signingCredentials;
 
+    /// <summary>
+    /// Creates the token issuer with the configured signing credentials.
+    /// </summary>
     public TokenService(SigningCredentials signingCredentials)
     {
         _signingCredentials = signingCredentials;
     }
 
+    /// <summary>
+    /// Issues a signed token containing the account identity claims.
+    /// </summary>
     public string CreateToken(AppUser user)
     {
         var claims = new List<Claim>

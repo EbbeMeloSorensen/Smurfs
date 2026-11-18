@@ -8,8 +8,14 @@ using Smurfs.Persistence.EFCore.Identity;
 
 namespace Smurfs.API.Extensions;
 
+/// <summary>
+/// Provides service registration for Identity and authentication.
+/// </summary>
 public static class IdentityServiceExtensions
 {
+    /// <summary>
+    /// Registers the Identity store, JWT authentication, and token issuance with the configured signing key.
+    /// </summary>
     public static IServiceCollection AddIdentityServices(
         this IServiceCollection services,
         IConfiguration config,

@@ -5,12 +5,18 @@ using Smurfs.API.MiddleWare;
 
 namespace Smurfs.API;
 
+/// <summary>
+/// Configures the API's service registrations and HTTP request pipeline.
+/// </summary>
 public class Startup
 {
     private readonly IConfiguration _config;
 
     private readonly IWebHostEnvironment _environment;
 
+    /// <summary>
+    /// Creates the startup component with the application configuration and hosting environment.
+    /// </summary>
     public Startup(IConfiguration config, IWebHostEnvironment environment)
     {
         _config = config;
@@ -18,6 +24,9 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to add services to the container.
+    /// <summary>
+    /// Registers controller, persistence, and authentication services.
+    /// </summary>
     public void ConfigureServices(
         IServiceCollection services)
     {
@@ -32,6 +41,9 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    /// <summary>
+    /// Configures middleware and routes for API requests and the hosted WebClient.
+    /// </summary>
     public void Configure(
         IApplicationBuilder app,
         IWebHostEnvironment env)

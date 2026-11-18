@@ -8,6 +8,9 @@ using Smurfs.Persistence.EFCore.Identity;
 
 namespace Smurfs.API.Controllers;
 
+/// <summary>
+/// Handles account registration, sign-in, and session restoration.
+/// </summary>
 [AllowAnonymous]
 [ApiController]
 [Route("api/[controller]")]
@@ -17,6 +20,9 @@ public class AccountController : ControllerBase
     private readonly SignInManager<AppUser> _signInManager;
     private readonly TokenService _tokenService;
 
+    /// <summary>
+    /// Creates the account controller with Identity services and a token issuer.
+    /// </summary>
     public AccountController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
@@ -27,6 +33,9 @@ public class AccountController : ControllerBase
         _tokenService = tokenService;
     }
 
+    /// <summary>
+    /// Checks the supplied credentials and issues a token on success.
+    /// </summary>
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
@@ -48,6 +57,9 @@ public class AccountController : ControllerBase
         return Unauthorized();
     }
 
+    /// <summary>
+    /// Creates an Identity account and issues a token when registration succeeds.
+    /// </summary>
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
@@ -80,6 +92,9 @@ public class AccountController : ControllerBase
         return BadRequest("Problem registering user");
     }
 
+    /// <summary>
+    /// Returns the current account and a refreshed token, or an unauthorized response if the account is missing.
+    /// </summary>
     [Authorize]
     [HttpGet]
     public async Task<ActionResult<UserDto>> GetCurrentUser()

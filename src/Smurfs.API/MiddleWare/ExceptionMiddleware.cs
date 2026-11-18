@@ -4,12 +4,18 @@ using Smurfs.Application.Core;
 
 namespace Smurfs.API.MiddleWare;
 
+/// <summary>
+/// Logs unhandled request exceptions and converts them to HTTP error responses.
+/// </summary>
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IHostEnvironment _env;
 
+    /// <summary>
+    /// Creates middleware with the downstream handler, logger, and host environment.
+    /// </summary>
     public ExceptionMiddleware(
         RequestDelegate next,
         ILogger<ExceptionMiddleware> logger,
@@ -20,6 +26,9 @@ public class ExceptionMiddleware
         _next = next;
     }
 
+    /// <summary>
+    /// Invokes the downstream handler and writes an HTTP error response if it throws.
+    /// </summary>
     public async Task InvokeAsync(HttpContext context)
     {
         try
