@@ -20,7 +20,7 @@ public static class HttpExtensions
             totalItems,
             totalPages
         };
-        response.Headers.Add("Pagination", JsonSerializer.Serialize(paginationHeader));
-        response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
+        response.Headers["Pagination"] = JsonSerializer.Serialize(paginationHeader);
+        response.Headers.Append("Access-Control-Expose-Headers", "Pagination");
     }
 }
