@@ -56,6 +56,11 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapFallback("api/{**path}", context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                return Task.CompletedTask;
+            }).AllowAnonymous();
             endpoints.MapFallbackToFile("index.html").AllowAnonymous();
         });
     }

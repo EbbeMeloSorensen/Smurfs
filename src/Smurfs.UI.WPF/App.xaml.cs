@@ -51,7 +51,6 @@ public partial class App
 
                     //services.AddAppDataPersistence<DataContext>(options => options.UseSqlite(connectionString));
                     services.AddAppDataPersistence<DataContext>(options => options.UseNpgsql(connectionString));
-                    services.AddAutoMapper(assemblies: typeof(MappingProfiles).Assembly);
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();

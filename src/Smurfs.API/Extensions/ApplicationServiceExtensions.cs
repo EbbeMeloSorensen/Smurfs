@@ -73,7 +73,6 @@ public static class ApplicationServiceExtensions
         });
 
         services.AddApplication();
-        services.AddAutoMapper(assemblies: typeof(MappingProfiles).Assembly);
         services.AddHttpContextAccessor();
         services.AddScoped<IUserAccessor, UserAccessor>();
         services.AddScoped<IUnitOfWorkFactory, Persistence.EFCore.AppData.UnitOfWorkFactory>();
