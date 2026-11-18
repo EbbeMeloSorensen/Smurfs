@@ -115,7 +115,7 @@ public class AccountController : ControllerBase
         {
             DisplayName = user.DisplayName,
             Token = _tokenService.CreateToken(user),
-            Username = user.UserName
+            Username = user.UserName ?? throw new InvalidOperationException("The account has no username.")
         };
     }
 }

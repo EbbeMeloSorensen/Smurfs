@@ -17,7 +17,7 @@ public class BaseApiController : ControllerBase
     /// <summary>
     /// Gets the MediatR dispatcher for the current request.
     /// </summary>
-    protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
+    protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<IMediator>();
 
     /// <summary>
     /// Converts an application result to a success, not-found, or bad-request response.
