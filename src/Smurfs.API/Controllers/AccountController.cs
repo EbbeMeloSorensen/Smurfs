@@ -11,7 +11,6 @@ namespace Smurfs.API.Controllers;
 /// <summary>
 /// Handles account registration, sign-in, and session restoration.
 /// </summary>
-[AllowAnonymous]
 [ApiController]
 [Route("api/[controller]")]
 public class AccountController : ControllerBase
@@ -36,6 +35,7 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Checks the supplied credentials and issues a token on success.
     /// </summary>
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
@@ -60,6 +60,7 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Creates an Identity account and issues a token when registration succeeds.
     /// </summary>
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
