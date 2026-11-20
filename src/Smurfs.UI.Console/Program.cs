@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,7 @@ internal class Program
         {
             fileLogging = new FrontendFileLogging("console");
             using var host = Host.CreateDefaultBuilder()
+                .UseContentRoot(AppContext.BaseDirectory)
                 .ConfigureLogging((context, logging) =>
                 {
                     fileLogging.Configure(context.Configuration, logging);
@@ -51,11 +53,23 @@ internal class Program
                     logging.AddFilter("Microsoft.EntityFrameworkCore.Migrations", LogLevel.None);
                     logging.AddFilter("LuckyPennySoftware.MediatR.License", LogLevel.None);
                 })
-                .ConfigureServices(services =>
+                .ConfigureServices((context, services) =>
                 {
-                    var connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_ConsoleApp";
+                    var provider = context.Configuration["Database:Provider"];
+                    switch (provider?.Trim().ToUpperInvariant())
+                    {
+                        case "SQLITE":
+                            var sqliteConnection = GetRequiredConnectionString(context.Configuration, "Sqlite");
+                            services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(sqliteConnection));
+                            break;
+                        case "POSTGRES":
+                            var postgresConnection = GetRequiredConnectionString(context.Configuration, "Postgres");
+                            services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(postgresConnection));
+                            break;
+                        default:
+                            throw new InvalidOperationException("Configure Database:Provider as Sqlite or Postgres.");
+                    }
 
-                    services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(connectionString));
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();
@@ -88,6 +102,17 @@ internal class Program
         {
             fileLogging?.Dispose();
         }
+    }
+
+    private static string GetRequiredConnectionString(IConfiguration config, string name)
+    {
+        var connectionString = config.GetConnectionString(name);
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException($"Configure ConnectionStrings:{name}.");
+        }
+
+        return connectionString;
     }
 
     private static async Task InitializeAsync(

@@ -9,7 +9,7 @@ $env:PLANTUML_JAR = 'C:\path\to\plantuml.jar'
 ./docs/build-docs.ps1
 ```
 
-To try the console, run the following from the repository root. The first invocation creates and seeds the local PostgreSQL database `Smurfs_ConsoleApp` if it is missing.
+To try the console, run the following from the repository root. The first invocation creates and seeds the selected database if it is missing. The console defaults to PostgreSQL `Smurfs_ConsoleApp`; [database settings](../behavioral/console.md#database-settings) also support SQLite.
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page 1 --page-size 5

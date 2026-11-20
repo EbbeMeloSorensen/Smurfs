@@ -66,4 +66,4 @@ The WPF application composes the same list and create handlers, read adapter, do
 
 ## HTTP API storage
 
-Identity owns the account tables and AppData owns the catalog tables. Smurfs.API selects both provider contexts using `Database:Provider` and applies their migration sets to the same database. Console, WPF, WinForms, and Avalonia each target their own local PostgreSQL catalog.
+Identity owns the account tables and AppData owns the catalog tables. Smurfs.API selects both provider contexts using `Database:Provider` and applies their migration sets to the same database. The console selects its AppData provider from settings and defaults to its own PostgreSQL catalog. WPF, WinForms, and Avalonia each target their own local PostgreSQL catalog.

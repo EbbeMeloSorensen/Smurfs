@@ -177,7 +177,7 @@ Both scripts should produce equivalent documentation on Windows and Linux. For r
 - [November 2026 persistence baseline](docs/baseline-2026-11-04.md)
 ## Populate a database for paging tests
 
-The console seeds 1,007 sample rows on first initialization of an empty PostgreSQL catalog. Use a disposable local PostgreSQL instance for paging checks.
+The console seeds 1,007 sample rows on first initialization of an empty catalog. Select SQLite or PostgreSQL in the console settings and use a disposable test database. See [console database settings](docs/behavioral/console.md#database-settings) for file locations and environment overrides.
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- initdb
@@ -192,7 +192,7 @@ For API and WebClient deployment, see the API README at `src/Smurfs.API/README.m
 
 Each persistence assembly keeps its shared model in the abstract `DataContext`. `PostgresDataContext` and `SqliteDataContext` each have their own migrations and model snapshot in the same assembly, under `Migrations/Postgres` and `Migrations/Sqlite`.
 
-Desktop and console clients currently select `PostgresDataContext`. The API selects both contexts from `Database:Provider` at startup, defaulting to the checked-in `Sqlite` setting. See `src/Smurfs.API/README.md` for connection settings and Heroku overrides. To compose an AppData host with SQLite, register `AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))`. The registration also exposes the selected context and its factory through the shared `DataContext` contract. Identity uses the same sibling provider context structure. Register its selected provider with `AddIdentityPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))` when composing a SQLite host. Both extension methods live in their respective persistence namespaces.
+Desktop clients select `PostgresDataContext`. The console selects its AppData provider from `Database:Provider` and defaults to PostgreSQL. The API selects both contexts from `Database:Provider` at startup, defaulting to the checked-in `Sqlite` setting. See `src/Smurfs.API/README.md` for connection settings and Heroku overrides. To compose an AppData host with SQLite, register `AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))`. The registration also exposes the selected context and its factory through the shared `DataContext` contract. Identity uses the same sibling provider context structure. Register its selected provider with `AddIdentityPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))` when composing a SQLite host. Both extension methods live in their respective persistence namespaces.
 
 For each model change, generate one migration per provider in the affected persistence project from the repository root with the EF Core CLI:
 

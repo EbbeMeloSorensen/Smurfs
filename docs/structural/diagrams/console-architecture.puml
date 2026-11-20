@@ -31,6 +31,7 @@ component "Smurfs.Application" {
 component "Smurfs.Persistence.EFCore.AppData" {
   abstract class DataContext
   class PostgresDataContext
+  class SqliteDataContext
   class UnitOfWorkFactory
   class "AppDataInitializer<TContext>" as AppDataInitializer
 }
@@ -68,7 +69,9 @@ Program ..> IBusinessRuleCatalog : registers contract
 Program ..> ListQuery : dispatches
 Program ..> IAppDataInitializer : runs setup
 PostgresDataContext --|> DataContext
-Program ..> PostgresDataContext : selects provider
+SqliteDataContext --|> DataContext
+Program ..> PostgresDataContext : selects from settings
+Program ..> SqliteDataContext : selects from settings
 Program ..> DataContext : resolves shared contract
 Program ..> SmurfReadService : registers
 Program ..> UnitOfWorkFactory : registers
