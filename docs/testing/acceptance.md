@@ -140,7 +140,7 @@ $wpf = (Resolve-Path 'src/Smurfs.UI.WPF/bin/Debug/net10.0-windows/Smurfs.UI.WPF.
 
 ## AT-008 List Smurfs through the HTTP API
 
-Set `ConnectionStrings__DefaultConnection` to a connection string for a fresh disposable PostgreSQL database. Start the API with the Development HTTPS profile. Use the request sequence in `src/Smurfs.API/Smurfs.API.http` or Postman.
+Set `Database__Provider=Postgres` and `ConnectionStrings__Postgres` to a connection string for a fresh disposable PostgreSQL database. Ensure `DATABASE_URL` is absent so this case uses the supplied connection string. Start the API with the Development HTTPS profile. Use the request sequence in `src/Smurfs.API/Smurfs.API.http` or Postman.
 
 1. Confirm startup prepares one PostgreSQL database with Identity and catalog tables.
 2. Request `GET /api/smurfs?pageNumber=1&pageSize=2` without credentials. Expect 401.

@@ -2,9 +2,9 @@
 
 ## Startup
 
-The API migrates Identity and AppData in the same PostgreSQL database, then seeds the catalog. In Development it also creates missing Bob, Jane and Tom sample accounts. Swagger UI is served at `/swagger` in all environments.
+The API migrates Identity and AppData in the same database using the configured SQLite or PostgreSQL provider, then seeds the catalog. In Development it also creates missing Bob, Jane and Tom sample accounts. Swagger UI is served at `/swagger` in all environments.
 
-In Development, the API reads `ConnectionStrings:DefaultConnection`. Outside Development, it reads `DATABASE_URL` and requires TLS for PostgreSQL. In Development, an absent `TokenKey` generates a key for the current process. Sign in again after a restart if the API generated the key. A configured key of at least 64 UTF-8 bytes is required outside Development.
+The API selects both context types from `Database:Provider` at startup. `Sqlite` uses `ConnectionStrings:Sqlite`. `Postgres` uses `DATABASE_URL` when supplied, requiring TLS, or `ConnectionStrings:Postgres` otherwise. Selection is independent of the host environment. Change the deployed setting and restart the API to switch providers without rebuilding. On Heroku, set `Database__Provider=Postgres`. In Development, an absent `TokenKey` generates a key for the current process. Sign in again after a restart if the API generated the key. A configured key of at least 64 UTF-8 bytes is required outside Development.
 
 The API serves the production WebClient from `wwwroot`. Browser routes such as `/people` load `index.html`, and unmatched `/api` routes return 404.
 

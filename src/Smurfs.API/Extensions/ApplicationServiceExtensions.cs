@@ -1,6 +1,5 @@
 using Craft.Domain;
 using Microsoft.EntityFrameworkCore;
-//using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Npgsql;
 using Smurfs.Application.Core;
@@ -32,42 +31,30 @@ public static class ApplicationServiceExtensions
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv5", Version = "v1" });
         });
 
-        var connectionString = string.Empty;
+        var provider = config["Database:Provider"];
 
-        // When launching the API from Visual Studio or VS Code, this environment variable is taken
-        // from the files launchSettings.json, where it is set to Development.
-        // When deploying to Heroku, it is taken from the application parameter section in Heroku,
-        // where it should be set to Production
-
-        var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        Console.WriteLine($"\nENVIRONMENT IS: {env}!!!\n");
-
-        // Depending on if in development or production, use either Heroku-provided
-        // connection string, or development connection string from env var.
-        if (env == "Development")
+        switch (provider?.Trim().ToUpperInvariant())
         {
-            Console.WriteLine("\nReading connection string from appsettings.json\n");
-
-            // Use connection string from file.
-            connectionString = config.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Configure ConnectionStrings:DefaultConnection.");
+            case "SQLITE":
+                var sqliteConnection = GetRequiredConnectionString(config, "Sqlite");
+                services.AddIdentityPersistence<Smurfs.Persistence.EFCore.Identity.SqliteDataContext>(options =>
+                    options.UseSqlite(sqliteConnection));
+                services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.SqliteDataContext>(options =>
+                    options.UseSqlite(sqliteConnection));
+                break;
+            case "POSTGRES":
+                var databaseUrl = config["DATABASE_URL"];
+                var postgresConnection = string.IsNullOrWhiteSpace(databaseUrl)
+                    ? GetRequiredConnectionString(config, "Postgres")
+                    : GetHerokuConnectionString(databaseUrl);
+                services.AddIdentityPersistence<Smurfs.Persistence.EFCore.Identity.PostgresDataContext>(options =>
+                    options.UseNpgsql(postgresConnection));
+                services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.PostgresDataContext>(options =>
+                    options.UseNpgsql(postgresConnection));
+                break;
+            default:
+                throw new InvalidOperationException("Configure Database:Provider as Sqlite or Postgres.");
         }
-        else
-        {
-            Console.WriteLine("\nReading connection string from Heroku config variable: DATABASE_URL\n");
-
-            connectionString = GetHerokuConnectionString(Environment.GetEnvironmentVariable("DATABASE_URL"));
-        }
-
-        //services.AddIdentityPersistence<Smurfs.Persistence.EFCore.Identity.PostgresDataContext>(options =>
-        services.AddIdentityPersistence<Smurfs.Persistence.EFCore.Identity.SqliteDataContext>(options =>
-            options.UseSqlite(connectionString));
-            //options.UseNpgsql(connectionString));
-
-        //services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.PostgresDataContext>(options =>
-        services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.SqliteDataContext>(options =>
-            options.UseSqlite(connectionString));
-            //options.UseNpgsql(connectionString));
 
         services.AddCors(opt =>
         {
@@ -89,6 +76,17 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IBusinessRuleCatalog, BusinessRuleCatalog>();
 
         return services;
+    }
+
+    private static string GetRequiredConnectionString(IConfiguration config, string name)
+    {
+        var connectionString = config.GetConnectionString(name);
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException($"Configure ConnectionStrings:{name}.");
+        }
+
+        return connectionString;
     }
 
     private static string GetHerokuConnectionString(string? databaseUrl)
