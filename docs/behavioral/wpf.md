@@ -1,6 +1,6 @@
 # WPF workflows
 
-Avalonia shares the WPF browse view model. Its window starts with no page loaded. **Load smurfs** opens page 1. **Previous** and **Next** load adjacent pages when available, and a failed load displays an error. Avalonia migrates and seeds its local PostgreSQL database `Smurfs_Avalonia` at startup.
+Avalonia shares the WPF browse view model. Its window starts with no page loaded. **Load smurfs** opens page 1. **Previous** and **Next** load adjacent pages when available, and a failed load displays an error. Avalonia migrates and seeds the AppData database selected by its settings at startup. Its `appsettings.json` is loaded beside the executable and copied into build and publish output. Set `Database:Provider` to `Postgres` or `Sqlite`, with `ConnectionStrings:Postgres` or `ConnectionStrings:Sqlite` respectively. The default is PostgreSQL `Smurfs_Avalonia`. SQLite defaults to `Data Source=smurfs-avalonia.db` relative to the process working directory. Edit the deployed settings and restart to switch providers without rebuilding. Environment overrides such as `Database__Provider=Sqlite` and `ConnectionStrings__Sqlite=Data Source=smurfs-avalonia.db` are supported. Invalid provider settings or missing selected connection strings follow the existing Avalonia startup-error path.
 
 ## Database settings
 

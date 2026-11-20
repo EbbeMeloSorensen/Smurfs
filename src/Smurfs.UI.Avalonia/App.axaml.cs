@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Smurfs.Application.Core;
@@ -39,15 +40,9 @@ public partial class App : global::Avalonia.Application
             try
             {
                 host = Host.CreateDefaultBuilder()
+                    .UseContentRoot(AppContext.BaseDirectory)
                     .ConfigureLogging((context, logging) => fileLogging.Configure(context.Configuration, logging))
-                    .ConfigureServices(services =>
-                    {
-                        //services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite("Data Source=babuska.db"));
-                        services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql("Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_Avalonia"));
-                        services.AddApplication();
-                        services.AddScoped<ISmurfReadService, SmurfReadService>();
-                        services.AddSingleton<MainWindowViewModel>();
-                    })
+                    .ConfigureServices(ConfigureServices)
                     .Build();
 
                 InitializeDatabaseAsync(host.Services).GetAwaiter().GetResult();
@@ -89,6 +84,28 @@ public partial class App : global::Avalonia.Application
         base.OnFrameworkInitializationCompleted();
     }
 
+    private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+    {
+        var provider = context.Configuration["Database:Provider"];
+        switch (provider?.Trim().ToUpperInvariant())
+        {
+            case "SQLITE":
+                var sqliteConnection = GetRequiredConnectionString(context.Configuration, "Sqlite");
+                services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(sqliteConnection));
+                break;
+            case "POSTGRES":
+                var postgresConnection = GetRequiredConnectionString(context.Configuration, "Postgres");
+                services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(postgresConnection));
+                break;
+            default:
+                throw new InvalidOperationException("Configure Database:Provider as Sqlite or Postgres.");
+        }
+
+        services.AddApplication();
+        services.AddScoped<ISmurfReadService, SmurfReadService>();
+        services.AddSingleton<MainWindowViewModel>();
+    }
+
     private static Task InitializeDatabaseAsync(IServiceProvider services) => Task.Run(async () =>
     {
         await using var scope = services.CreateAsyncScope();
@@ -96,4 +113,15 @@ public partial class App : global::Avalonia.Application
         await initializer.MigrateAsync();
         await initializer.SeedAsync();
     });
+
+    private static string GetRequiredConnectionString(IConfiguration config, string name)
+    {
+        var connectionString = config.GetConnectionString(name);
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException($"Configure ConnectionStrings:{name}.");
+        }
+
+        return connectionString;
+    }
 }

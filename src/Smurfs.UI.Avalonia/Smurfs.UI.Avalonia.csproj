@@ -24,4 +24,7 @@
     <ProjectReference Include="..\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj" />
     <ProjectReference Include="..\Smurfs.ViewModel\Smurfs.ViewModel.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
