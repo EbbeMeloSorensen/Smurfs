@@ -2,9 +2,15 @@
 
 Avalonia shares the WPF browse view model. Its window starts with no page loaded. **Load smurfs** opens page 1. **Previous** and **Next** load adjacent pages when available, and a failed load displays an error. Avalonia migrates and seeds its local PostgreSQL database `Smurfs_Avalonia` at startup.
 
+## Database settings
+
+WPF loads `appsettings.json` beside its executable. The project copies this file into build and publish output. Set `Database:Provider` to `Postgres` or `Sqlite` and supply `ConnectionStrings:Postgres` or `ConnectionStrings:Sqlite` respectively. The default provider is PostgreSQL with the existing `Smurfs_WPF` catalog. SQLite defaults to `Data Source=smurfs-wpf.db` relative to the process working directory.
+
+Edit the deployed settings file and restart WPF to switch providers without rebuilding. Environment variables override file settings, for example `Database__Provider=Sqlite` and `ConnectionStrings__Sqlite=Data Source=smurfs-wpf.db`. Provider names are case-insensitive. Missing or unsupported provider settings and missing selected connection strings use the startup failure path below. Both browsing and creation use the selected provider's AppData context and migration set.
+
 ## Application lifetime
 
-This sequence covers launching the application, leaving it idle and closing the main window. WPF opens its rolling file logger before showing the splash or building the host. The splash remains on the UI thread while a worker uses the shared app-data initializer to migrate and seed the local PostgreSQL database `Smurfs_WPF`. Startup disposes the initialization scope before showing the main window. On exit, WPF disposes the host and then the file logger. See [Application logging](../structural/index.md#application-logging). The first list request is an operator action described under [Browse Smurfs](#browse-smurfs).
+This sequence covers launching the application, leaving it idle and closing the main window. WPF opens its rolling file logger before showing the splash or building the host. The splash remains on the UI thread while a worker uses the shared app-data initializer to migrate and seed the database selected by its settings. Startup disposes the initialization scope before showing the main window. On exit, WPF disposes the host and then the file logger. See [Application logging](../structural/index.md#application-logging). The first list request is an operator action described under [Browse Smurfs](#browse-smurfs).
 
 ![WPF application lifetime sequence](../_generated/diagrams/behavioral/diagrams/wpf-lifetime.svg)
 

@@ -2,6 +2,7 @@ using System.Windows;
 using Microsoft.Extensions.Logging;
 using Craft.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Smurfs.Application.Core;
@@ -43,14 +44,25 @@ public partial class App
             splash.Show();
 
             var host = Host.CreateDefaultBuilder()
+                .UseContentRoot(AppContext.BaseDirectory)
                 .ConfigureLogging((context, logging) => _fileLogging.Configure(context.Configuration, logging))
-                .ConfigureServices(services =>
+                .ConfigureServices((context, services) =>
                 {
-                    //const string connectionString = "Data Source=babuska.db";
-                    const string connectionString = "Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_WPF";
+                    var provider = context.Configuration["Database:Provider"];
+                    switch (provider?.Trim().ToUpperInvariant())
+                    {
+                        case "SQLITE":
+                            var sqliteConnection = GetRequiredConnectionString(context.Configuration, "Sqlite");
+                            services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(sqliteConnection));
+                            break;
+                        case "POSTGRES":
+                            var postgresConnection = GetRequiredConnectionString(context.Configuration, "Postgres");
+                            services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(postgresConnection));
+                            break;
+                        default:
+                            throw new InvalidOperationException("Configure Database:Provider as Sqlite or Postgres.");
+                    }
 
-                    //services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString));
-                    services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(connectionString));
                     services.AddApplication();
                     services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
                     services.AddScoped<ISmurfReadService, SmurfReadService>();
@@ -111,5 +123,16 @@ public partial class App
                 base.OnExit(e);
             }
         }
+    }
+
+    private static string GetRequiredConnectionString(IConfiguration config, string name)
+    {
+        var connectionString = config.GetConnectionString(name);
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException($"Configure ConnectionStrings:{name}.");
+        }
+
+        return connectionString;
     }
 }
