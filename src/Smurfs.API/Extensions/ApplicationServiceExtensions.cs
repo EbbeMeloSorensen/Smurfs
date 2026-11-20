@@ -59,13 +59,15 @@ public static class ApplicationServiceExtensions
             connectionString = GetHerokuConnectionString(Environment.GetEnvironmentVariable("DATABASE_URL"));
         }
 
-        services.AddIdentityPersistence<Smurfs.Persistence.EFCore.Identity.PostgresDataContext>(options =>
-                //options.UseSqlite(connectionString));
-                options.UseNpgsql(connectionString));
+        //services.AddIdentityPersistence<Smurfs.Persistence.EFCore.Identity.PostgresDataContext>(options =>
+        services.AddIdentityPersistence<Smurfs.Persistence.EFCore.Identity.SqliteDataContext>(options =>
+            options.UseSqlite(connectionString));
+            //options.UseNpgsql(connectionString));
 
-        services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.PostgresDataContext>(options =>
-            //options.UseSqlite(connectionString));
-            options.UseNpgsql(connectionString));
+        //services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.PostgresDataContext>(options =>
+        services.AddAppDataPersistence<Smurfs.Persistence.EFCore.AppData.SqliteDataContext>(options =>
+            options.UseSqlite(connectionString));
+            //options.UseNpgsql(connectionString));
 
         services.AddCors(opt =>
         {
