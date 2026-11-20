@@ -29,7 +29,7 @@ note bottom of VillageTable
   Village FK: explicit ClientSetNull.
 end note
 note bottom of PetTable
-  PostgreSQL baseline 20261116175110_InitialMigration
+  PostgreSQL baseline 20261118194640_InitialPostgres
   and the SQLite baseline share these tables and relationships.
   PostgreSQL uses uuid for Guid, text for string, and integer for Age.
   SQLite uses TEXT for Guid/string and INTEGER for Age.

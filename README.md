@@ -188,20 +188,20 @@ The legacy `scripts/add-random-smurfs.ps1` inserts into a SQLite file. It cannot
 
 For API and WebClient deployment, see the API README at `src/Smurfs.API/README.md`.
 
-## AppData providers and migrations
+## AppData and Identity providers and migrations
 
-AppData keeps its shared model in the abstract `DataContext`. `PostgresDataContext` and `SqliteDataContext` each have their own migrations and model snapshot in the same assembly, under `Migrations/Postgres` and `Migrations/Sqlite`.
+Each persistence assembly keeps its shared model in the abstract `DataContext`. `PostgresDataContext` and `SqliteDataContext` each have their own migrations and model snapshot in the same assembly, under `Migrations/Postgres` and `Migrations/Sqlite`.
 
-Production clients currently select `PostgresDataContext`. To compose an AppData host with SQLite, register `AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))`. The registration also exposes the selected context and its factory through the shared `DataContext` contract. Identity retains its PostgreSQL context and migrations.
+Production clients currently select `PostgresDataContext`. To compose an AppData host with SQLite, register `AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))`. The registration also exposes the selected context and its factory through the shared `DataContext` contract. Identity uses the same sibling provider context structure. Register its selected provider with `AddIdentityPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))` when composing a SQLite host. Both extension methods live in their respective persistence namespaces.
 
-For each AppData model change, generate one migration per provider from the repository root with the EF Core CLI:
+For each model change, generate one migration per provider in the affected persistence project from the repository root with the EF Core CLI:
 
 ```powershell
-$project = 'src/Smurfs.Persistence.EFCore.AppData'
+$project = 'src/Smurfs.Persistence.EFCore.AppData' # Use Smurfs.Persistence.EFCore.Identity for Identity changes
 dotnet ef migrations add DescribePostgresChange --project $project --startup-project $project --context PostgresDataContext --output-dir Migrations/Postgres
 dotnet ef migrations add DescribeSqliteChange --project $project --startup-project $project --context SqliteDataContext --output-dir Migrations/Sqlite
 ```
 
-The design-time factories use local development settings and do not open a connection when generating migrations. To apply a migration explicitly, pass `--connection` to `dotnet ef database update` with the chosen context. SQLite's design-time default is `Data Source=smurfs-sqlite.db`; start with a fresh file for its new baseline.
+The design-time factories use local development settings and do not open a connection when generating migrations. To apply a migration explicitly, pass `--connection` to `dotnet ef database update` with the chosen context. SQLite design-time defaults are `Data Source=smurfs-sqlite.db` for AppData and `Data Source=smurfs-identity-sqlite.db` for Identity. Start with a fresh file for each new baseline. The API uses one PostgreSQL database for both contexts. A SQLite host can explicitly supply the same SQLite connection to both registrations.
 
-The existing PostgreSQL migration ID is preserved. Generating or switching migration sets does not transfer data between providers. Identity migration commands still use its `DataContext` in `src/Smurfs.Persistence.EFCore.Identity`.
+The existing PostgreSQL migration ID is preserved. Generating or switching migration sets does not transfer data between providers. Pass the project explicitly because both assemblies expose context types with the same names.

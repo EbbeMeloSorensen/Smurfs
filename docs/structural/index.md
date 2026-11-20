@@ -46,15 +46,15 @@ WPF and the console initialize the shared file logger in `Smurfs.Infrastructure`
 
 ## Identity storage
 
-The separate Identity adapter defines an EF context for ASP.NET Core Identity and adds a required `DisplayName` to `AspNetUsers`. The initial Identity migration `20261116175127_InitialMigration` creates the user and role tables and their related claim, login, membership and token tables. The design-time factory targets the local PostgreSQL database `Smurfs_API`. The console currently uses app-data services only and does not register the Identity context, user accessor or sample account seeder.
+The separate Identity adapter defines an EF context for ASP.NET Core Identity and adds a required `DisplayName` to `AspNetUsers`. The initial Identity migration `20261116175127_InitialMigration` creates the user and role tables and their related claim, login, membership and token tables. The abstract Identity DataContext shares its model with PostgresDataContext and SqliteDataContext. Each provider has a migration folder, snapshot, and design-time factory in the Identity assembly. The PostgreSQL baseline retains its existing migration ID. AddIdentityPersistence registers the selected concrete context and exposes that same scoped instance as DataContext for Identity stores and startup migration. The console currently uses app-data services only and does not register the Identity context, user accessor or sample account seeder.
 
 ## Relational model
 
 This app-data model reflects the current EF runtime model: Smurfs, Villages and Pets tables. DataContext exposes all three entity sets. Smurf has optional indexed PetId and shadow VillageId foreign keys; each village and pet can be associated with multiple Smurfs. VillageId is nullable and maintained by EF, with no corresponding C# property. SmurfConfiguration explicitly maps the optional Pet relationship with Restrict. SmurfConfiguration also explicitly maps optional Village membership through the shadow VillageId, with ClientSetNull and navigation from Village to Smurfs only. DataContext.OnModelCreating calls the shared Configure helper, which applies SmurfConfiguration. See [ADR 0002](../decisions/0002-pet-configuration.md) for the mapping and deletion semantics.
 
-EF Core can materialize legacy Smurf names through the backing field. The PostgreSQL Name column requires a value but does not enforce the domain’s whitespace or length checks.
+EF Core can materialize legacy Smurf names through the backing field. The PostgreSQL Name column requires a value but does not enforce the domainâ€™s whitespace or length checks.
 
-The regenerated initial migration `20261116175110_InitialMigration` and snapshot now match this model: Smurfs, Pets and Villages, with nullable indexed PetId and VillageId foreign keys. Both foreign keys reference the corresponding Id primary key. The Pet foreign key specifies ON DELETE RESTRICT; the Village foreign key specifies no cascading database delete action. This replaces the earlier initial migration; it creates the current schema directly rather than renaming an existing Pet table. This PostgreSQL baseline is associated with PostgresDataContext and retains its deployed migration ID. The separate SQLite baseline is associated with SqliteDataContext and is tested against an in-memory SQLite database. See the current test plan for provider coverage.
+The regenerated initial migration `20261118194640_InitialPostgres` and snapshot now match this model: Smurfs, Pets and Villages, with nullable indexed PetId and VillageId foreign keys. Both foreign keys reference the corresponding Id primary key. The Pet foreign key specifies ON DELETE RESTRICT; the Village foreign key specifies no cascading database delete action. This replaces the earlier initial migration; it creates the current schema directly rather than renaming an existing Pet table. This PostgreSQL baseline is associated with PostgresDataContext and retains its deployed migration ID. The separate SQLite baseline is associated with SqliteDataContext and is tested against an in-memory SQLite database. See the current test plan for provider coverage.
 
 ![Relational persistence model](../_generated/diagrams/structural/diagrams/persistence-model.svg)
 
@@ -66,4 +66,4 @@ The WPF application composes the same list and create handlers, read adapter, do
 
 ## HTTP API storage
 
-Identity owns the account tables and AppData owns the catalog tables. Smurfs.API applies both migration sets to the same PostgreSQL database. Console, WPF, WinForms, and Avalonia each target their own local PostgreSQL catalog.
+Identity owns the account tables and AppData owns the catalog tables. Smurfs.API selects both PostgreSQL contexts and applies their migration sets to the same PostgreSQL database. Console, WPF, WinForms, and Avalonia each target their own local PostgreSQL catalog.

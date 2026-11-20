@@ -18,7 +18,7 @@ public sealed class ProviderMigrationTests
     public void Postgres_UsesExistingMigrationAndMatchingSnapshot()
     {
         using var context = new PostgresDataContextFactory().CreateDbContext([]);
-        Assert.Equal("20261116175110_InitialMigration", Assert.Single(context.Database.GetMigrations()));
+        Assert.Equal("20261118194640_InitialPostgres", Assert.Single(context.Database.GetMigrations()));
         Assert.False(context.Database.HasPendingModelChanges());
     }
 

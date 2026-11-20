@@ -6,13 +6,13 @@ namespace Smurfs.Persistence.EFCore.Identity;
 /// <summary>
 /// Stores Identity users and related Identity records.
 /// </summary>
-public class DataContext : IdentityDbContext<AppUser>
+public abstract class DataContext : IdentityDbContext<AppUser>
 {
     /// <summary>
     /// Creates an Identity context using the supplied EF Core options.
     /// </summary>
-    public DataContext(
-        DbContextOptions<DataContext> options) : base(options)
+    protected DataContext(
+        DbContextOptions options) : base(options)
     {
     }
 }

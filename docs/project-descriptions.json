@@ -5,7 +5,7 @@
   "Smurfs.Infrastructure": "Implements the application's Smurf read service against the app-data EF Core context. It orders, pages, and projects results for the list use case. It also provides the shared Serilog rolling file setup used by the console and WPF.",
   "Smurfs.Persistence": "Defines the Smurfs persistence contracts for the Smurf repository, app-data initialization, and unit-of-work creation and lifetime.",
   "Smurfs.Persistence.EFCore.AppData": "Stores Smurfs, Pets, and Villages in PostgreSQL through EF Core. It owns the app-data context, mappings, separate PostgreSQL and SQLite migrations, repository, unit of work, initialization, and seed data.",
-  "Smurfs.Persistence.EFCore.Identity": "Owns the separate ASP.NET Core Identity store, including the user model, EF Core context, PostgreSQL migrations, and sample-account seeding.",
+  "Smurfs.Persistence.EFCore.Identity": "Owns the separate ASP.NET Core Identity store, including the user model, shared EF Core context, provider contexts with independent PostgreSQL and SQLite migrations, and sample-account seeding.",
   "Smurfs.UI.Avalonia": "Hosts the Avalonia desktop interface for loading and paging through Smurfs using the shared view model.",
   "Smurfs.UI.Console": "Hosts the command-line interface. It composes the application and persistence services and exposes commands to initialize the app database, create a Smurf, and list Smurfs with paging.",
   "Smurfs.UI.WinForms": "Hosts the Windows Forms catalog browser and adapts the shared paging commands and state to WinForms controls.",

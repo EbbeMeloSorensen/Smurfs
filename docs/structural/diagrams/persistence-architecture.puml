@@ -46,6 +46,14 @@ component "Smurfs.Persistence.EFCore.AppData" as AppData {
   class "AppDataContextFactory<TContext>" as AppDataContextFactory
   class SmurfConfiguration
 }
+component "Smurfs.Persistence.EFCore.Identity" as Identity {
+  class AppUser
+  abstract class "DataContext" as IdentityDataContext
+  class "PostgresDataContext" as IdentityPostgresDataContext
+  class "SqliteDataContext" as IdentitySqliteDataContext
+  class "PostgresDataContextFactory" as IdentityPostgresFactory <<design-time>>
+  class "SqliteDataContextFactory" as IdentitySqliteFactory <<design-time>>
+}
 component "Smurfs.Domain" as Domain {
   class Smurf
   class Village
@@ -85,6 +93,11 @@ PostgresDataContextFactory ..> PostgresDataContext : creates
 SqliteDataContextFactory ..> SqliteDataContext : creates
 AppDataContextFactory ..> DataContext : returns / context constraint
 DataContext ..> SmurfConfiguration : applies during model creation
+IdentityDataContext <|-- IdentityPostgresDataContext
+IdentityDataContext <|-- IdentitySqliteDataContext
+IdentityDataContext ..> AppUser : Identity user type
+IdentityPostgresFactory ..> IdentityPostgresDataContext : creates
+IdentitySqliteFactory ..> IdentitySqliteDataContext : creates
 legend bottom left
   UML components represent production .NET assemblies.
   Arrows describe relationships between types.

@@ -11,6 +11,7 @@ using Smurfs.Infrastructure.Security;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.Persistence;
 using Smurfs.Persistence.EFCore.AppData;
+using Smurfs.Persistence.EFCore.Identity;
 
 namespace Smurfs.API.Extensions;
 
@@ -58,7 +59,7 @@ public static class ApplicationServiceExtensions
             connectionString = GetHerokuConnectionString(Environment.GetEnvironmentVariable("DATABASE_URL"));
         }
 
-        services.AddDbContext<Smurfs.Persistence.EFCore.Identity.DataContext>(options =>
+        services.AddIdentityPersistence<Smurfs.Persistence.EFCore.Identity.PostgresDataContext>(options =>
                 //options.UseSqlite(connectionString));
                 options.UseNpgsql(connectionString));
 
