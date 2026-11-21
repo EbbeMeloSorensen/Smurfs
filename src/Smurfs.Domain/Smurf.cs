@@ -3,7 +3,7 @@ using Smurfs.Domain.BusinessRules.AtomicRules;
 namespace Smurfs.Domain;
 
 /// <summary>
-/// A named Smurf with an health and an optional pet.
+/// A named Smurf with health, an optional birthday, and an optional pet.
 /// </summary>
 public class Smurf
 {
@@ -39,6 +39,21 @@ public class Smurf
     /// Gets or sets the health; no range validation is applied.
     /// </summary>
     public int Health { get; set; }
+
+    /// <summary>
+    /// Gets or sets the birthday, or null when it is unknown.
+    /// </summary>
+    public DateTime? Birthday { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the Smurf is infected, or null when it is unknown.
+    /// </summary>
+    public bool? Infected { get; set; }
+
+    /// <summary>
+    /// Gets or sets the gender, or null when it is unknown.
+    /// </summary>
+    public Gender? Gender { get; set; }
 
     /// <summary>
     /// Gets or sets the optional pet identifier.

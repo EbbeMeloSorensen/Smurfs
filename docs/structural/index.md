@@ -83,3 +83,7 @@ The authenticated API exposes DELETE /api/smurfs/{id} with no request body. The 
 ## Pending Health schema migration
 
 The active domain model, application DTOs, edit command, and API edit body use Health (health in JSON). Existing PostgreSQL and SQLite migrations and model snapshots still define Age. New provider migrations must be created and applied before using the renamed property with migrated databases. Review generated migrations to preserve existing values when renaming the column. Snapshot agreement and migration-backed integration checks will report this deliberate mismatch until migration work is completed.
+
+Smurf.Birthday is an optional DateTime, defaulting to null when unknown. It has no additional validation. The runtime persistence model includes the nullable property; provider migrations for Birthday are pending.
+
+Smurf also exposes nullable Infected (bool) and Gender (the domain enum with Male and Female values). Null represents an unknown value for either property. EF Core maps Gender to a nullable integer by convention. Provider migrations for these properties are pending.

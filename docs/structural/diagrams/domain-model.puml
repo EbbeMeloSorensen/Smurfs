@@ -5,7 +5,15 @@ left to right direction
 class Smurf {
   +Name : string {get; set;}
   +Health : int {get; set;}
+  +Birthday : DateTime? {get; set;}
+  +Infected : bool? {get; set;}
+  +Gender : Gender? {get; set;}
 }
+enum Gender {
+  Male
+  Female
+}
+Smurf ..> Gender : optional value
 class Village {
   +Name : string {get; set;}
 }

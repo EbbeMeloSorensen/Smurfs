@@ -6,6 +6,9 @@ entity "Smurfs" as SmurfTable {
   --
   * Name : string
   * Health : int
+  Birthday : DateTime?
+  Infected : bool?
+  Gender : int?
   PetId : Guid? <<FK, indexed>>
   VillageId : Guid? <<shadow FK, indexed>>
 }
@@ -36,5 +39,10 @@ note bottom of PetTable
   Pet FK: ON DELETE RESTRICT; Village FK: no cascade.
   Runtime property is Health. Existing migrations and snapshots still use Age.
   Provider migrations are pending; existing databases retain Age.
+end note
+note bottom of SmurfTable
+  Birthday, Infected, and Gender are optional in the runtime model.
+  Gender is stored as an integer by EF convention (Male=0, Female=1).
+  Provider migrations must be generated and applied separately.
 end note
 @enduml
