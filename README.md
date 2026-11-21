@@ -202,6 +202,20 @@ dotnet ef migrations add DescribePostgresChange --project $project --startup-pro
 dotnet ef migrations add DescribeSqliteChange --project $project --startup-project $project --context SqliteDataContext --output-dir Migrations/Sqlite
 ```
 
+To ease this process for AppData changes, [scripts/add-appdata-migrations.sh](scripts/add-appdata-migrations.sh) runs both generation commands for you. Supply one DescribeChange argument; the script uses that name for both provider migrations in the AppData project:
+
+```bash
+bash scripts/add-appdata-migrations.sh RenameAgeToHealth
+```
+
+Run it using Bash on Linux/macOS, Git Bash, or WSL. It requires the .NET 10 SDK and a compatible EF Core 10 CLI tool on PATH. If needed, install the tool with:
+
+```sh
+dotnet tool install --global dotnet-ef --version 10.0.14
+```
+
+The script resolves the project relative to its own location, generates PostgreSQL first and SQLite second, and updates both model snapshots. Review the generated migrations before applying them, especially for a column rename where existing values should be preserved. If generation fails, inspect git diff before retrying because the first migration may already have been generated. Use the manual commands above for Identity changes.
+
 The design-time factories use local development settings and do not open a connection when generating migrations. To apply a migration explicitly, pass `--connection` to `dotnet ef database update` with the chosen context. SQLite design-time defaults are `Data Source=smurfs-sqlite.db` for AppData and `Data Source=smurfs-identity-sqlite.db` for Identity. Start with a fresh file for each new baseline. The API uses one database for both contexts, selecting its provider from configuration. A SQLite host can explicitly supply the same SQLite connection to both registrations.
 
 The existing PostgreSQL migration ID is preserved. Generating or switching migration sets does not transfer data between providers. Pass the project explicitly because both assemblies expose context types with the same names.
