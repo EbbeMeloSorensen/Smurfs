@@ -29,3 +29,8 @@ GET {{host}}/api/smurfs?pageNumber=1&pageSize=2
 ### Authenticated page (200 with a Pagination header)
 GET {{host}}/api/smurfs?pageNumber=1&pageSize=2
 Authorization: Bearer {{login.response.body.$.token}}
+
+
+### Delete a disposable Smurf. Replace the placeholder with its identifier.
+DELETE {{host}}/api/smurfs/<smurf-id>
+Authorization: Bearer {{login.response.body.$.token}}

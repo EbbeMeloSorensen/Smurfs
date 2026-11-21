@@ -73,3 +73,9 @@ Identity owns the account tables and AppData owns the catalog tables. Smurfs.API
 The application-owned Edit.Command identifies an existing Smurf by Id and supplies replacement Name and Age values. The handler checks the name draft through the domain catalog, loads the tracked entity in a unit of work, applies the values, and validates the resulting entity before committing. Missing entities and catalog violations return failures. Age follows the domain's current unrestricted integer contract. Existing relationships remain attached to the loaded entity. Cancellation and persistence exceptions propagate through the shared request failure logging pipeline.
 
 The command returns Result<Unit>, matching Create. MediatR discovers the handler through AddApplication(). The API exposes PUT /api/smurfs/{id} with a JSON body containing name and age. The route supplies the identifier. The endpoint uses the shared result mapping, returning 200 on success and 400 for a handler failure, including a missing Smurf. Desktop edit screens are not implemented. EditSmurfTests verifies successful persistence, missing IDs, name and entity rejection without partial writes, and preservation of the pet relationship.
+
+## Deleting a Smurf
+
+Delete.Command identifies an existing Smurf by Id. The handler loads the entity within a unit of work, stages removal through the repository, and commits before returning Result<Unit>. A missing identifier returns the same failure message as Edit. Cancellation and persistence exceptions propagate through the existing logging pipeline. Deletion removes the selected Smurf and preserves associated Pet and Village records.
+
+The authenticated API exposes DELETE /api/smurfs/{id} with no request body. The controller uses the existing result mapping, returning 200 on success and 400 if the Smurf is missing. DeleteSmurfTests verifies persisted removal, preservation of another Smurf and a shared pet, missing identifiers, and cancellation.

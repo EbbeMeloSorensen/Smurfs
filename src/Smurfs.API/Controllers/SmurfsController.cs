@@ -51,6 +51,17 @@ public class SmurfsController : BaseApiController
     }
 
     /// <summary>
+    /// Deletes the Smurf identified by the route.
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> DeleteSmurf(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return HandleResult(await Mediator.Send(new Delete.Command { Id = id }, cancellationToken));
+    }
+
+    /// <summary>
     /// Supplies the replacement values for a Smurf edit.
     /// </summary>
     public sealed class EditRequest
