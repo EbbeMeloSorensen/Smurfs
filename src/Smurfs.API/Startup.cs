@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Smurfs.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Smurfs.API.Extensions;
@@ -34,6 +36,10 @@ public class Startup
         {
             var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
             opt.Filters.Add(new AuthorizeFilter(policy));
+        }).AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter<Gender>(allowIntegerValues: false));
         });
 
         services.AddApplicationServices(_config);

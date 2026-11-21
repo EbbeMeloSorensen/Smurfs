@@ -40,7 +40,11 @@ public sealed class SmurfReadService(DataContext context) : ISmurfReadService
             {
                 Id = smurf.Id,
                 Name = smurf.Name,
-                Health = smurf.Health
+                Health = smurf.Health,
+                Birthday = smurf.Birthday,
+                Infected = smurf.Infected,
+                Gender = smurf.Gender,
+                PetId = smurf.PetId
             })
             .ToListAsync(cancellationToken);
 

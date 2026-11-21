@@ -87,3 +87,7 @@ The active domain model, application DTOs, edit command, and API edit body use H
 Smurf.Birthday is an optional DateTime, defaulting to null when unknown. It has no additional validation. The runtime persistence model includes the nullable property; provider migrations for Birthday are pending.
 
 Smurf also exposes nullable Infected (bool) and Gender (the domain enum with Male and Female values). Null represents an unknown value for either property. EF Core maps Gender to a nullable integer by convention. Provider migrations for these properties are pending.
+
+## Smurf list response fields
+
+The paged read DTO exposes id, name, health, birthday, infected, gender, and petId. GET /api/smurfs includes nullable properties explicitly as JSON null when unknown. Gender is serialized as Male or Female text. Infection status distinguishes true, false, and null. PetId identifies the related pet without serializing its navigation graph. SmurfReadService projects these fields directly from the database.

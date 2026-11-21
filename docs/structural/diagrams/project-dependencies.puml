@@ -45,6 +45,7 @@ Smurfs_UI_WPF -up-> Smurfs_Infrastructure
 Smurfs_UI_WPF -up-> Smurfs_Persistence_EFCore_AppData
 Smurfs_UI_WPF -up-> Smurfs_ViewModel
 Smurfs_ViewModel -up-> Smurfs_Application
+Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Infrastructure
 Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Application
 Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Persistence_EFCore_AppData
 Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Persistence_EFCore_Identity
