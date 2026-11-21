@@ -29,46 +29,46 @@ public sealed class EditSmurfTests
         await using var context = await factory.CreateDbContextAsync();
         await context.Database.EnsureCreatedAsync();
         var pet = new Pet { Name = "Pet" };
-        var original = new Smurfs.Domain.Smurf { Name = "Original", Age = 7, Pet = pet };
+        var original = new Smurfs.Domain.Smurf { Name = "Original", Health = 7, Pet = pet };
         context.Smurfs.Add(original);
         await context.SaveChangesAsync();
         var petId = original.PetId;
         var catalog = new BusinessRuleCatalog();
-        catalog.RegisterAtomicRule(new RejectedAgeRule());
+        catalog.RegisterAtomicRule(new RejectedHealthRule());
         var handler = new Edit.Handler(new UnitOfWorkFactory(factory), catalog);
 
         foreach (var name in new[] { " ", new string('a', 21) })
         {
             var rejected = await handler.Handle(
-                new Edit.Command { Id = original.Id, Name = name, Age = 12 }, CancellationToken.None);
+                new Edit.Command { Id = original.Id, Name = name, Health = 12 }, CancellationToken.None);
             Assert.False(rejected.IsSuccess);
         }
 
         var entityRejected = await handler.Handle(
-            new Edit.Command { Id = original.Id, Name = "Changed", Age = 99 }, CancellationToken.None);
+            new Edit.Command { Id = original.Id, Name = "Changed", Health = 99 }, CancellationToken.None);
         Assert.False(entityRejected.IsSuccess);
         await context.Entry(original).ReloadAsync();
         Assert.Equal("Original", original.Name);
-        Assert.Equal(7, original.Age);
+        Assert.Equal(7, original.Health);
 
         var missing = await handler.Handle(
-            new Edit.Command { Id = Guid.NewGuid(), Name = "Missing", Age = 1 }, CancellationToken.None);
+            new Edit.Command { Id = Guid.NewGuid(), Name = "Missing", Health = 1 }, CancellationToken.None);
         Assert.False(missing.IsSuccess);
         Assert.Equal("Smurf not found.", missing.Error);
 
         var saved = await handler.Handle(
-            new Edit.Command { Id = original.Id, Name = "Edited", Age = 12 }, CancellationToken.None);
+            new Edit.Command { Id = original.Id, Name = "Edited", Health = 12 }, CancellationToken.None);
         Assert.True(saved.IsSuccess);
         await context.Entry(original).ReloadAsync();
         Assert.Equal("Edited", original.Name);
-        Assert.Equal(12, original.Age);
+        Assert.Equal(12, original.Health);
         Assert.Equal(petId, original.PetId);
         Assert.Single(await context.Smurfs.ToListAsync());
     }
 
-    private sealed class RejectedAgeRule : IBusinessRule<Smurfs.Domain.Smurf>
+    private sealed class RejectedHealthRule : IBusinessRule<Smurfs.Domain.Smurf>
     {
         public BusinessRuleViolation? Validate(Smurfs.Domain.Smurf smurf) =>
-            smurf.Age == 99 ? new(nameof(Smurfs.Domain.Smurf.Age), "Test age rejected.") : null;
+            smurf.Health == 99 ? new(nameof(Smurfs.Domain.Smurf.Health), "Test health rejected.") : null;
     }
 }

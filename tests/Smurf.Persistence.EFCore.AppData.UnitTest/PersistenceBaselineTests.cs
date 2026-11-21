@@ -41,19 +41,19 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     public async Task Queries_CombinePredicatesWithAnd_AndAcceptEmptyFilters()
     {
         await using var context = new SqliteDataContext(Options);
-        context.AddRange(new SmurfEntity { Name = "Papa", Age = 100 },
-            new SmurfEntity { Name = "Papa", Age = 20 },
-            new SmurfEntity { Name = "Other", Age = 100 });
+        context.AddRange(new SmurfEntity { Name = "Papa", Health = 100 },
+            new SmurfEntity { Name = "Papa", Health = 20 },
+            new SmurfEntity { Name = "Other", Health = 100 });
         await context.SaveChangesAsync();
         context.ChangeTracker.Clear();
         var repository = new SmurfRepository(context);
-        Expression<Func<SmurfEntity, bool>>[] filters = [s => s.Name == "Papa", s => s.Age > 50];
+        Expression<Func<SmurfEntity, bool>>[] filters = [s => s.Name == "Papa", s => s.Health > 50];
 
         Assert.Single(await repository.FindAsync(filters));
         Assert.Equal(1, await repository.CountAsync(filters));
         Assert.Equal(3, await repository.CountAsync(_all));
         Assert.Equal(3, (await repository.FindAsync(_all)).Count);
-        Assert.Empty(await repository.FindAsync([s => s.Age < 0]));
+        Assert.Empty(await repository.FindAsync([s => s.Health < 0]));
     }
 
     /// <summary>

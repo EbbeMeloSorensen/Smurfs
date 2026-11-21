@@ -1,11 +1,11 @@
 @startuml
-' Current runtime model, regenerated initial migration and snapshot.
+' Runtime model. Existing migrations and snapshots still use Age.
 hide methods
 entity "Smurfs" as SmurfTable {
   * Id : Guid <<PK>>
   --
   * Name : string
-  * Age : int
+  * Health : int
   PetId : Guid? <<FK, indexed>>
   VillageId : Guid? <<shadow FK, indexed>>
 }
@@ -31,9 +31,10 @@ end note
 note bottom of PetTable
   PostgreSQL baseline 20261118194640_InitialPostgres
   and the SQLite baseline share these tables and relationships.
-  PostgreSQL uses uuid for Guid, text for string, and integer for Age.
-  SQLite uses TEXT for Guid/string and INTEGER for Age.
+  PostgreSQL uses uuid for Guid, text for string, and integer for Health.
+  SQLite uses TEXT for Guid/string and INTEGER for Health.
   Pet FK: ON DELETE RESTRICT; Village FK: no cascade.
-  No existing database was updated during reconciliation.
+  Runtime property is Health. Existing migrations and snapshots still use Age.
+  Provider migrations are pending; existing databases retain Age.
 end note
 @enduml

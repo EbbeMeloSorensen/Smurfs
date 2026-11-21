@@ -48,7 +48,7 @@ public sealed class CreateSmurfTests
         Assert.True(created.IsSuccess);
         var saved = Assert.Single(await context.Smurfs.ToListAsync());
         Assert.Equal(validName, saved.Name);
-        Assert.Equal(0, saved.Age);
+        Assert.Equal(0, saved.Health);
     }
 
     private sealed class ReservedNameRule : IBusinessRule<SmurfNameDraft>

@@ -16,7 +16,7 @@ public class SmurfDto
     public string Name { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the persisted age.
+    /// Gets or sets the persisted health.
     /// </summary>
-    public int Age { get; set; }
+    public int Health { get; set; }
 }

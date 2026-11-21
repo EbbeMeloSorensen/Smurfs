@@ -32,7 +32,7 @@ dotnet run --project src/Smurfs.UI.Console -- initdb
 
 ## createsmurf
 
-Submits a proposed name. The handler checks the draft through the business rule catalog, constructs a Smurf with age zero, checks the entity rules and commits in one write session. Names require non-whitespace text and have a limit of 20 characters. If a rule fails, the console displays the first violation. This realizes [UC-002 Create a Smurf](../requirements/use-cases.md#uc-002-create-a-smurf).
+Submits a proposed name. The handler checks the draft through the business rule catalog, constructs a Smurf with health zero, checks the entity rules and commits in one write session. Names require non-whitespace text and have a limit of 20 characters. If a rule fails, the console displays the first violation. This realizes [UC-002 Create a Smurf](../requirements/use-cases.md#uc-002-create-a-smurf).
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- createsmurf --name "New Smurf"

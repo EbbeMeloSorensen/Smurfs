@@ -13,7 +13,7 @@ ref over CLI : Database setup if missing (initdb operations)
 CLI -> Create : Send Create.Command with proposed name
 Create -> Catalog : ValidateAtomic(name draft)
 opt valid draft
-  Create -> Create : Construct Smurf with age zero
+  Create -> Create : Construct Smurf with health zero
   Create -> Catalog : ValidateAtomic(smurf)
 end
 alt rule violation
