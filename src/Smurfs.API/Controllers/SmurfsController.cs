@@ -30,4 +30,39 @@ public class SmurfsController : BaseApiController
     {
         return HandleResult(await Mediator.Send(command, cancellationToken));
     }
+
+    /// <summary>
+    /// Replaces the name and age of the Smurf identified by the route.
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult> EditSmurf(
+        Guid id,
+        [FromBody] EditRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new Edit.Command
+        {
+            Id = id,
+            Name = request.Name,
+            Age = request.Age
+        };
+
+        return HandleResult(await Mediator.Send(command, cancellationToken));
+    }
+
+    /// <summary>
+    /// Supplies the replacement values for a Smurf edit.
+    /// </summary>
+    public sealed class EditRequest
+    {
+        /// <summary>
+        /// Gets the proposed name.
+        /// </summary>
+        public required string Name { get; init; }
+
+        /// <summary>
+        /// Gets the replacement age.
+        /// </summary>
+        public required int Age { get; init; }
+    }
 }
