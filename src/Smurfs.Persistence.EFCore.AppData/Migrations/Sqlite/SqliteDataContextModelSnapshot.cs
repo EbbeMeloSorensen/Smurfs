@@ -38,7 +38,7 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Age")
+                    b.Property<int>("Health")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")

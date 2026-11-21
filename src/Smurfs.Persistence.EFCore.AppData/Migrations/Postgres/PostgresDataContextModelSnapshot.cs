@@ -43,7 +43,7 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations.Postgres
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Age")
+                    b.Property<int>("Health")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
