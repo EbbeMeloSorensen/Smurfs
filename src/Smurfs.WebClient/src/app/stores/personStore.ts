@@ -96,7 +96,7 @@ export default class PersonStore {
         }
 
         return Array.from(this.personRegistry.values()).sort((a, b) => {
-            return a.created > b.created ? -1 : 1
+            return (b.created?.getTime() ?? 0) - (a.created?.getTime() ?? 0)
         });
     }
 

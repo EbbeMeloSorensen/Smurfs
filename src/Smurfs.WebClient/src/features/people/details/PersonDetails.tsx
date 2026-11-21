@@ -5,7 +5,6 @@ import LoadingComponent from "../../../app/layout/LoadingComponents";
 import { useStore } from "../../../app/stores/store";
 import PersonDetailedHeader from "./PersonDetailedHeader";
 import PersonDetailedInfo from "./PersonDetailedInfo";
-import PersonRelations from "./PersonRelations";
 
 export default observer(function PersonDetails() {
   const { personStore } = useStore();
@@ -28,7 +27,6 @@ export default observer(function PersonDetails() {
     <>
       <PersonDetailedHeader person={person} />
       <PersonDetailedInfo person={person} />
-      <PersonRelations />
     </>
   );
 });

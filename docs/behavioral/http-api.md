@@ -31,3 +31,9 @@ For [UC-003](../requirements/use-cases.md#uc-003-list-smurfs), send `GET /api/sm
 The Create Smurf button opens /createSmurf. The form accepts a required nonblank name up to 20 characters, an integer health value (default zero), an optional birthday, infection status (Unknown, Yes, or No), and gender (Unknown, Male, or Female). It posts name, health, birthday, infected, and gender to the authenticated POST /api/smurfs endpoint. Unknown values are sent as null. Birthdays use midnight UTC for the selected calendar date. Successful submission returns to Smurf Overview and resets the list so its next load reads the saved catalog. Failed submission keeps the form values and shows an error. Submission is disabled while saving.
 
 Create.Command defaults the added fields so existing name-only desktop and console callers continue to create Smurfs with zero health and unknown birthday and infection status.
+
+## WebClient Smurf details
+
+Selecting a Smurf in the overview shows its name, health, birthday, infection status, and gender. Unknown optional values display Unknown; false infection displays No and true displays Yes. Birthday displays the stored calendar date without shifting it to the browser timezone. Legacy address, nickname, category, death status, and person-relations fields are removed from this view.
+
+The list adapter retains the complete Smurf response in the existing client store. Opening or refreshing a detail URL retrieves GET /api/smurfs/{id}, which returns the same DTO fields as the paged list, or 404 for a missing identifier. The detail header's Delete action calls DELETE /api/smurfs/{id}.

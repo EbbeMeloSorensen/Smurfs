@@ -21,6 +21,16 @@ public class SmurfsController : BaseApiController
     }
 
     /// <summary>
+    /// Returns the fields of one Smurf.
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult> GetSmurf(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await Mediator.Send(new Details.Query { Id = id }, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : NotFound();
+    }
+
+    /// <summary>
     /// Creates a Smurf with the proposed name. 
     /// </summary>
     [HttpPost]

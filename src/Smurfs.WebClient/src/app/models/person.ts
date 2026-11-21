@@ -1,9 +1,12 @@
 export interface Person {
   id: string;
-  start: Date;
-  end: Date;
-  created: Date;
-  superseded: Date;
+  health: number;
+  infected: boolean | null;
+  gender: 'Male' | 'Female' | null;
+  start: Date | null;
+  end: Date | null;
+  created: Date | null;
+  superseded: Date | null;
   firstName: string;
   surname: string | null;
   nickname: string | null;

@@ -18,7 +18,7 @@ export default observer(function PersonDetailedHeader({ person }: Props) {
     e: SyntheticEvent<HTMLButtonElement>,
     id: string
   ) {
-    if (window.confirm("Do you want to delete this person?") == true) {
+    if (window.confirm("Do you want to delete this Smurf?") === true) {
       deletePerson(id).then(() => history.push(`/people`));
     }
   }
@@ -27,7 +27,7 @@ export default observer(function PersonDetailedHeader({ person }: Props) {
     <Segment.Group>
       <Segment clearing attached="bottom">
         <Header>
-          {person.firstName} {person.surname}
+          {person.firstName}
         </Header>
         <Button.Group floated="right">
           <Button

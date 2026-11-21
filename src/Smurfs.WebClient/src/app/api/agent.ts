@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import { history } from '../..';
-import { CreateSmurfRequest } from '../models/smurf';
+import { CreateSmurfRequest, Smurf } from '../models/smurf';
 import { Person, PersonFormValues } from '../models/person';
 import { PaginatedResult } from '../models/pagination';
 import { User, UserFormValues } from '../models/user';
@@ -82,25 +82,37 @@ const requests = {
     del: <T> (url: string) => axios.delete<T>(url).then(responseBody),
 }
 
+function toPerson(smurf: Smurf): Person {
+    return {
+        ...smurf,
+        firstName: smurf.name,
+        surname: null,
+        birthday: smurf.birthday ? new Date(smurf.birthday) : null,
+        start: null,
+        end: null,
+        created: null,
+        superseded: null,
+        nickname: null,
+        address: null,
+        zipCode: null,
+        city: null,
+        category: null,
+        description: null,
+        dead: null,
+        latitude: null,
+        longitude: null
+    };
+}
+
 const People = {
-    // list: (params: URLSearchParams) => axios.get<PaginatedResult<Person[]>>('/people', {params})
-    //     .then(responseBody),
     list: (params: URLSearchParams) =>
-        axios.get<PaginatedResult<{ id: string; name: string }[]>>('/smurfs', { params })
+        axios.get<PaginatedResult<Smurf[]>>('/smurfs', { params })
             .then(responseBody)
-            .then(result => new PaginatedResult(
-                result.data.map(smurf => ({
-                    id: smurf.id,
-                    firstName: smurf.name,
-                    surname: null,
-                    birthday: null,
-                } as Person)),
-                result.pagination
-            )),    
-    details: (id: string) => requests.get<Person>(`/people/${id}`),
+            .then(result => new PaginatedResult(result.data.map(toPerson), result.pagination)),
+    details: (id: string) => requests.get<Smurf>('/smurfs/' + id).then(toPerson),
     create: (person: PersonFormValues) => requests.post<void>('/people', person),
     update: (person: PersonFormValues) => requests.put<void>(`/people/${person.id}`, person),
-    delete: (id: string) => requests.del<void>(`/people/${id}`)
+    delete: (id: string) => requests.del<void>(`/smurfs/${id}`)
 }
 
 const Account = {
