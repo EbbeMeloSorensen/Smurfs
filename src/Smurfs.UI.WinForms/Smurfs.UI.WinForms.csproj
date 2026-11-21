@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Smurfs.ViewModel\Smurfs.ViewModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

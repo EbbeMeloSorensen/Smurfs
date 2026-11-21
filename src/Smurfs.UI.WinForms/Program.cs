@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Smurfs.Application.Core;
@@ -38,15 +39,9 @@ internal static class Program
         try
         {
             host = Host.CreateDefaultBuilder()
+                .UseContentRoot(AppContext.BaseDirectory)
                 .ConfigureLogging((context, builder) => logging.Configure(context.Configuration, builder))
-                .ConfigureServices(services =>
-                {
-                    //services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite("Data Source=babuska.db"));
-                    services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql("Server=localhost;Port=5432;User Id=root;Password=root;Database=Smurfs_WinForms"));
-                    services.AddApplication();
-                    services.AddScoped<ISmurfReadService, SmurfReadService>();
-                    services.AddSingleton<MainWindowViewModel>();
-                })
+                .ConfigureServices(ConfigureServices)
                 .Build();
 
             Task.Run(async () =>
@@ -65,5 +60,38 @@ internal static class Program
             host?.Dispose();
             throw;
         }
+    }
+
+    private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+    {
+        var provider = context.Configuration["Database:Provider"];
+        switch (provider?.Trim().ToUpperInvariant())
+        {
+            case "SQLITE":
+                var sqliteConnection = GetRequiredConnectionString(context.Configuration, "Sqlite");
+                services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(sqliteConnection));
+                break;
+            case "POSTGRES":
+                var postgresConnection = GetRequiredConnectionString(context.Configuration, "Postgres");
+                services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(postgresConnection));
+                break;
+            default:
+                throw new InvalidOperationException("Configure Database:Provider as Sqlite or Postgres.");
+        }
+
+        services.AddApplication();
+        services.AddScoped<ISmurfReadService, SmurfReadService>();
+        services.AddSingleton<MainWindowViewModel>();
+    }
+
+    private static string GetRequiredConnectionString(IConfiguration config, string name)
+    {
+        var connectionString = config.GetConnectionString(name);
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException($"Configure ConnectionStrings:{name}.");
+        }
+
+        return connectionString;
     }
 }
