@@ -19,6 +19,7 @@ public class Seeding
         }
 
         CreateDataForSeeding(
+            1,
             out var smurfs);
 
         await context.Smurfs.AddRangeAsync(smurfs);
@@ -27,6 +28,7 @@ public class Seeding
     }
 
     private static void CreateDataForSeeding(
+        int randomSmurfCount,
         out List<Smurf> smurfs)
     {
         smurfs = new List<Smurf>
@@ -40,7 +42,7 @@ public class Seeding
             new Smurf{ Name = "Vanity Smurf"}
         };
 
-        const int randomSmurfCount = 1_000;
+        //const int randomSmurfCount = 1_000;
         string[] adjectives = ["Bashful", "Bright", "Cheerful", "Curious", "Drowsy", "Jolly", "Merry", "Quiet"];
         string[] hobbies = ["Baker", "Dancer", "Gardener", "Painter", "Poet", "Singer", "Tailor", "Writer"];
 
@@ -51,6 +53,5 @@ public class Seeding
             var hobby = hobbies[Random.Shared.Next(hobbies.Length)];
             smurfs.Add(new Smurf { Name = $"{adjective} {hobby}" });
         }
-
     }
 }
