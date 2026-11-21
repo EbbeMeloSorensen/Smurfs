@@ -6,7 +6,7 @@ using Smurfs.Application.Core;
 using Smurfs.Application.Interfaces;
 using Smurfs.Application.Smurfs;
 using Smurfs.Domain.BusinessRules;
-using Smurfs.Infrastructure.Security;
+using Smurfs.API.Services;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.Persistence;
 using Smurfs.Persistence.EFCore.AppData;

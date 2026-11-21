@@ -1,8 +1,7 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 using Smurfs.Application.Interfaces;
 
-namespace Smurfs.Infrastructure.Security;
+namespace Smurfs.API.Services;
 
 /// <summary>
 /// Reads the current account identity from the HTTP request.

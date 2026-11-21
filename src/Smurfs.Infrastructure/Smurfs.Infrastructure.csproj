@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.14" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
@@ -15,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Smurfs.Application\Smurfs.Application.csproj" />
     <ProjectReference Include="..\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj" />
-    <ProjectReference Include="..\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj" />
   </ItemGroup>
 
 </Project>

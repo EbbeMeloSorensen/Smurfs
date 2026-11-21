@@ -29,7 +29,7 @@ Smurfs_API -up-> Smurfs_Infrastructure
 Smurfs_Application -up-> Smurfs_Persistence
 Smurfs_Infrastructure -up-> Smurfs_Application
 Smurfs_Infrastructure -up-> Smurfs_Persistence_EFCore_AppData
-Smurfs_Infrastructure -up-> Smurfs_Persistence_EFCore_Identity
+Smurfs_API -up-> Smurfs_Persistence_EFCore_Identity
 Smurfs_Persistence -up-> Smurfs_Domain
 Smurfs_Persistence_EFCore_AppData -up-> Smurfs_Persistence
 Smurfs_UI_Avalonia -up-> Smurfs_Infrastructure

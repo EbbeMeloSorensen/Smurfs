@@ -44,3 +44,5 @@ Reconcile `docs/structural/diagrams/persistence-model.puml` against both the run
 ## HTTP API baseline
 
 Smurfs.API composes Identity, JWT bearer authentication and the shared MediatR list query. Its two EF Core contexts share a database selected by `Database:Provider`, using matching SQLite or PostgreSQL context types and migration sets. The API also hosts the production WebClient. See the [HTTP API workflows](behavioral/http-api.md).
+
+Identity persistence is referenced directly by the API. The HTTP user accessor lives in Smurfs.API.Services and implements the application-owned IUserAccessor contract. Shared Infrastructure supplies catalog reads and logging without depending on Identity persistence or HTTP context APIs.

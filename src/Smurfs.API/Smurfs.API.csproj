@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Smurfs.Infrastructure\Smurfs.Infrastructure.csproj" />
+    <ProjectReference Include="..\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj" />
   </ItemGroup>
 
 </Project>
