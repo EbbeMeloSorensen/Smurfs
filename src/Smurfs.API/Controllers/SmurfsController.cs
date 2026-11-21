@@ -19,4 +19,15 @@ public class SmurfsController : BaseApiController
         var result = await Mediator.Send(new List.Query { Params = parameters }, cancellationToken);
         return HandlePagedResult(result);
     }
+
+    /// <summary>
+    /// Creates a Smurf with the proposed name. 
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult> CreateSmurf(
+        [FromBody] Create.Command command,
+        CancellationToken cancellationToken)
+    {
+        return HandleResult(await Mediator.Send(command, cancellationToken));
+    }
 }
