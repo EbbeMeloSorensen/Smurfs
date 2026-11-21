@@ -5,6 +5,7 @@ import PersonDashboard from '../../features/people/dashboard/PersonDashboard';
 import { observer } from 'mobx-react-lite';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import HomePage from '../../features/home/HomePage';
+import SmurfForm from '../../features/people/form/SmurfForm';
 import PersonForm from '../../features/people/form/PersonForm';
 import PersonDetails from '../../features/people/details/PersonDetails';
 import TestErrors from '../../features/errors/TestError';
@@ -44,7 +45,8 @@ function App() {
               <Switch>
                 <PrivateRoute exact path='/people' component={PersonDashboard} />
                 <PrivateRoute path='/people/:id' component={PersonDetails} />
-                <PrivateRoute key={location.key} path={['/createPerson', '/manage/:id']} component={PersonForm} />
+                <PrivateRoute key={location.key} path={['/createSmurf', '/createPerson']} component={SmurfForm} />
+                <PrivateRoute path='/manage/:id' component={PersonForm} />
                 <PrivateRoute path='/errors' component={TestErrors} />
                 <Route path='/server-error' component={ServerError} />
                 <Route component={NotFound} />

@@ -22,6 +22,26 @@ public class Create
         /// Gets the proposed name supplied by the caller.
         /// </summary>
         public required string Name { get; init; }
+
+        /// <summary>
+        /// Gets the initial health, defaulting to zero for name-only callers.
+        /// </summary>
+        public int Health { get; init; }
+
+        /// <summary>
+        /// Gets the birthday, or null when unknown.
+        /// </summary>
+        public DateTime? Birthday { get; init; }
+
+        /// <summary>
+        /// Gets infection status, or null when unknown.
+        /// </summary>
+        public bool? Infected { get; init; }
+
+        /// <summary>
+        /// Gets the gender, or null when unknown.
+        /// </summary>
+        public Gender? Gender { get; init; }
     }
 
     /// <summary>
@@ -64,7 +84,14 @@ public class Create
                 return Result<Unit>.Failure(errors[0].Message);
             }
 
-            var smurf = new Smurf { Name = request.Name };
+            var smurf = new Smurf
+            {
+                Name = request.Name,
+                Health = request.Health,
+                Birthday = request.Birthday,
+                Infected = request.Infected,
+                Gender = request.Gender
+            };
             var entityErrors = _businessRuleCatalog.ValidateAtomic(smurf);
             if (entityErrors.Count > 0)
             {

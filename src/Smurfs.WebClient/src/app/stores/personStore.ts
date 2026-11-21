@@ -199,6 +199,13 @@ export default class PersonStore {
         }
     }
 
+    resetPeople = () => {
+        this.personRegistry.clear();
+        this.selectedPerson = undefined;
+        this.pagingParams = new PagingParams();
+        this.pagination = null;
+    }
+
     clearSelectedPerson = () => {
         this.selectedPerson = undefined;
     }

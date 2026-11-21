@@ -49,6 +49,23 @@ public sealed class CreateSmurfTests
         var saved = Assert.Single(await context.Smurfs.ToListAsync());
         Assert.Equal(validName, saved.Name);
         Assert.Equal(0, saved.Health);
+        var birthday = new DateTime(2000, 1, 2, 0, 0, 0, DateTimeKind.Utc);
+        var detailed = await handler.Handle(new Create.Command
+        {
+            Name = "Detailed",
+            Health = 42,
+            Birthday = birthday,
+            Infected = false,
+            Gender = Gender.Female
+        }, CancellationToken.None);
+        Assert.True(detailed.IsSuccess);
+        context.ChangeTracker.Clear();
+        var detailedSmurf = await context.Smurfs.SingleAsync(smurf => smurf.Name == "Detailed");
+        Assert.Equal(42, detailedSmurf.Health);
+        Assert.Equal(birthday, detailedSmurf.Birthday);
+        Assert.Equal(false, detailedSmurf.Infected);
+        Assert.Equal(Gender.Female, detailedSmurf.Gender);
+
     }
 
     private sealed class ReservedNameRule : IBusinessRule<SmurfNameDraft>

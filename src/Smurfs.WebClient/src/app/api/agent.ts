@@ -1,6 +1,7 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import { history } from '../..';
+import { CreateSmurfRequest } from '../models/smurf';
 import { Person, PersonFormValues } from '../models/person';
 import { PaginatedResult } from '../models/pagination';
 import { User, UserFormValues } from '../models/user';
@@ -33,14 +34,17 @@ axios.interceptors.response.use(async response => {
     }
     return response;
 }, (error: AxiosError) => {
-    const {data, status, config} = error.response!;
+    if (!error.response) {
+        return Promise.reject(error);
+    }
+    const {data, status, config} = error.response;
     let data_as_any = data as any; // The instructor doesn't do this, but I couldn't get it to compile without casting
     switch (status) {
         case 400:
             if (typeof data === 'string') {
                 toast.error(data);
             }
-            if (config.method === 'get' && data_as_any.errors.hasOwnProperty('id')) {
+            if (config.method === 'get' && data_as_any?.errors?.hasOwnProperty('id')) {
                 history.push('/not-found');
             }
             if (data_as_any.errors) {
@@ -106,6 +110,9 @@ const Account = {
 }
 
 const agent = {
+    Smurfs: {
+        create: (request: CreateSmurfRequest) => requests.post<void>('/smurfs', request)
+    },
     People,
     Account
 }

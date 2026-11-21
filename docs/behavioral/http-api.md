@@ -25,3 +25,9 @@ For [UC-003](../requirements/use-cases.md#uc-003-list-smurfs), send `GET /api/sm
 ![Protected paging sequence](../_generated/diagrams/behavioral/diagrams/api-list.svg)
 
 [PlantUML source](diagrams/api-list.puml)
+
+## WebClient creation
+
+The Create Smurf button opens /createSmurf. The form accepts a required nonblank name up to 20 characters, an integer health value (default zero), an optional birthday, infection status (Unknown, Yes, or No), and gender (Unknown, Male, or Female). It posts name, health, birthday, infected, and gender to the authenticated POST /api/smurfs endpoint. Unknown values are sent as null. Birthdays use midnight UTC for the selected calendar date. Successful submission returns to Smurf Overview and resets the list so its next load reads the saved catalog. Failed submission keeps the form values and shows an error. Submission is disabled while saving.
+
+Create.Command defaults the added fields so existing name-only desktop and console callers continue to create Smurfs with zero health and unknown birthday and infection status.

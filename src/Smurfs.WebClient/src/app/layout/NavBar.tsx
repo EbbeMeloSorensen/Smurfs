@@ -23,7 +23,7 @@ export default observer(function NavBar() {
                 <Menu.Item>
                     <Button
                         as={NavLink}
-                        to="/createPerson"
+                        to="/createSmurf"
                         positive
                         content="Create Smurf"
                     />
