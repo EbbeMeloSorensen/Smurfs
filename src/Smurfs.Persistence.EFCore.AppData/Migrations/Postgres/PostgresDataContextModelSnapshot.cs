@@ -43,8 +43,17 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations.Postgres
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("Birthday")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Gender")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Health")
                         .HasColumnType("integer");
+
+                    b.Property<bool?>("Infected")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
