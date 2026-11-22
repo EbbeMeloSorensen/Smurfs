@@ -13,6 +13,11 @@ public class SmurfDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the persisted UTC creation timestamp.
+    /// </summary>
+    public DateTime CreatedUtc { get; set; }
+
+    /// <summary>
     /// Gets or sets the persisted Smurf name.
     /// </summary>
     public string Name { get; set; } = null!;

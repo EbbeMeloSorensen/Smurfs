@@ -91,3 +91,11 @@ Smurf also exposes nullable Infected (bool) and Gender (the domain enum with Mal
 ## Smurf list response fields
 
 The paged read DTO exposes id, name, health, birthday, infected, gender, and petId. GET /api/smurfs includes nullable properties explicitly as JSON null when unknown. Gender is serialized as Male or Female text. Infection status distinguishes true, false, and null. PetId identifies the related pet without serializing its navigation graph. SmurfReadService projects these fields directly from the database.
+
+## Creation timestamps and list ordering
+
+Smurf.CreatedUtc is a non-nullable DateTime initialized from UTC time when a new Smurf is constructed. Seed/import code can supply it during initialization. Edit commands preserve it, and API create/edit contracts do not accept it. Read DTOs expose createdUtc. Persistence marks restored values as UTC so JSON includes the UTC suffix.
+
+Seed rows have fixed creation times starting at 2026-01-01T00:00:00Z, increasing by one minute per row. Their names may remain random. Both list sort modes execute before paging: name ascending then identifier, or CreatedUtc descending then identifier. The identifier resolves equal timestamps consistently. The WebClient retains the server order.
+
+AddedCreatedTimestampToSmurf migrations and updated snapshots are included for both providers. The migrations currently use the generated year-0001 default for historical rows. Rows sharing a timestamp use the identifier tie-breaker. Historical creation dates cannot be reconstructed from these defaults. Apply the appropriate migration before running against an existing database.

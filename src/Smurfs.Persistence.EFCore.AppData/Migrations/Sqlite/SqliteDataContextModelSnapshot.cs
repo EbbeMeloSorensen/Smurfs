@@ -41,6 +41,9 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations.Sqlite
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("Gender")
                         .HasColumnType("INTEGER");
 

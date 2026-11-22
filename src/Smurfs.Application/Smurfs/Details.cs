@@ -39,6 +39,7 @@ public class Details
             return Result<SmurfDto>.Success(new SmurfDto
             {
                 Id = smurf.Id,
+                CreatedUtc = smurf.CreatedUtc,
                 Name = smurf.Name,
                 Health = smurf.Health,
                 Birthday = smurf.Birthday,

@@ -17,4 +17,9 @@ public class SmurfParams : PagingParams
     /// An omitted or blank value includes every state.
     /// </summary>
     public string? Infected { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ordering: name (ascending) or created (newest first).
+    /// </summary>
+    public string Sorting { get; set; } = "name";
 }

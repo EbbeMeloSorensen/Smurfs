@@ -20,6 +20,12 @@ public class SmurfConfiguration : IEntityTypeConfiguration<Smurf>
     {
         builder.HasKey(s => s.Id);
 
+        builder.Property(s => s.CreatedUtc)
+            .IsRequired()
+            .HasConversion(
+                value => value,
+                value => DateTime.SpecifyKind(value, DateTimeKind.Utc));
+
         builder.HasOne(s => s.Pet)
             .WithMany()
             .HasForeignKey(s => s.PetId)

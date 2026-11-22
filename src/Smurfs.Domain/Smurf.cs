@@ -15,6 +15,12 @@ public class Smurf
     public Guid Id { get; private set; } = Guid.NewGuid();
 
     /// <summary>
+    /// Gets the UTC creation timestamp, initialized when the instance is constructed.
+    /// Seed and import callers can supply a timestamp during initialization.
+    /// </summary>
+    public DateTime CreatedUtc { get; init; } = DateTime.UtcNow;
+
+    /// <summary>
     /// Gets or sets the nonblank name, which can contain at most 20 characters.
     /// </summary>
     /// <exception cref="ArgumentException">

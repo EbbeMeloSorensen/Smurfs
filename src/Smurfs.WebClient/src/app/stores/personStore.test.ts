@@ -46,3 +46,25 @@ test("a previous page response cannot reintroduce rows after a new search", asyn
     await oldRequest;
     expect(Array.from(store.personRegistry.keys())).toEqual(["New"]);
 });
+
+
+test("Created sorting is sent to the API and the list retains server ordering", async () => {
+    const rows = [
+        { id: "new", firstName: "Z", birthday: null, created: new Date("2026-01-02T00:00:00Z") } as Person,
+        { id: "old", firstName: "A", birthday: null, created: new Date("2026-01-01T00:00:00Z") } as Person
+    ];
+    (agent.People.list as jest.Mock).mockResolvedValue({ ...result("unused"), data: rows });
+    const store = new PersonStore();
+    store.setPagingParams(new PagingParams(3));
+    store.setSorting("created");
+    await store.setPredicate("", false, false, false);
+    const parameters = (agent.People.list as jest.Mock).mock.calls[0][0] as URLSearchParams;
+    expect(parameters.get("sorting")).toBe("created");
+    expect(parameters.get("pageNumber")).toBe("1");
+    expect(store.sortedPeople.map(row => row.id)).toEqual(["new", "old"]);
+    store.setSorting("name");
+    await store.setPredicate("", false, false, false);
+    const next = (agent.People.list as jest.Mock).mock.calls[1][0] as URLSearchParams;
+    expect(next.get("sorting")).toBe("name");
+    expect(store.sortedPeople.map(row => row.id)).toEqual(["new", "old"]);
+});

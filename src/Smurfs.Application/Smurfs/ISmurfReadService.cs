@@ -8,7 +8,7 @@ namespace Smurfs.Application.Smurfs;
 public interface ISmurfReadService
 {
     /// <summary>
-    /// Returns a page ordered by name and then identifier, with a filtered total row count.
+    /// Returns a page in the selected order with an identifier tie-breaker and a filtered total row count.
     /// Page number and page size must be positive.
     /// </summary>
     /// <param name="pageNumber">
@@ -23,6 +23,9 @@ public interface ISmurfReadService
     /// <param name="infected">
     /// Infection states to include. Null or empty means all states.
     /// </param>
+    /// <param name="newestFirst">
+    /// Orders by creation timestamp descending when true, or by name ascending when false.
+    /// </param>
     /// <param name="cancellationToken">
     /// Requests cancellation of retrieval.
     /// </param>
@@ -31,5 +34,6 @@ public interface ISmurfReadService
         int pageSize,
         CancellationToken cancellationToken,
         string? name = null,
-        IReadOnlyCollection<bool?>? infected = null);
+        IReadOnlyCollection<bool?>? infected = null,
+        bool newestFirst = false);
 }

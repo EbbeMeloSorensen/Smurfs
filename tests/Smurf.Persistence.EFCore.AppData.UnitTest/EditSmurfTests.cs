@@ -32,6 +32,7 @@ public sealed class EditSmurfTests
         var original = new Smurfs.Domain.Smurf { Name = "Original", Health = 7, Pet = pet };
         context.Smurfs.Add(original);
         await context.SaveChangesAsync();
+        var createdUtc = original.CreatedUtc;
         var petId = original.PetId;
         var catalog = new BusinessRuleCatalog();
         catalog.RegisterAtomicRule(new RejectedHealthRule());
@@ -63,6 +64,7 @@ public sealed class EditSmurfTests
         Assert.Equal("Edited", original.Name);
         Assert.Equal(12, original.Health);
         Assert.Equal(petId, original.PetId);
+        Assert.Equal(createdUtc, original.CreatedUtc);
         Assert.Equal(new DateTime(2000, 1, 2), original.Birthday);
         Assert.Equal(false, original.Infected);
         Assert.Equal(Gender.Female, original.Gender);

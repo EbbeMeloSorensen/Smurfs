@@ -41,6 +41,8 @@ public sealed class SmurfDetailsTests
         Assert.True(result.IsSuccess);
         Assert.Equal(smurf.Id, result.Value.Id);
         Assert.Equal(smurf.Name, result.Value.Name);
+        Assert.Equal(smurf.CreatedUtc, result.Value.CreatedUtc);
+        Assert.Equal(DateTimeKind.Utc, result.Value.CreatedUtc.Kind);
         Assert.Equal(42, result.Value.Health);
         Assert.Equal(smurf.Birthday, result.Value.Birthday);
         Assert.Equal(false, result.Value.Infected);

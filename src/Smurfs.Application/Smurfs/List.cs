@@ -55,6 +55,12 @@ public class List
                 return Result<PagedList<SmurfDto>>.Failure("Page number and page size must be positive.");
             }
 
+            var sorting = request.Params.Sorting?.Trim().ToLowerInvariant() ?? "name";
+            if (sorting != "name" && sorting != "created")
+            {
+                return Result<PagedList<SmurfDto>>.Failure("Sorting must be name or created.");
+            }
+
             var infected = new HashSet<bool?>();
             if (!string.IsNullOrWhiteSpace(request.Params.Infected))
             {
@@ -76,7 +82,7 @@ public class List
             }
 
             var page = await _readService.GetPageAsync(
-                pageNumber, pageSize, cancellationToken, request.Params.Name, infected);
+                pageNumber, pageSize, cancellationToken, request.Params.Name, infected, sorting == "created");
             _logger.LogInformation("Listed page {PageNumber} of Smurfs with {RowCount} rows.", pageNumber, page.Count);
             return Result<PagedList<SmurfDto>>.Success(page);
         }

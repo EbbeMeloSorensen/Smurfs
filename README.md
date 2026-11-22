@@ -219,3 +219,9 @@ The script resolves the project relative to its own location, generates PostgreS
 The design-time factories use local development settings and do not open a connection when generating migrations. To apply a migration explicitly, pass `--connection` to `dotnet ef database update` with the chosen context. SQLite design-time defaults are `Data Source=smurfs-sqlite.db` for AppData and `Data Source=smurfs-identity-sqlite.db` for Identity. Start with a fresh file for each new baseline. The API uses one database for both contexts, selecting its provider from configuration. A SQLite host can explicitly supply the same SQLite connection to both registrations.
 
 The existing PostgreSQL migration ID is preserved. Generating or switching migration sets does not transfer data between providers. Pass the project explicitly because both assemblies expose context types with the same names.
+
+### Required creation timestamps
+
+The Smurf model includes a required CreatedUtc value. AddedCreatedTimestampToSmurf migrations are included for PostgreSQL and SQLite. Both currently use the generated year-0001 default for existing rows. Seed data uses fixed UTC times starting at 2026-01-01T00:00:00Z, and new Smurfs receive their creation time from the application.
+
+Apply the appropriate provider migration before running the updated clients against an existing database.

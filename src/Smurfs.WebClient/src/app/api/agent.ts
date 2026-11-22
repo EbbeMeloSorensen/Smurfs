@@ -90,7 +90,7 @@ function toPerson(smurf: Smurf): Person {
         birthday: smurf.birthday ? new Date(smurf.birthday) : null,
         start: null,
         end: null,
-        created: null,
+        created: new Date(smurf.createdUtc),
         superseded: null,
         nickname: null,
         address: null,

@@ -60,24 +60,12 @@ export default class PersonStore {
         params.append('pageNumber', this.pagingParams.pageNumber.toString());
         params.append('pageSize', this.pagingParams.pageSize.toString());
         this.predicate.forEach((value, key) => params.append(key, value))
+        params.set('sorting', this.sorting);
         return params;
     }
 
     get sortedPeople() {
-        if (this.sorting === "name") {
-            return Array.from(this.personRegistry.values()).sort((a, b) => {
-                if (a.firstName !== b.firstName) {
-                    return a.firstName.localeCompare(b.firstName, 'en');
-                }
-                let surnameA = a.surname === null ? "" : a.surname;
-                let surnameB = b.surname === null ? "" : b.surname;
-                return surnameA.localeCompare(surnameB, 'en');
-            });
-        }
-
-        return Array.from(this.personRegistry.values()).sort((a, b) => {
-            return (b.created?.getTime() ?? 0) - (a.created?.getTime() ?? 0)
-        });
+        return Array.from(this.personRegistry.values());
     }
 
     private listRequestVersion = 0;

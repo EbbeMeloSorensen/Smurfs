@@ -46,6 +46,9 @@ namespace Smurfs.Persistence.EFCore.AppData.Migrations.Postgres
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int?>("Gender")
                         .HasColumnType("integer");
 

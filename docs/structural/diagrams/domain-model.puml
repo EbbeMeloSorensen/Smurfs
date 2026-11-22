@@ -4,6 +4,7 @@ skinparam classAttributeIconSize 0
 left to right direction
 class Smurf {
   +Name : string {get; set;}
+  +CreatedUtc : DateTime {get; init;}
   +Health : int {get; set;}
   +Birthday : DateTime? {get; set;}
   +Infected : bool? {get; set;}

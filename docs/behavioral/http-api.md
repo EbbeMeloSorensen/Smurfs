@@ -49,3 +49,9 @@ The PUT body replaces name, health, birthday, infected, and gender. Omitted null
 Smurf Overview submits its filters when Search is clicked. Name contains uses case-insensitive literal substring matching; surrounding search whitespace is trimmed and a blank value includes all names. Infected offers Yes, No, and Unspecified. Selected states are combined with OR; no selections include every infection state. Unspecified matches an unknown (null) value. Name and infection filters are combined with AND.
 
 GET /api/smurfs accepts name and infected query parameters alongside paging. For example, name=pa&infected=true%7Cnull includes matching names whose infection state is true or unknown. Infection tokens are true, false, and null, separated by pipes; invalid tokens return 400. Filtering runs in the database before the total count, ordering, and page selection. Pagination headers report the filtered totals. Search clears loaded rows and resets to page 1, including when only filter values change. Earlier requests cannot replace the results of a newer search.
+
+## Sorting the Smurf list
+
+Select Name or Newest first and click Search. Both modes reset the loaded list to page 1 while retaining the selected filters. GET /api/smurfs accepts sorting=name (the default) or sorting=created. Unknown sorting values return 400. The database applies name ascending or creation time descending, then the identifier for ties, before paging. The client displays the returned order across all loaded pages.
+
+The API includes createdUtc in both list and detail DTOs as a UTC timestamp. Creation assigns it automatically; editing leaves it unchanged.

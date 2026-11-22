@@ -31,15 +31,16 @@ public class Seeding
         int randomSmurfCount,
         out List<Smurf> smurfs)
     {
+        var seedCreatedUtc = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         smurfs = new List<Smurf>
         {
-            new Smurf{ Name = "Papa Smurf"},
-            new Smurf{ Name = "Smurfette"},
-            new Smurf{ Name = "Clumsy Smurf"},
-            new Smurf{ Name = "Grouchy Smurf"},
-            new Smurf{ Name = "Brainy Smurf"},
-            new Smurf{ Name = "Gutsy Smurf"},
-            new Smurf{ Name = "Vanity Smurf"}
+            new Smurf{ Name = "Papa Smurf", CreatedUtc = seedCreatedUtc.AddMinutes(0) },
+            new Smurf{ Name = "Smurfette", CreatedUtc = seedCreatedUtc.AddMinutes(1) },
+            new Smurf{ Name = "Clumsy Smurf", CreatedUtc = seedCreatedUtc.AddMinutes(2) },
+            new Smurf{ Name = "Grouchy Smurf", CreatedUtc = seedCreatedUtc.AddMinutes(3) },
+            new Smurf{ Name = "Brainy Smurf", CreatedUtc = seedCreatedUtc.AddMinutes(4) },
+            new Smurf{ Name = "Gutsy Smurf", CreatedUtc = seedCreatedUtc.AddMinutes(5) },
+            new Smurf{ Name = "Vanity Smurf", CreatedUtc = seedCreatedUtc.AddMinutes(6) }
         };
 
         //const int randomSmurfCount = 1_000;
@@ -51,7 +52,7 @@ public class Seeding
         {
             var adjective = adjectives[Random.Shared.Next(adjectives.Length)];
             var hobby = hobbies[Random.Shared.Next(hobbies.Length)];
-            smurfs.Add(new Smurf { Name = $"{adjective} {hobby}" });
+            smurfs.Add(new Smurf { Name = $"{adjective} {hobby}", CreatedUtc = seedCreatedUtc.AddMinutes(smurfs.Count) });
         }
     }
 }

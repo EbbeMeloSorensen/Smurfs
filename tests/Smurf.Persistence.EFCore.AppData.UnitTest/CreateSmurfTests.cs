@@ -43,12 +43,15 @@ public sealed class CreateSmurfTests
 
         Assert.Empty(await context.Smurfs.ToListAsync());
 
+        var beforeCreate = DateTime.UtcNow;
         var validName = new string('a', 20);
         var created = await handler.Handle(new Create.Command { Name = validName }, CancellationToken.None);
         Assert.True(created.IsSuccess);
         var saved = Assert.Single(await context.Smurfs.ToListAsync());
         Assert.Equal(validName, saved.Name);
         Assert.Equal(0, saved.Health);
+        Assert.InRange(saved.CreatedUtc, beforeCreate, DateTime.UtcNow);
+        Assert.Equal(DateTimeKind.Utc, saved.CreatedUtc.Kind);
         var birthday = new DateTime(2000, 1, 2, 0, 0, 0, DateTimeKind.Utc);
         var detailed = await handler.Handle(new Create.Command
         {

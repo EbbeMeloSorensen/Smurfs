@@ -1,5 +1,6 @@
 export interface Smurf {
     id: string;
+    createdUtc: string;
     name: string;
     health: number;
     birthday: string | null;

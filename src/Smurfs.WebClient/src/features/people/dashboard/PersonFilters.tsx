@@ -79,7 +79,7 @@ export default observer(function PeopleFilters() {
                 </Form.Field>
                 <Form.Field>
                     <Radio
-                        label="Created"
+                        label="Newest first"
                         name="radioGroup"
                         value="that"
                         checked={sortingLocal === "created"}

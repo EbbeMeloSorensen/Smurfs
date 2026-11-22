@@ -40,6 +40,8 @@ public sealed class SmurfReadServiceTests
         Assert.Equal(2, page.TotalCount);
         var first = page[0];
         Assert.Equal(known.Id, first.Id);
+        Assert.Equal(known.CreatedUtc, first.CreatedUtc);
+        Assert.Equal(DateTimeKind.Utc, first.CreatedUtc.Kind);
         Assert.Equal("A", first.Name);
         Assert.Equal(42, first.Health);
         Assert.Equal(known.Birthday, first.Birthday);

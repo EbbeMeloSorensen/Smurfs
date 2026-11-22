@@ -22,7 +22,8 @@ public sealed class SmurfReadService(DataContext context) : ISmurfReadService
         int pageSize,
         CancellationToken cancellationToken,
         string? name = null,
-        IReadOnlyCollection<bool?>? infected = null)
+        IReadOnlyCollection<bool?>? infected = null,
+        bool newestFirst = false)
     {
         var smurfs = context.Smurfs.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(name))
@@ -50,14 +51,17 @@ public sealed class SmurfReadService(DataContext context) : ISmurfReadService
             return new PagedList<SmurfDto>([], count, pageNumber, pageSize);
         }
 
-        var items = await smurfs
-            .OrderBy(smurf => smurf.Name)
+        var ordered = newestFirst
+            ? smurfs.OrderByDescending(smurf => smurf.CreatedUtc)
+            : smurfs.OrderBy(smurf => smurf.Name);
+        var items = await ordered
             .ThenBy(smurf => smurf.Id)
             .Skip((int) offset)
             .Take(pageSize)
             .Select(smurf => new SmurfDto
             {
                 Id = smurf.Id,
+                CreatedUtc = smurf.CreatedUtc,
                 Name = smurf.Name,
                 Health = smurf.Health,
                 Birthday = smurf.Birthday,
