@@ -43,7 +43,7 @@ Reconcile `docs/structural/diagrams/persistence-model.puml` against both the run
 
 ## API console milestone
 
-Smurfs.UI.Console.API is a separate HTTP client for login and adjacent-page browsing through Smurfs.Persistence.API. The adapter implements ISmurfReadService and keeps its bearer token in memory. The client neither references Identity persistence nor initializes server storage. Its write repository/unit-of-work classes remain unregistered skeletons; completing them requires an explicit HTTP commit policy. See behavioral/api-console.md for supported commands and error handling.
+Smurfs.UI.Console.API is a separate HTTP client for login, name-only creation, and adjacent-page browsing through Smurfs.Persistence.API. The adapter implements ISmurfReadService, sends name-only creation directly to the API, and keeps its bearer token in memory. The server validates and commits creation; uncertain outcomes are not automatically retried. The client neither references Identity persistence nor initializes server storage. Its write repository/unit-of-work classes remain unregistered skeletons; completing them requires an explicit HTTP commit policy. See behavioral/api-console.md for supported commands and error handling.
 
 ## HTTP API baseline
 

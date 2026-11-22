@@ -15,7 +15,9 @@ component "Smurfs.Application" as Application {
   class "PagedList<T>" as Page
 }
 component "Smurfs.Persistence.API" as Adapter {
-  class SmurfsApiClient
+  class SmurfsApiClient {
+    +CreateSmurfAsync(name, cancellationToken) : Task
+  }
   class ApiUser
   class ApiException
 }
@@ -33,7 +35,7 @@ Handler ..> Query : handles
 ISmurfReadService ..> SmurfDto : item type
 ISmurfReadService ..> Page : returns
 SmurfDto .up.> Gender : optional value
-Program .up.> SmurfsApiClient : constructs / signs in
+Program .up.> SmurfsApiClient : constructs / signs in / creates
 Program .up.> ApiUser : displays account
 Program .up.> ApiException : handles authentication failure
 Program .up.> Handler : constructs / invokes

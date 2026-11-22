@@ -3,7 +3,7 @@ using System.Net;
 namespace Smurfs.Persistence.API;
 
 /// <summary>
-/// Reports an unsuccessful HTTP status without including response bodies or credentials.
+/// Reports an unsuccessful HTTP status with safe feedback, including structured create-validation messages.
 /// </summary>
 public sealed class ApiException : HttpRequestException
 {

@@ -108,7 +108,7 @@ internal static class Program
                         System.Console.WriteLine($" {smurf.Name}");
                     }
 
-                    System.Console.Write("Next / Previous / Reload / Login / Quit (n/p/r/l/q): ");
+                    System.Console.Write("Next / Previous / Reload / Create / Login / Quit (n/p/r/c/l/q): ");
 
                     var command = System.Console.ReadLine()?.Trim().ToLowerInvariant();
 
@@ -122,7 +122,14 @@ internal static class Program
                         break;
                     }
 
-                    if (command is "n" or "next")
+                    if (command is "c" or "create")
+                    {
+                        if (!await CreateSmurfAsync(api))
+                        {
+                            return 0;
+                        }
+                    }
+                    else if (command is "n" or "next")
                     {
                         if (pageNumber < page.TotalPages)
                         {
@@ -146,7 +153,7 @@ internal static class Program
                     }
                     else if (command is not ("r" or "reload"))
                     {
-                        System.Console.WriteLine("Use n, p, r, l, or q.");
+                        System.Console.WriteLine("Use n, p, r, c, l, or q.");
                     }
                 }
                 catch (ApiException exception) when (exception.StatusCode == HttpStatusCode.Unauthorized)
@@ -154,6 +161,46 @@ internal static class Program
                     System.Console.Error.WriteLine(exception.Message);
                     break;
                 }
+            }
+        }
+    }
+
+    private static async Task<bool> CreateSmurfAsync(SmurfsApiClient api)
+    {
+        while (true)
+        {
+            System.Console.Write("Name (blank to cancel): ");
+            var name = System.Console.ReadLine();
+            if (name is null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return true;
+            }
+
+            try
+            {
+                await api.CreateSmurfAsync(name);
+                System.Console.WriteLine($"Smurf: \"{name}\" created successfully.");
+                return true;
+            }
+            catch (ApiException exception) when (exception.StatusCode == HttpStatusCode.BadRequest)
+            {
+                System.Console.Error.WriteLine(exception.Message);
+            }
+            catch (ApiException exception) when (exception.StatusCode != HttpStatusCode.Unauthorized)
+            {
+                System.Console.Error.WriteLine(exception.Message);
+                return true;
+            }
+            catch (Exception exception) when (exception is not ApiException &&
+                exception is HttpRequestException or IOException or OperationCanceledException)
+            {
+                System.Console.Error.WriteLine("Creation outcome is unknown. Check the list before trying again; the request was not retried.");
+                return true;
             }
         }
     }

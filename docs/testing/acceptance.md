@@ -194,3 +194,17 @@ For the hosted WebClient, reload `/smurfs` and confirm it loads the client. Requ
 6. Quit with `q`; expect exit code 0. Stop the API and relaunch/sign in; expect a concise transport error and exit code 1. No token, password, or raw server exception body should appear in output.
 
 **Evidence** — Record client/API commit, disposable database, server URL, commands, visible outcomes, and exit codes without recording credentials or tokens.
+
+## AT-012 API console name-only creation
+
+**Scope** — UC-002 and UC-003, FR-002 and FR-004. Proposed manual acceptance; record human execution separately.
+
+**Setup** — Use the isolated API and console setup from AT-011. Sign in and note the current page and total count.
+
+1. Choose `c` and enter a blank name. Expect browsing to resume with unchanged count and no creation confirmation.
+2. Choose `c` and enter 21 characters. Expect the server's name-validation feedback and another name prompt, without adding a row.
+3. Enter a unique valid name such as `Console New Smurf`. Expect one success confirmation and the current page to reload with the total increased by one. Navigate to the appropriate alphabetical page and confirm the name. Restart the console, sign in again, and confirm it remains stored. Authorized API details should show health zero, unknown optional values, and a generated ID/UTC timestamp.
+4. In a controlled test environment, reject/expire the token after loading the page but before creation. Expect a login prompt; signing in must not resubmit the old name automatically.
+5. With a controlled HTTP stub/proxy, drop the response after forwarding a successful create. Expect an uncertain-outcome message, no success confirmation, and no automatic second POST. Check the list before submitting again.
+
+**Evidence** — Record names, counts, outcomes, and controlled failure setup without credentials or bearer tokens. Stopping the API before creation verifies a transport error but does not establish the lost-response-after-commit scenario.

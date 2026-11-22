@@ -1,0 +1,37 @@
+@startuml
+title API console - create a named Smurf
+actor Operator
+participant "API console" as CLI
+participant SmurfsApiClient as Client
+participant "Smurfs.API catalog endpoint" as API
+participant "Server Create.Handler" as Create
+Operator -> CLI : Choose Create and enter a name
+alt blank name / EOF
+  CLI --> Operator : Cancel / exit without a POST
+else name supplied
+  CLI -> Client : CreateSmurfAsync(name)
+  Client -> API : POST /api/smurfs {name}\nAuthorization: Bearer token
+  alt validated and committed
+    API -> Create : Send Create.Command (other fields default)
+    Create -> Create : Validate, generate entity, commit
+    Create --> API : Success
+    API --> Client : 200
+    Client --> CLI : Completed
+    CLI --> Operator : Creation confirmation
+    ref over CLI : Reload current page (browse workflow)
+  else invalid name
+    API --> Client : 400 with structured validation feedback
+    Client --> CLI : ApiException (400)
+    CLI --> Operator : Validation feedback and another name prompt
+  else token rejected
+    API --> Client : 401
+    Client -> Client : Discard token
+    Client --> CLI : ApiException (401)
+    CLI --> Operator : Login prompt (no automatic resubmission)
+  else transport failure / unconfirmed HTTP outcome
+    Client --> CLI : Exception
+    CLI --> Operator : Check list before trying again (no POST retry)
+    ref over CLI : Attempt to reload current page
+  end
+end
+@enduml

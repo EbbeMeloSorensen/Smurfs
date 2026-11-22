@@ -19,7 +19,7 @@ The catalog operator is the external actor. These specifications describe the cu
 ## UC-002 Create a Smurf
 
 - **Purpose and actor** — The catalog operator records a named Smurf.
-- **Preconditions** — Local storage can accept writes.
+- **Preconditions** — Storage can accept writes locally or through an authenticated HTTP connection.
 - **Trigger** — The operator supplies a proposed name and requests creation.
 - **Main success scenario** — The system checks the name, saves the Smurf and confirms creation.
 - **Alternatives and exceptions** — The system explains why an invalid name was rejected and does not add a Smurf. A storage failure is reported without confirming creation.
@@ -77,4 +77,4 @@ Avalonia and WinForms use the shared desktop paging view model. The [HTTP API](.
 
 The client-side logout removes the stored token. Production token lifecycle, authorization roles, and account policies are review items rather than new acceptance claims.
 
-The separate API console realizes UC-007 through interactive sign-in and UC-003 through adjacent pages of five rows. Tokens remain in memory for that process. It does not expose account registration, catalog writes, filters, or sorting controls in this milestone.
+The separate API console realizes UC-007 through interactive sign-in and UC-003 through adjacent pages of five rows. Tokens remain in memory for that process. It also realizes UC-002 with a name-only create prompt. It does not expose registration, edit/delete, filters, or sorting controls. The API validates and commits creation; the client does not automatically retry an unconfirmed create.

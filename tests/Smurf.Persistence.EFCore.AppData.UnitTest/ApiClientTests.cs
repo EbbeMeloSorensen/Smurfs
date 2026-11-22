@@ -232,6 +232,172 @@ public sealed class ApiClientTests
         await Assert.ThrowsAsync<InvalidDataException>(() => api.GetPageAsync(1, 5, CancellationToken.None));
     }
 
+    /// <summary>
+    /// Name-only creation posts once with authentication, leaving identifiers and defaults to the server.
+    /// </summary>
+    [Fact]
+    public async Task Create_PostsOnlyNameWithBearerWithoutRetrying()
+    {
+        using var transport = new StubHandler(async (request, call, _) =>
+        {
+            if (call == 1)
+            {
+                return LoginResponse();
+            }
+
+            Assert.Contains(request.Headers.Accept, item => item.MediaType == "application/json");
+            Assert.Equal(HttpMethod.Post, request.Method);
+            Assert.Equal("/api/smurfs", request.RequestUri!.AbsolutePath);
+            Assert.Equal("test-token", request.Headers.Authorization!.Parameter);
+            Assert.Equal("Bearer", request.Headers.Authorization.Scheme);
+            using var body = JsonDocument.Parse(await request.Content!.ReadAsStringAsync());
+            var field = Assert.Single(body.RootElement.EnumerateObject());
+            Assert.Equal("name", field.Name);
+            Assert.Equal("New Smurf", field.Value.GetString());
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        });
+        using var http = Client(transport);
+        var api = new SmurfsApiClient(http);
+        await api.LoginAsync("email", "password");
+        await api.CreateSmurfAsync("New Smurf");
+        Assert.Equal(2, transport.Calls);
+        Assert.Null(http.DefaultRequestHeaders.Authorization);
+    }
+
+    /// <summary>
+    /// The two API validation shapes produce usable feedback, and the user can submit a corrected name.
+    /// </summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Create_ReportsValidationAndAllowsCorrection(bool problemDetails)
+    {
+        using var transport = new StubHandler((_, call, _) => Task.FromResult(call switch
+        {
+            1 => LoginResponse(),
+            2 => new HttpResponseMessage(HttpStatusCode.BadRequest)
+            {
+                Content = problemDetails
+                    ? JsonContent.Create(new { errors = new { Name = new[] { "Name is required." } } })
+                    : JsonContent.Create("Name is required.")
+            },
+            _ => new HttpResponseMessage(HttpStatusCode.OK)
+        }));
+        using var http = Client(transport);
+        var api = new SmurfsApiClient(http);
+        await api.LoginAsync("email", "password");
+        var error = await Assert.ThrowsAsync<ApiException>(() => api.CreateSmurfAsync(" "));
+        Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
+        Assert.Equal("Name is required.", error.Message);
+        await api.CreateSmurfAsync("Corrected");
+        Assert.Equal(3, transport.Calls);
+    }
+
+    /// <summary>
+    /// Unexpected validation bodies use generic feedback instead of exposing raw server content.
+    /// </summary>
+    [Theory]
+    [InlineData("<html>private details</html>")]
+    [InlineData("null")]
+    [InlineData("{\"detail\":\"private details\"}")]
+    [InlineData("{\"errors\":{\"Name\":null}}")]
+    public async Task Create_HandlesMalformedValidationSafely(string json)
+    {
+        using var transport = new StubHandler((_, call, _) => Task.FromResult(call == 1 ? LoginResponse() :
+            new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = new StringContent(json) }));
+        using var http = Client(transport);
+        var api = new SmurfsApiClient(http);
+        await api.LoginAsync("email", "password");
+        var error = await Assert.ThrowsAsync<ApiException>(() => api.CreateSmurfAsync("Invalid"));
+        Assert.Equal("The Smurf was not created. Check the name and try again.", error.Message);
+        Assert.DoesNotContain("private details", error.ToString());
+        Assert.Equal(2, transport.Calls);
+    }
+
+    /// <summary>
+    /// Creation requires sign-in, and a rejected token is discarded without replaying the operation.
+    /// </summary>
+    [Fact]
+    public async Task Create_RequiresAuthenticationAndClearsRejectedToken()
+    {
+        using var transport = new StubHandler((_, call, _) => Task.FromResult(call == 1 ? LoginResponse() :
+            new HttpResponseMessage(HttpStatusCode.Unauthorized)));
+        using var http = Client(transport);
+        var api = new SmurfsApiClient(http);
+        await Assert.ThrowsAsync<ApiException>(() => api.CreateSmurfAsync("New"));
+        Assert.Equal(0, transport.Calls);
+        await api.LoginAsync("email", "password");
+        var error = await Assert.ThrowsAsync<ApiException>(() => api.CreateSmurfAsync("New"));
+        Assert.Equal(HttpStatusCode.Unauthorized, error.StatusCode);
+        await Assert.ThrowsAsync<ApiException>(() => api.GetPageAsync(1, 5, CancellationToken.None));
+        await Assert.ThrowsAsync<ApiException>(() => api.CreateSmurfAsync("New"));
+        Assert.Equal(2, transport.Calls);
+    }
+
+    /// <summary>
+    /// Rejected or unconfirmed creates retain the status, hide server internals, and are not retried.
+    /// </summary>
+    [Theory]
+    [InlineData(HttpStatusCode.Forbidden)]
+    [InlineData(HttpStatusCode.InternalServerError)]
+    public async Task Create_ReportsHttpFailureWithoutRetrying(HttpStatusCode status)
+    {
+        using var transport = new StubHandler((_, call, _) => Task.FromResult(call == 1 ? LoginResponse() :
+            new HttpResponseMessage(status) { Content = new StringContent("private server details") }));
+        using var http = Client(transport);
+        var api = new SmurfsApiClient(http);
+        await api.LoginAsync("email", "password");
+        var error = await Assert.ThrowsAsync<ApiException>(() => api.CreateSmurfAsync("New"));
+        Assert.Equal(status, error.StatusCode);
+        Assert.DoesNotContain("private server details", error.ToString());
+        if (status == HttpStatusCode.InternalServerError)
+        {
+            Assert.Contains("Check the list", error.Message);
+        }
+
+        Assert.Equal(2, transport.Calls);
+    }
+
+    /// <summary>
+    /// A disconnected transport is propagated after one create attempt, never replayed.
+    /// </summary>
+    [Fact]
+    public async Task Create_PropagatesTransportFailureWithoutRetrying()
+    {
+        using var transport = new StubHandler((_, call, _) => call == 1
+            ? Task.FromResult(LoginResponse())
+            : throw new HttpRequestException("Connection lost"));
+        using var http = Client(transport);
+        var api = new SmurfsApiClient(http);
+        await api.LoginAsync("email", "password");
+        await Assert.ThrowsAsync<HttpRequestException>(() => api.CreateSmurfAsync("New"));
+        Assert.Equal(2, transport.Calls);
+    }
+
+    /// <summary>
+    /// Cancellation reaches a pending create and does not trigger another submission.
+    /// </summary>
+    [Fact]
+    public async Task Create_PropagatesCancellationWithoutRetrying()
+    {
+        using var transport = new StubHandler(async (_, call, token) =>
+        {
+            if (call == 1)
+            {
+                return LoginResponse();
+            }
+
+            await Task.Delay(Timeout.Infinite, token);
+            throw new InvalidOperationException();
+        });
+        using var http = Client(transport);
+        var api = new SmurfsApiClient(http);
+        await api.LoginAsync("email", "password");
+        using var cancellation = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => api.CreateSmurfAsync("New", cancellation.Token));
+        Assert.Equal(2, transport.Calls);
+    }
+
     private static HttpClient Client(HttpMessageHandler handler) => new(handler)
     {
         BaseAddress = new Uri("https://localhost:7231/")

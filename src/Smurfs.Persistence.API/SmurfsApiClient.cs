@@ -11,7 +11,7 @@ using Smurfs.Domain;
 namespace Smurfs.Persistence.API;
 
 /// <summary>
-/// Signs in to Smurfs.API and implements its application read contract over HTTP.
+/// Signs in, creates named Smurfs, and implements the application read contract over HTTP.
 /// </summary>
 /// <remarks>
 /// Owns an in-memory token for one user session. Do not share instances between users or use them concurrently.
@@ -71,6 +71,51 @@ public sealed class SmurfsApiClient : ISmurfReadService
 
         _token = user.Token;
         return new ApiUser { DisplayName = user.DisplayName, Username = user.Username };
+    }
+
+    /// <summary>
+    /// Sends a name-only create operation to the server, which validates and commits it.
+    /// Health defaults to zero and optional values to null. No client identifier is generated.
+    /// </summary>
+    /// <remarks>
+    /// Requires sign-in. A 400 exposes structured validation feedback; a 401 clears the session.
+    /// Requests are never retried. A transport failure or timeout can occur after the server committed;
+    /// callers must report that uncertain outcome and check the list before submitting again.
+    /// </remarks>
+    public async Task CreateSmurfAsync(string name, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        if (_token is null)
+        {
+            throw new ApiException(HttpStatusCode.Unauthorized, "Sign in before creating a Smurf.");
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "api/smurfs")
+        {
+            Content = JsonContent.Create(new { name })
+        };
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            _token = null;
+            throw new ApiException(response.StatusCode, "Authentication expired or was rejected. Sign in again.");
+        }
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            throw new ApiException(response.StatusCode, await ReadCreateValidationAsync(response, cancellationToken));
+        }
+
+        throw new ApiException(response.StatusCode, response.StatusCode == HttpStatusCode.Forbidden
+            ? "You are not allowed to create a Smurf."
+            : $"Creation was not confirmed (HTTP {(int) response.StatusCode}). Check the list before trying again.");
     }
 
     /// <inheritdoc />
@@ -148,6 +193,51 @@ public sealed class SmurfsApiClient : ISmurfReadService
         }
 
         return new PagedList<SmurfDto>(items, pagination.TotalItems, pagination.CurrentPage, pagination.ItemsPerPage);
+    }
+
+    private static async Task<string> ReadCreateValidationAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    {
+        const string fallback = "The Smurf was not created. Check the name and try again.";
+        try
+        {
+            using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(cancellationToken),
+                cancellationToken: cancellationToken);
+            var root = document.RootElement;
+            if (root.ValueKind == JsonValueKind.String)
+            {
+                var message = root.GetString();
+                return string.IsNullOrWhiteSpace(message) ? fallback : message;
+            }
+
+            if (root.ValueKind == JsonValueKind.Object && root.TryGetProperty("errors", out var errors) && errors.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var field in errors.EnumerateObject())
+                {
+                    if (field.Value.ValueKind != JsonValueKind.Array)
+                    {
+                        continue;
+                    }
+
+                    foreach (var error in field.Value.EnumerateArray())
+                    {
+                        if (error.ValueKind == JsonValueKind.String)
+                        {
+                            var message = error.GetString();
+                            if (!string.IsNullOrWhiteSpace(message))
+                            {
+                                return message;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            // Only the API's validation string or problem-details errors are user-facing feedback.
+        }
+
+        return fallback;
     }
 
     private static async Task<T> ReadJsonAsync<T>(HttpResponseMessage response, CancellationToken cancellationToken)
