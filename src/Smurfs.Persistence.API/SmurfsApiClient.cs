@@ -16,7 +16,7 @@ namespace Smurfs.Persistence.API;
 /// <remarks>
 /// Owns an in-memory token for one user session. Do not share instances between users or use them concurrently.
 /// The caller owns HttpClient and should disable redirects and cookies; no certificate validation is bypassed.
-/// No repository, write unit of work, storage initializer, or token persistence is provided by this milestone.
+/// No repository, write unit of work, or storage initializer is provided. Token persistence is owned by the caller.
 /// </remarks>
 public sealed class SmurfsApiClient : ISmurfReadService
 {
@@ -47,8 +47,29 @@ public sealed class SmurfsApiClient : ISmurfReadService
     }
 
     /// <summary>
+    /// Supplies an existing bearer token from the caller's credential store or environment.
+    /// The server validates it on the next request; this method does not authenticate or refresh it.
+    /// </summary>
+    public void UseAccessToken(string token)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(token);
+        if (token.Any(character => char.IsWhiteSpace(character) || char.IsControl(character)))
+        {
+            throw new ArgumentException("The API token contains invalid characters.", nameof(token));
+        }
+
+        _token = token;
+    }
+
+    /// <summary>
+    /// Exports the current token explicitly for secure storage by the caller.
+    /// Treat the returned value as a secret; never print or log it.
+    /// </summary>
+    public string GetAccessToken() => _token ?? throw new InvalidOperationException("No API access token is available.");
+
+    /// <summary>
     /// Clears any previous token, posts credentials, and retains the new token only after a valid response.
-    /// Invalid credentials throw ApiException with status 401. Passwords and tokens are never logged or saved.
+    /// Invalid credentials throw ApiException with status 401. Passwords are never retained. The token remains in memory until explicitly exported by the caller.
     /// </summary>
     public async Task<ApiUser> LoginAsync(string email, string password, CancellationToken cancellationToken = default)
     {
@@ -69,7 +90,7 @@ public sealed class SmurfsApiClient : ISmurfReadService
             throw new InvalidDataException("The API returned an incomplete sign-in response.");
         }
 
-        _token = user.Token;
+        UseAccessToken(user.Token);
         return new ApiUser { DisplayName = user.DisplayName, Username = user.Username };
     }
 

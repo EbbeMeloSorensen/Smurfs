@@ -3,7 +3,7 @@ allowmixing
 set namespaceSeparator none
 skinparam componentStyle uml2
 skinparam classAttributeIconSize 0
-title API client milestone (selected implemented types)
+title API command client (selected implemented types)
 component "Smurfs.Domain" as Domain {
   enum Gender
 }
@@ -16,6 +16,8 @@ component "Smurfs.Application" as Application {
 }
 component "Smurfs.Persistence.API" as Adapter {
   class SmurfsApiClient {
+    +UseAccessToken(token) : void
+    +GetAccessToken() : string
     +CreateSmurfAsync(name, cancellationToken) : Task
   }
   class ApiUser
@@ -23,6 +25,9 @@ component "Smurfs.Persistence.API" as Adapter {
 }
 component "Smurfs.UI.Console.API" as Console {
   class Program
+  class ApiConsole
+  interface ITokenStore
+  class WindowsTokenStore
 }
 SmurfsApiClient .up.|> ISmurfReadService
 SmurfsApiClient .up.> Gender : JSON converter
@@ -35,15 +40,24 @@ Handler ..> Query : handles
 ISmurfReadService ..> SmurfDto : item type
 ISmurfReadService ..> Page : returns
 SmurfDto .up.> Gender : optional value
-Program .up.> SmurfsApiClient : constructs / signs in / creates
-Program .up.> ApiUser : displays account
-Program .up.> ApiException : handles authentication failure
-Program .up.> Handler : constructs / invokes
-Program .up.> Query : constructs
+Program ..> ApiConsole : constructs / dispatches
+Program ..> WindowsTokenStore : constructs
+Program .up.> SmurfsApiClient : constructs
+Program .up.> ApiException : handles failures
+ApiConsole --> ITokenStore : reads / saves / deletes
+WindowsTokenStore .up.|> ITokenStore
+ApiConsole .up.> SmurfsApiClient : login / token / create
+ApiConsole .up.> ApiUser : displays account
+ApiConsole .up.> ApiException : handles 401
+ApiConsole .up.> Handler : invokes
+ApiConsole .up.> Query : constructs
+ApiConsole .up.> Page : prints totals
+ApiConsole .up.> SmurfDto : prints names
 legend bottom
   Components represent production assemblies.
-  Selected direct type dependencies; BCL and internal wire models omitted.
-  Unimplemented write skeletons are outside this milestone.
-  Server interaction is HTTP, not an assembly reference.
+  Selected direct type dependencies; verb DTOs, BCL, native fields,
+  and internal wire models omitted. Server communication is HTTP.
+  Windows Credential Manager is native OS infrastructure.
+  Unimplemented repository/unit-of-work skeletons are outside this view.
 endlegend
 @enduml

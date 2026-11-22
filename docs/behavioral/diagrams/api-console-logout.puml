@@ -1,0 +1,16 @@
+@startuml
+title API console - remove local saved login
+actor Operator
+participant "API console process" as CLI
+participant ApiConsole as Command
+participant ITokenStore as Store
+Operator -> CLI : logout
+CLI -> Command : LogoutAsync()
+Command -> Store : Delete(configured API address)
+Store --> Command : Removed / already absent
+Command --> Operator : Local removal confirmation
+opt environment override is set
+  Command --> Operator : SMURFS_API_TOKEN remains active until unset
+end
+CLI --> Operator : Exit 0 (no server request)
+@enduml

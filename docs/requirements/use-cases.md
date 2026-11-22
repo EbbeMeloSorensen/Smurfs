@@ -75,6 +75,6 @@ Avalonia and WinForms use the shared desktop paging view model. The [HTTP API](.
 - **Postconditions** — Valid authentication permits access according to the current API policy.
 - **Requirements** — See the [UC-007 mapping](../_generated/traceability.md#uc-007).
 
-The client-side logout removes the stored token. Production token lifecycle, authorization roles, and account policies are review items rather than new acceptance claims.
+The client-side logout removes its stored token; API-console logout removes only the configured endpoint entry. Neither this action nor clearing a browser session revokes an already issued server JWT. Production token lifecycle, authorization roles, and account policies are review items rather than new acceptance claims.
 
-The separate API console realizes UC-007 through interactive sign-in and UC-003 through adjacent pages of five rows. Tokens remain in memory for that process. It also realizes UC-002 with a name-only create prompt. It does not expose registration, edit/delete, filters, or sorting controls. The API validates and commits creation; the client does not automatically retry an unconfirmed create.
+The separate API console realizes UC-007 through login/logout with endpoint-scoped saved tokens, UC-003 through explicit page/size options, and UC-002 through a name option. Each invocation executes one operation and exits. Catalog commands never prompt; scripts can supply a token override. It does not expose registration, edit/delete, filters, or sorting controls. The API validates and commits creation; the client does not automatically retry an unconfirmed create.

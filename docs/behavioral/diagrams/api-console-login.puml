@@ -1,21 +1,27 @@
 @startuml
-title API console — login
+title API console - login once for later processes
 actor Operator
-participant "API console" as CLI
+participant "API console process" as CLI
+participant ApiConsole as Command
 participant SmurfsApiClient as Client
 participant "Smurfs.API account endpoint" as API
-Operator -> CLI : Enter email and hidden password
-CLI -> Client : LoginAsync(email, password)
-Client -> Client : Clear previous token
+participant ITokenStore as Store
+Operator -> CLI : login (email / password-stdin options)
+CLI -> Command : LoginAsync(options)
+Command -> Operator : Read credentials (hidden password / explicit stdin)
+Command -> Client : LoginAsync(email, password)
 Client -> API : POST /api/account/login
 alt valid credentials
-  API --> Client : Account information and token
-  Client -> Client : Validate response and retain token in memory
-  Client --> CLI : ApiUser (no token)
-  CLI --> Operator : Signed-in confirmation
-else invalid credentials
-  API --> Client : 401
-  Client --> CLI : ApiException (401)
-  CLI --> Operator : Failure and another login prompt
+  API --> Client : Account and token
+  Client --> Command : ApiUser (display information)
+  Command -> Client : GetAccessToken()
+  Client --> Command : Secret token
+  Command -> Store : Save(API address, token)
+  Store --> Command : Saved in Windows Credential Manager
+  Command --> Operator : Account confirmation
+  CLI --> Operator : Exit 0
+else authentication or credential storage failed
+  Command --> CLI : Exception
+  CLI --> Operator : Error on stderr, exit 1 (no prompt loop)
 end
 @enduml

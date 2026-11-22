@@ -64,6 +64,14 @@ After a startup failure or an unexpected application request failure in the cons
 
 **Approved** by the request to add Diagnosability to the requirements baseline. See the [logging design](../structural/index.md#application-logging) and [manual acceptance case](../testing/acceptance.md#at-007-diagnose-frontend-failures-after-exit).
 
+#### Scriptability
+
+##### SR-002 Run CLI operations from scripts
+
+The console clients execute one requested catalog operation per process with consistent create/list names and options. Catalog commands take arguments and an existing login or explicit token without interactive prompts. They report success/failure through exit codes, results through stdout, and diagnostics through stderr. A user can authenticate once and run several API-console processes without repeating login while the saved token remains valid.
+
+**Approved** by the request to align both console UXs, retain login between processes, and support repeated script calls. No execution-time threshold is specified. See [API command behavior](../behavioral/api-console.md#saved-login-and-script-authentication).
+
 ## Additional constraints
 
 ### CR-001 Optional Village membership

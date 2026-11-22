@@ -43,7 +43,7 @@ Reconcile `docs/structural/diagrams/persistence-model.puml` against both the run
 
 ## API console milestone
 
-Smurfs.UI.Console.API is a separate HTTP client for login, name-only creation, and adjacent-page browsing through Smurfs.Persistence.API. The adapter implements ISmurfReadService, sends name-only creation directly to the API, and keeps its bearer token in memory. The server validates and commits creation; uncertain outcomes are not automatically retried. The client neither references Identity persistence nor initializes server storage. Its write repository/unit-of-work classes remain unregistered skeletons; completing them requires an explicit HTTP commit policy. See behavioral/api-console.md for supported commands and error handling.
+Smurfs.UI.Console.API executes one command per process: login, logout, listsmurfs, and createsmurf. Catalog commands match the direct console's names/options/output and never prompt. Windows Credential Manager retains an endpoint-scoped token; SMURFS_API_TOKEN overrides it for unattended/portable execution. Passwords are not saved. Login is interactive unless --email and --password-stdin are supplied. Rejected credentials fail without prompting or replaying. Logout removes local credentials only. The HTTP adapter retains an in-memory token supplied/exported explicitly by its host. The server validates and commits creation, and uncertain outcomes are not automatically retried. The client has no Identity persistence/EF dependency and does not initialize server storage. Its repository/unit-of-work classes remain unregistered skeletons. Dataset import is a later server-side milestone. See behavioral/api-console.md for script conventions.
 
 ## HTTP API baseline
 

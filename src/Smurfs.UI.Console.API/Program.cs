@@ -1,26 +1,35 @@
-using System.Net;
+using System.ComponentModel;
 using System.Text;
+using CommandLine;
 using Microsoft.Extensions.Configuration;
-using Smurfs.Application.Smurfs;
 using Smurfs.Persistence.API;
+using Smurfs.UI.Console.API.Authentication;
+using Smurfs.UI.Console.API.Verbs;
+using CreateOptions = Smurfs.UI.Console.API.Verbs.Create;
+using ListOptions = Smurfs.UI.Console.API.Verbs.List;
 
 namespace Smurfs.UI.Console.API;
 
 internal static class Program
 {
-    private static async Task<int> Main()
+    private static Task<int> Main(string[] args) =>
+        Parser.Default.ParseArguments<Login, Logout, CreateOptions, ListOptions>(args)
+            .MapResult(
+                (Login options) => RunAsync(console => console.LoginAsync(options)),
+                (Logout _) => RunAsync(console => console.LogoutAsync()),
+                (CreateOptions options) => RunAsync(console => console.CreateAsync(options)),
+                (ListOptions options) => RunAsync(console => console.ListAsync(options)),
+                errors => Task.FromResult(errors.All(error => error.StopsProcessing) ? 0 : 2));
+
+    private static async Task<int> RunAsync(Func<ApiConsole, Task<int>> operation)
     {
         try
         {
             using var configuration = new ConfigurationManager();
-
             configuration.SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddEnvironmentVariables();
-
-            var baseUrl = configuration["Api:BaseUrl"];
-
-            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var address))
+            if (!Uri.TryCreate(configuration["Api:BaseUrl"], UriKind.Absolute, out var address))
             {
                 throw new InvalidOperationException("Configure Api:BaseUrl as an absolute HTTP(S) server URL ending in /.");
             }
@@ -30,12 +39,19 @@ internal static class Program
                 BaseAddress = address,
                 Timeout = TimeSpan.FromSeconds(30)
             };
-
             var api = new SmurfsApiClient(http);
-            System.Console.WriteLine($"Smurfs API console — {address}");
-            return await RunAsync(api);
+            var console = new ApiConsole(api, address, new WindowsTokenStore(), System.Console.In,
+                System.Console.Out, System.Console.Error, ReadPassword, System.Console.IsInputRedirected,
+                Environment.GetEnvironmentVariable("SMURFS_API_TOKEN"));
+            return await operation(console);
         }
-        catch (Exception exception) when (exception is HttpRequestException or IOException or ArgumentException or InvalidOperationException or OperationCanceledException)
+        catch (Win32Exception exception)
+        {
+            System.Console.Error.WriteLine($"Could not access Windows Credential Manager (error {exception.NativeErrorCode}).");
+            return 1;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or IOException or ArgumentException or
+            InvalidOperationException or OperationCanceledException or PlatformNotSupportedException)
         {
             System.Console.Error.WriteLine(exception is HttpRequestException and not ApiException
                 ? "Could not contact the API. Check its address, availability, and HTTPS certificate."
@@ -44,182 +60,15 @@ internal static class Program
         }
     }
 
-    private static async Task<int> RunAsync(SmurfsApiClient api)
-    {
-        var handler = new List.Handler(api);
-
-        while (true)
-        {
-            System.Console.Write("Email (blank to quit): ");
-            var email = System.Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                return 0;
-            }
-
-            System.Console.Write("Password: ");
-            var password = ReadPassword();
-
-            if (password is null)
-            {
-                return 0;
-            }
-
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                System.Console.Error.WriteLine("Enter a password.");
-                continue;
-            }
-
-            try
-            {
-                var user = await api.LoginAsync(email.Trim(), password);
-                System.Console.WriteLine($"Signed in as {user.DisplayName} ({user.Username}).");
-            }
-            catch (ApiException exception) when (exception.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                System.Console.Error.WriteLine(exception.Message);
-                continue;
-            }
-
-            var pageNumber = 1;
-            var pageSize = 5;
-
-            while (true)
-            {
-                try
-                {
-                    var result = await handler.Handle(new List.Query
-                    {
-                        Params = new SmurfParams { PageNumber = pageNumber, PageSize = pageSize }
-                    }, CancellationToken.None);
-                    if (!result.IsSuccess)
-                    {
-                        System.Console.Error.WriteLine(result.Error);
-                        return 1;
-                    }
-
-                    var page = result.Value;
-                    System.Console.WriteLine($"Smurfs (page {page.CurrentPage}, {page.TotalPages} total pages, {page.TotalCount} rows):");
-
-                    foreach (var smurf in page)
-                    {
-                        System.Console.WriteLine($" {smurf.Name}");
-                    }
-
-                    System.Console.Write("Next / Previous / Reload / Create / Login / Quit (n/p/r/c/l/q): ");
-
-                    var command = System.Console.ReadLine()?.Trim().ToLowerInvariant();
-
-                    if (command is null or "q" or "quit")
-                    {
-                        return 0;
-                    }
-
-                    if (command is "l" or "login")
-                    {
-                        break;
-                    }
-
-                    if (command is "c" or "create")
-                    {
-                        if (!await CreateSmurfAsync(api))
-                        {
-                            return 0;
-                        }
-                    }
-                    else if (command is "n" or "next")
-                    {
-                        if (pageNumber < page.TotalPages)
-                        {
-                            pageNumber++;
-                        }
-                        else
-                        {
-                            System.Console.WriteLine("Already at the last page.");
-                        }
-                    }
-                    else if (command is "p" or "previous")
-                    {
-                        if (pageNumber > 1)
-                        {
-                            pageNumber--;
-                        }
-                        else
-                        {
-                            System.Console.WriteLine("Already at the first page.");
-                        }
-                    }
-                    else if (command is not ("r" or "reload"))
-                    {
-                        System.Console.WriteLine("Use n, p, r, c, l, or q.");
-                    }
-                }
-                catch (ApiException exception) when (exception.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    System.Console.Error.WriteLine(exception.Message);
-                    break;
-                }
-            }
-        }
-    }
-
-    private static async Task<bool> CreateSmurfAsync(SmurfsApiClient api)
-    {
-        while (true)
-        {
-            System.Console.Write("Name (blank to cancel): ");
-            var name = System.Console.ReadLine();
-            if (name is null)
-            {
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return true;
-            }
-
-            try
-            {
-                await api.CreateSmurfAsync(name);
-                System.Console.WriteLine($"Smurf: \"{name}\" created successfully.");
-                return true;
-            }
-            catch (ApiException exception) when (exception.StatusCode == HttpStatusCode.BadRequest)
-            {
-                System.Console.Error.WriteLine(exception.Message);
-            }
-            catch (ApiException exception) when (exception.StatusCode != HttpStatusCode.Unauthorized)
-            {
-                System.Console.Error.WriteLine(exception.Message);
-                return true;
-            }
-            catch (Exception exception) when (exception is not ApiException &&
-                exception is HttpRequestException or IOException or OperationCanceledException)
-            {
-                System.Console.Error.WriteLine("Creation outcome is unknown. Check the list before trying again; the request was not retried.");
-                return true;
-            }
-        }
-    }
-
     private static string? ReadPassword()
     {
-        if (System.Console.IsInputRedirected)
-        {
-            return System.Console.ReadLine();
-        }
-
         var password = new StringBuilder();
         while (true)
         {
             var key = System.Console.ReadKey(intercept: true);
-
             if (key.Key == ConsoleKey.Enter)
             {
-                System.Console.WriteLine();
+                System.Console.Error.WriteLine();
                 return password.ToString();
             }
 

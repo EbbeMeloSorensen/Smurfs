@@ -188,9 +188,9 @@ The legacy `scripts/add-random-smurfs.ps1` inserts into a SQLite file. It cannot
 
 For API and WebClient deployment, see the API README at `src/Smurfs.API/README.md`.
 
-## API console: login, creation, and paging
+## API console: login once, run separate commands
 
-`Smurfs.UI.Console.API` is a separate HTTP frontend. It uses `Smurfs.Persistence.API` to sign in and implements listing through the existing application read contract. Identity and catalog storage remain on the server; the original `Smurfs.UI.Console` remains a direct-persistence client.
+`Smurfs.UI.Console.API` uses the same one-operation-per-process model as `Smurfs.UI.Console`. Creation and listing share command names, options, defaults, output, and exit conventions. The API client adds login/logout; Identity and catalog storage remain on the server.
 
 Start the API with a trusted development HTTPS certificate:
 
@@ -201,12 +201,17 @@ dotnet run --project src/Smurfs.API --launch-profile https
 In another terminal:
 
 ```powershell
-dotnet run --project src/Smurfs.UI.Console.API
+dotnet run --project src/Smurfs.UI.Console.API -- login
+dotnet run --project src/Smurfs.UI.Console.API -- listsmurfs --page 1 --page-size 5
+dotnet run --project src/Smurfs.UI.Console.API -- createsmurf --name "Kylling"
+dotnet run --project src/Smurfs.UI.Console.API -- logout
 ```
 
-Sign in with a registered account, or the Development sample `bob@test.com` / `Pa$$w0rd`. The password is hidden during interactive entry. After login the console loads five Smurfs per page; use **n** (next), **p** (previous), **r** (reload), **c** (create), **l** (sign in again), and **q** (quit). Blank email or end-of-input also exits. Credentials and tokens are not stored or logged; restart requires another login. Choose **c**, enter a name, and the API creates a Smurf with health zero and unknown optional values. Blank name cancels; invalid names produce server feedback and another name prompt. The current page reloads after success, so alphabetical ordering may place the new Smurf elsewhere. Creation is never automatically retried after a timeout or transport failure; check the list before submitting again. The API client does not initialize storage.
+Login prompts for email and a hidden password, saves the token in Windows Credential Manager for the configured API address, and exits. Later processes reuse it without signing in again. Use an existing account or Development sample `bob@test.com` / `Pa$$w0rd`. Passwords are not saved. Logout removes the local saved token, without revoking the server JWT. Rejected/expired tokens require another login. There is no command loop.
 
-The client loads `Api:BaseUrl` from `appsettings.json` beside its executable, defaulting to `https://localhost:7231/`. Override it with `Api__BaseUrl`; use a server-root HTTP(S) URL ending in `/`. Use HTTPS for remote servers. Normal certificate validation remains enabled. See [API console workflows](docs/behavioral/api-console.md) for errors, scope, and verification.
+For scripts, `login --email bob@test.com --password-stdin` reads one password line from a pipe without prompting; obtain the password from your secret source instead of passing it as an argument. Alternatively provide a bearer token through `SMURFS_API_TOKEN`, which overrides saved credentials and works on non-Windows systems too. Ordinary commands never prompt: operation/authentication failures exit 1, invalid syntax exits 2, and success/help exits 0. Results go to stdout and diagnostics to stderr. Creation is never automatically retried after an uncertain outcome. For many calls, run the built/published executable or DLL instead of rebuilding with `dotnet run` every time.
+
+The client loads `Api:BaseUrl` beside its executable (default `https://localhost:7231/`); override it with `Api__BaseUrl`. Use an absolute server-root HTTP(S) URL ending in `/`, and HTTPS remotely. Scheme, host, port, and base path isolate saved logins. Normal certificate validation remains enabled. See [API console workflows](docs/behavioral/api-console.md). JSON dataset import is a planned server-side operation and is not implemented yet.
 
 ## AppData and Identity providers and migrations
 

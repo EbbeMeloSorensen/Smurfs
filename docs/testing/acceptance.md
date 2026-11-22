@@ -182,29 +182,30 @@ For the hosted WebClient, reload `/smurfs` and confirm it loads the client. Requ
 
 ## AT-011 API console login and paging
 
-**Scope** — UC-003 and UC-007, FR-003 and FR-010. Proposed manual acceptance; record human execution separately.
+**Scope** — UC-003 and UC-007, FR-003, FR-010, and SR-002. Proposed human acceptance; record execution separately.
 
-**Setup** — Start Smurfs.API in Development against a disposable SQLite database with its sample accounts and eight catalog rows. Use a trusted HTTPS development certificate and the HTTPS launch profile. In another terminal run `dotnet run --project src/Smurfs.UI.Console.API`. Override Api__BaseUrl if the server address differs.
+**Setup** — Run the API in Development against a disposable SQLite database with eight sample rows/accounts. Configure HTTPS with a trusted development certificate. Build the API console and capture its DLL as `$app`. Each `dotnet $app ...` below starts a separate process. Unset SMURFS_API_TOKEN initially and use a test API address so real saved logins are untouched.
 
-1. Enter a known email and an incorrect password. Expect a sign-in error, no catalog output, and another login prompt.
-2. Sign in as `bob@test.com` with the Development sample password `Pa$$w0rd`. Expect hidden password entry, account confirmation, and five names with page 1, two total pages, and eight rows.
-3. Enter `n`; expect page 2 with three names. Enter `p`; expect the original page 1. At the first/last page, navigation cannot move beyond its known bounds. Enter `r` to reload.
-4. Enter `l` and sign in again. Expect page 1. Restarting the client requires credentials again; no token or password file is created.
-5. Restart the API without a configured Development TokenKey, then reload in the still-running client. Expect a rejected-token error and a login prompt. Sign in again and verify listing resumes.
-6. Quit with `q`; expect exit code 0. Stop the API and relaunch/sign in; expect a concise transport error and exit code 1. No token, password, or raw server exception body should appear in output.
+1. Run `dotnet $app logout`, then `dotnet $app listsmurfs`. Expect logout exit 0, listing exit 1 with a login instruction and no prompt.
+2. Run login with invalid credentials. Expect one error and exit 1, without another prompt. Login again as `bob@test.com` with Development password `Pa$$w0rd`; expect hidden password entry, confirmation, and exit 0.
+3. Run `dotnet $app listsmurfs --page 1 --page-size 5`, then page 2 in another process. Expect five then three names, correct totals, and no credential/navigation prompts. Default page size is 25, matching the original console.
+4. Change Api__BaseUrl to another isolated address; expect missing login. Restore the original and verify its saved login still works.
+5. Restart the Development API without a stable TokenKey. Listing should exit 1 with a login instruction, without automatic login or retry. Re-login and verify listing works.
+6. Use `login --email bob@test.com --password-stdin` with a protected password source. Expect no prompts and reuse by later processes. Redirected login without the explicit flag must fail promptly. Missing verb options/unknown commands exit 2; help exits 0.
+7. Supply SMURFS_API_TOKEN from a protected source. Verify commands bypass saved credentials. Invalid overrides must not fall back to another account. Logout removes the saved entry and explains that the override remains active until unset; it does not revoke the server JWT.
+8. Unset the override, logout, and verify later listing fails. Stop the API: logout still works locally; an authenticated list fails on transport. No password/token should appear in output or a plaintext token file.
 
-**Evidence** — Record client/API commit, disposable database, server URL, commands, visible outcomes, and exit codes without recording credentials or tokens.
+**Evidence** — Record command options, endpoint, outcomes, and exit codes without secrets. Confirm test Credential Manager entries are removed. Saved login is Windows-specific; environment-token commands also work on other platforms. Use the execution-record template for human acceptance.
 
 ## AT-012 API console name-only creation
 
-**Scope** — UC-002 and UC-003, FR-002 and FR-004. Proposed manual acceptance; record human execution separately.
+**Scope** — UC-002 and UC-003, FR-002, FR-004, and SR-002. Proposed human acceptance.
 
-**Setup** — Use the isolated API and console setup from AT-011. Sign in and note the current page and total count.
+**Setup** — Use the isolated API from AT-011 and log in once. Record the initial count. Each operation runs in a separate process.
 
-1. Choose `c` and enter a blank name. Expect browsing to resume with unchanged count and no creation confirmation.
-2. Choose `c` and enter 21 characters. Expect the server's name-validation feedback and another name prompt, without adding a row.
-3. Enter a unique valid name such as `Console New Smurf`. Expect one success confirmation and the current page to reload with the total increased by one. Navigate to the appropriate alphabetical page and confirm the name. Restart the console, sign in again, and confirm it remains stored. Authorized API details should show health zero, unknown optional values, and a generated ID/UTC timestamp.
-4. In a controlled test environment, reject/expire the token after loading the page but before creation. Expect a login prompt; signing in must not resubmit the old name automatically.
-5. With a controlled HTTP stub/proxy, drop the response after forwarding a successful create. Expect an uncertain-outcome message, no success confirmation, and no automatic second POST. Check the list before submitting again.
+1. Run createsmurf without --name; expect syntax error/exit 2. Supply 21 name characters; expect server validation and exit 1 without a prompt or new row.
+2. Run `createsmurf --name "Console New Smurf"`. Expect one confirmation and exit 0, without a list reload. List separately: count increases by one and another process finds the name alphabetically. API details show health zero, unknown optional fields, and server-generated ID/UTC timestamp.
+3. Reject/expire the token before creation. Expect exit 1 with a login instruction, without automatic sign-in or resubmission. Logging in later must not replay the old name.
+4. Using a controlled stub/proxy, drop the response after a completed create. Expect uncertainty feedback, exit 1, no false success, and exactly one POST. List separately to check the outcome before trying again.
 
-**Evidence** — Record names, counts, outcomes, and controlled failure setup without credentials or bearer tokens. Stopping the API before creation verifies a transport error but does not establish the lost-response-after-commit scenario.
+**Evidence** — Record commands, counts, failure setup, and exit codes without credentials. Stopping the API before a request does not establish a lost response after commit.

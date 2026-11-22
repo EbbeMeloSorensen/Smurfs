@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Smurfs.UI.Console.API\Smurfs.UI.Console.API.csproj" />
     <ProjectReference Include="..\..\src\Smurfs.Persistence.API\Smurfs.Persistence.API.csproj" />
     <ProjectReference Include="..\..\src\Smurfs.Persistence.File\Smurfs.Persistence.File.csproj" />
     <ProjectReference Include="..\..\src\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj" />

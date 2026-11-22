@@ -1,24 +1,38 @@
 @startuml
-title API console — load and navigate a page
+title API console - one list operation per process
 actor Operator
-participant "API console" as CLI
+participant "API console process" as CLI
+participant ApiConsole as Command
+participant ITokenStore as Store
 participant "List.Handler" as List
-participant "SmurfsApiClient\nISmurfReadService" as Client
+participant SmurfsApiClient as Client
 participant "Smurfs.API catalog endpoint" as API
-Operator -> CLI : Login completes / next / previous / reload
-CLI -> List : Handle(List.Query)
-List -> Client : GetPageAsync(page, size)
-Client -> API : GET /api/smurfs?pageNumber=...&pageSize=...\nAuthorization: Bearer token
-alt authorized
-  API --> Client : JSON item array and Pagination header
-  Client -> Client : Validate and construct PagedList<SmurfDto>
-  Client --> List : Page and totals
-  List --> CLI : Successful result
-  CLI --> Operator : Names and totals, navigation prompt
-else token rejected
-  API --> Client : 401
-  Client -> Client : Discard token
-  Client --> CLI : ApiException (401) propagated through handler
-  CLI --> Operator : Authentication error and login prompt
+Operator -> CLI : listsmurfs --page ... --page-size ...
+CLI -> Command : ListAsync(options)
+alt SMURFS_API_TOKEN is supplied
+  Command -> Command : Use environment token
+else saved login
+  Command -> Store : Read(configured API address)
+  Store --> Command : Token / absent
+end
+alt token missing
+  Command --> Operator : Authentication error, exit 1 (no prompt)
+else token available
+  Command -> Client : UseAccessToken(token)
+  Command -> List : Handle(List.Query)
+  List -> Client : GetPageAsync(page, size)
+  Client -> API : GET /api/smurfs with bearer token
+  alt authorized
+    API --> Client : Items and Pagination header
+    Client --> List : PagedList<SmurfDto>
+    List --> Command : Result
+    Command --> Operator : Page and totals on stdout
+    CLI --> Operator : Exit 0
+  else token rejected
+    API --> Client : 401
+    Client -> Client : Discard in-memory token
+    Client --> Command : ApiException (401) through handler
+    Command --> Operator : Run login / replace override, exit 1
+  end
 end
 @enduml

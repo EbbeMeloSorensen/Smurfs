@@ -27,7 +27,8 @@
         "wpf-create",
         "api-create",
         "file-storage",
-        "api-console-create"
+        "api-console-create",
+        "api-console-auth"
       ],
       "automated": [
         "IT-002",
@@ -35,7 +36,8 @@
         "WT-001",
         "IT-014",
         "IT-020",
-        "IT-021"
+        "IT-021",
+        "IT-025"
       ],
       "note": "SQLite create integration and React form tests cover selected behavior. Manual cases remain unexecuted in the formal execution record."
     },
@@ -49,7 +51,8 @@
         "wpf-browse",
         "api-list",
         "file-storage",
-        "api-console"
+        "api-console",
+        "api-console-auth"
       ],
       "automated": [
         "IT-009",
@@ -58,9 +61,10 @@
         "WT-003",
         "IT-015",
         "IT-017",
-        "IT-019"
+        "IT-019",
+        "IT-022"
       ],
-      "note": "Backend query and React store tests exist. Console parsing, desktop navigation, live HTTP and browser system acceptance remain manual. API console login/paging is implemented; adapter tests mock HTTP. Manual acceptance remains separate."
+      "note": "Backend query and React store tests exist. Console parsing, desktop navigation, live HTTP and browser system acceptance remain manual. API console command-based login/paging is implemented; adapter tests mock HTTP. Manual acceptance remains separate."
     },
     "FR-004": {
       "classification": "Functionality",
@@ -233,13 +237,34 @@
       "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
       "design": [
         "api-auth",
-        "api-console"
+        "api-console",
+        "api-console-auth"
       ],
       "automated": [
         "IT-017",
-        "IT-018"
+        "IT-018",
+        "IT-022",
+        "IT-023",
+        "IT-024"
       ],
-      "note": "JWT login/register are implemented. Formal manual acceptance has not been recorded. API console login/paging is implemented; adapter tests mock HTTP. Manual acceptance remains separate."
+      "note": "JWT login/register are implemented. Formal manual acceptance has not been recorded. API console saved login and independent commands are implemented; adapter tests mock HTTP. Manual acceptance remains separate."
+    },
+    "SR-002": {
+      "classification": "Supportability",
+      "status": "Approved (scriptable CLI request)",
+      "method": "CLI command tests and manual cross-process checks",
+      "implementation": "One-operation commands with endpoint-scoped saved login or token override; ordinary commands never prompt.",
+      "design": [
+        "api-console",
+        "api-console-auth",
+        "api-console-create"
+      ],
+      "automated": [
+        "IT-022",
+        "IT-024",
+        "IT-025"
+      ],
+      "note": "Approval is the request to align console UX and support repeated script calls. No quantitative performance target or dataset import acceptance is claimed."
     }
   },
   "useCases": {
@@ -248,13 +273,15 @@
     ],
     "UC-002": [
       "FR-002",
-      "FR-004"
+      "FR-004",
+      "SR-002"
     ],
     "UC-003": [
       "FR-003",
       "RR-001",
       "FR-007",
-      "FR-008"
+      "FR-008",
+      "SR-002"
     ],
     "UC-004": [
       "FR-009"
@@ -267,7 +294,8 @@
       "FR-006"
     ],
     "UC-007": [
-      "FR-010"
+      "FR-010",
+      "SR-002"
     ]
   },
   "acceptance": {
@@ -379,7 +407,8 @@
       ],
       "requirements": [
         "FR-003",
-        "FR-010"
+        "FR-010",
+        "SR-002"
       ]
     },
     "AT-012": {
@@ -389,7 +418,8 @@
       ],
       "requirements": [
         "FR-002",
-        "FR-004"
+        "FR-004",
+        "SR-002"
       ]
     }
   },
@@ -485,7 +515,7 @@
       "anchor": "file-persistence"
     },
     "api-console": {
-      "title": "API console login and paging",
+      "title": "API console login and command lifecycle",
       "path": "behavioral/api-console.md",
       "anchor": "login"
     },
@@ -493,6 +523,11 @@
       "title": "API console name-only creation",
       "path": "behavioral/api-console.md",
       "anchor": "create-a-smurf"
+    },
+    "api-console-auth": {
+      "title": "Saved login and script authentication",
+      "path": "behavioral/api-console.md",
+      "anchor": "saved-login-and-script-authentication"
     }
   },
   "automated": {
@@ -630,6 +665,26 @@
       "title": "HTTP create validation and correction",
       "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiClientTests.cs",
       "symbol": "Create_ReportsValidationAndAllowsCorrection"
+    },
+    "IT-022": {
+      "title": "API saved login reused by independent commands",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiConsoleTests.cs",
+      "symbol": "SavedLogin_IsReusedByIndependentCommands"
+    },
+    "IT-023": {
+      "title": "Native Windows credential persistence",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiConsoleTests.cs",
+      "symbol": "WindowsCredentialStore_RoundTripsAcrossInstances"
+    },
+    "IT-024": {
+      "title": "Non-interactive command authentication failure",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiConsoleTests.cs",
+      "symbol": "MissingLogin_FailsWithoutPromptOrNetwork"
+    },
+    "IT-025": {
+      "title": "Single create command and consistent output",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiConsoleTests.cs",
+      "symbol": "Create_PerformsOneOperationAndMatchesOriginalOutput"
     }
   }
 }

@@ -64,6 +64,8 @@ Smurfs_UI_Console_API -up-> Smurfs_Persistence_API
 Smurfs_UI_Console_API -up-> Smurfs_Application
 Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Persistence_API
 
+Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_UI_Console_API
+
 legend bottom
   Arrow points from the referencing project to the referenced project.
   Direct project references only.

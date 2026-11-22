@@ -1,45 +1,74 @@
 # API console workflows
 
-`Smurfs.UI.Console.API` realizes [UC-007 authentication](../requirements/use-cases.md#uc-007-authenticate-api-access), [UC-002 creation](../requirements/use-cases.md#uc-002-create-a-smurf), and [UC-003 listing](../requirements/use-cases.md#uc-003-list-smurfs) through a running Smurfs.API. It is separate from the direct-persistence console. The HTTP adapter implements `ISmurfReadService`; the console constructs the existing `List.Handler` with it. The server performs authorization, filtering, ordering, paging, and persistence.
+`Smurfs.UI.Console.API` realizes [UC-007 authentication](../requirements/use-cases.md#uc-007-authenticate-api-access), [UC-002 creation](../requirements/use-cases.md#uc-002-create-a-smurf), and [UC-003 listing](../requirements/use-cases.md#uc-003-list-smurfs). Like the direct-persistence console, it executes one command and exits. Login is retained between separate processes, rather than by a menu. Catalog commands never request credentials or other input. The server owns Identity, validation, and persistence.
 
 ## Setup and lifetime
 
-Start `dotnet run --project src/Smurfs.API --launch-profile https` with a trusted development certificate, then run `dotnet run --project src/Smurfs.UI.Console.API` in another terminal. Development sample accounts include `bob@test.com` with password `Pa$$w0rd`; existing registered accounts also work. Only the server initializes/seeds databases.
+Start `dotnet run --project src/Smurfs.API --launch-profile https` with a trusted development certificate, then `dotnet run --project src/Smurfs.UI.Console.API -- login` in another terminal. Development accounts include `bob@test.com` / `Pa$$w0rd`. Only the server initializes databases.
 
-The client reads `appsettings.json` beside its executable. `Api:BaseUrl` defaults to `https://localhost:7231/`; environment variable `Api__BaseUrl` overrides it. The absolute HTTP(S) address must end in `/` and contain no embedded credentials, query, or fragment. Routes append `api/account/login` and `api/smurfs`; normally configure the server root. HTTP is suitable for local development; use HTTPS remotely. The client does not bypass certificate validation, follow redirects, or use authentication cookies. Requests time out after 30 seconds.
+The client reads appsettings.json beside its executable. Api:BaseUrl defaults to `https://localhost:7231/`; Api__BaseUrl overrides it. An absolute HTTP(S) base URL must end in `/`, without embedded credentials, query, or fragment. Routes append api/account/login and api/smurfs; normally configure the server root. Use HTTPS remotely. Normal certificate checks remain enabled; redirects and cookies are disabled. Requests time out after 30 seconds.
 
-One HttpClient and one SmurfsApiClient live for the console session. The adapter is not intended for concurrent calls or sharing between users. The token exists only in private memory; no token file, password setting, or command-line credential option is used. Interactive password entry is hidden. Redirected input uses one line per prompt, which is useful for automated checks but must be handled as sensitive input. The console has no rolling file logger in this milestone and prints concise errors to stderr. EOF or blank email exits with code 0; unrecovered configuration, transport, protocol, or non-authentication HTTP errors during login/listing exit with code 1. Create failures are handled as described below. Ordinary quit exits with code 0.
+Parsing precedes configuration/credential access. Help/version exit 0, invalid syntax exits 2, successes exit 0, and operation/authentication/credential-store failures exit 1. Login with --password-stdin but no --email is an option error (2). Results go to stdout; diagnostics and login prompts go to stderr. A process owns one HttpClient. There is no banner, menu, implicit login, automatic list reload, or retry loop. No rolling file logger is registered.
+
+## Saved login and script authentication
+
+Windows Credential Manager stores a generic credential under Smurfs.API/ plus the SHA-256 hash of the canonical API base URL. Scheme, host, port, and base path isolate entries; Uri normalizes equivalent host casing and default ports. Credentials belong to the current Windows user on this machine and persist across processes/logon sessions. The UTF-8 token is the secret blob. Passwords are never saved and there is no plaintext token file. One account is saved per endpoint; successful login replaces it. Native-store failures are reported without plaintext fallback.
+
+SMURFS_API_TOKEN takes precedence over saved credentials for list/create. A blank override is ignored; an override is never persisted. This is the portable/unattended path: saved login/logout currently require Windows. Ordinary override-authenticated commands bypass native storage. Obtain secrets from an existing protected source, avoid logging them, and unset the override when finished. A rejected override never falls back to another saved account.
+
+Rejected/expired tokens exit 1 without prompting, refreshing, or replaying. The adapter clears its in-memory rejected token. The CLI leaves the saved entry untouched, avoiding interference with a concurrent login; login replaces it and logout explicitly deletes it. Development API restarts can invalidate tokens without a stable TokenKey. Local logout does not revoke the server JWT.
+
+For repeated calls, build/publish once and run the executable or DLL directly:
+
+```powershell
+$app = (Resolve-Path 'src/Smurfs.UI.Console.API/bin/Debug/net10.0/Smurfs.UI.Console.API.dll').Path
+dotnet $app login
+dotnet $app createsmurf --name "Kylling"
+if ($LASTEXITCODE -ne 0) { throw 'Creation failed or was not confirmed.' }
+dotnet $app listsmurfs --page 1 --page-size 25
+dotnet $app logout
+```
+
+These are separate processes sharing a saved token. List/create each perform one operation request, without an extra login or session-validation round trip. No execution-time threshold is claimed. See [SR-002](../requirements/index.md#sr-002-run-cli-operations-from-scripts).
 
 ## Login
 
-Enter email and password. The adapter clears any previous token before POSTing credentials to `/api/account/login`. A valid response supplies account display information and the new private token. A 401 reports a sign-in failure and prompts again. Malformed/incomplete responses fail without establishing a session. Raw sign-in error response bodies and tokens are never printed. An API restart can invalidate Development tokens; sign in again when needed.
+`login` prompts once for email and a hidden password, POSTs to api/account/login, saves the returned token, prints an account confirmation, and exits. `login --email bob@test.com` prompts only for password. Invalid credentials exit 1 without reprompting. Failed authentication preserves an earlier saved login; token-storage failure does not print success.
+
+`login --email bob@test.com --password-stdin` reads one password line without prompting. There is no --password argument. Login without this flag fails immediately on redirected stdin. The adapter exports a token explicitly for secure storage; ApiUser retains display information only. Passwords/tokens are never printed. If the override is set, login still saves the new token and explains that commands currently prefer the override.
 
 ![API console login](../_generated/diagrams/behavioral/diagrams/api-console-login.svg)
 
 Source: [api-console-login.puml](diagrams/api-console-login.puml).
 
+## Logout
+
+`logout` removes only the configured endpoint's saved token, without contacting the server. It succeeds when no entry exists. If SMURFS_API_TOKEN is set, it explains that the override remains active until unset in the caller's shell/script. It cannot alter the parent process environment or revoke a JWT remotely.
+
+![API console logout](../_generated/diagrams/behavioral/diagrams/api-console-logout.svg)
+
+Source: [api-console-logout.puml](diagrams/api-console-logout.puml).
+
 ## Browse pages
 
-Successful sign-in immediately requests page 1 with page size 5. The console displays names, current page, total pages, and matching row count. Use `n`/`next`, `p`/`previous`, `r`/`reload`, `c`/`create`, `l`/`login`, and `q`/`quit`. Next/previous stay within known page bounds. Reload requests the current page. Signing in again resets browsing to page 1. Invalid commands display guidance and reload the current page.
+`listsmurfs --page 2 --page-size 5` prints names and page/totals, then exits. Defaults match the original console: page 1, size 25, capped at 50 by the application. Select another page through another invocation. Missing login fails without a request or prompt.
 
-Each read sends a bearer header on that request only. The adapter reads the item array and the server's `Pagination` header, honoring the server's effective page size (the API caps it at 50). Missing/malformed metadata or invalid JSON is reported instead of inventing totals. The read contract also forwards encoded name/infection filters and ordering, although the console has no filter/sort controls. The API performs filtering/sorting before paging; the adapter does not reorder results or fetch the whole catalog. A 401 clears the token and returns to the login prompt. Other HTTP errors retain their status in ApiException without exposing raw server details.
+The existing List.Handler uses the HTTP ISmurfReadService. The adapter reads JSON items and the Pagination header, preserving server ordering and effective page size. Invalid metadata/JSON fails instead of inventing totals. The read contract supports filters/sorting, but the CLI does not expose those controls. HTTP status failures do not expose raw error bodies.
 
-![API console browsing](../_generated/diagrams/behavioral/diagrams/api-console-list.svg)
+![API console listing](../_generated/diagrams/behavioral/diagrams/api-console-list.svg)
 
 Source: [api-console-list.puml](diagrams/api-console-list.puml).
 
 ## Create a Smurf
 
-Choose `c`/`create` and enter a name. This realizes [UC-002](../requirements/use-cases.md#uc-002-create-a-smurf). Blank/whitespace name cancels and returns to browsing; EOF exits. The adapter's CreateSmurfAsync sends one authenticated `POST /api/smurfs` containing only `name`, requesting a JSON response. The existing server Create handler validates and commits it. The server generates the ID and UTC timestamp; health defaults to zero, and Birthday, Infected, Gender, and PetId remain null. The client does not construct a domain entity or invoke its local write-handler/repository skeletons.
+`createsmurf --name "Kylling"` sends one authenticated POST containing only name, prints the original console's confirmation, and exits. There is no form, list reload, or client-generated ID. The server Create handler validates/commits: health defaults to zero, optional values to null, and ID/UTC timestamp are generated on the server.
 
-A successful response produces a confirmation and reloads the current page. The list is alphabetical, so a newly created Smurf may appear on a different page. A 400 displays the API's validation string or the first structured problem-details error and asks for a corrected name. Unexpected validation bodies use generic feedback. A 401 clears the token and returns to login; the name is not automatically resubmitted after sign-in. A 403 displays a denial and returns to browsing.
-
-Timeouts, connection errors, and interrupted responses can occur after the API has saved the Smurf. The console reports that creation is unconfirmed, advises checking the list before trying again, and never retries the POST automatically. Unexpected HTTP failures also display an unconfirmed outcome with the status, without raw server error bodies. The console attempts to reload the current page afterward; if the API remains unavailable, the normal listing error exits with code 1. Quitting after a handled create failure exits with code 0. Cancelling a draft sends no POST. This baseline does not provide idempotency keys or exactly-once delivery.
+A 400 prints a validation string or first structured problem-details error and exits 1. Correct the arguments and explicitly invoke again. Unexpected validation bodies use generic feedback. Authentication/forbidden errors also exit 1. Timeouts, interrupted responses, or unexpected HTTP failures may occur after commit: the CLI reports uncertainty, advises checking the list, and never retries automatically. No false success is printed. There are no idempotency keys or exactly-once guarantees.
 
 ![API console creation](../_generated/diagrams/behavioral/diagrams/api-console-create.svg)
 
-Source: [api-console-create.puml](diagrams/api-console-create.puml). See [AT-012](../testing/acceptance.md#at-012-api-console-name-only-creation) for manual verification.
+Source: [api-console-create.puml](diagrams/api-console-create.puml). See [AT-012](../testing/acceptance.md#at-012-api-console-name-only-creation).
 
 ## Milestone boundary
 
-There are no client-side migrations, local repositories, edit/delete commands, registration flow, refresh-token mechanism, or stored sessions. The original UnitOfWorkFactory, UnitOfWork, and SmurfRepository classes in Smurfs.Persistence.API remain explicitly documented, unimplemented skeletons and are not constructed by this frontend. Name-only creation is a direct HTTP application operation with a server-owned commit. A later repository/unit-of-work milestone would need an explicit commit policy; multiple requests cannot be assumed to share a transaction. See the [HTTP adapter architecture](../structural/index.md#http-api-client) and [manual acceptance case](../testing/acceptance.md#at-011-api-console-login-and-paging).
+No client migrations, edit/delete, registration, refresh tokens, or dataset upload is implemented. UnitOfWorkFactory, UnitOfWork, and SmurfRepository remain unimplemented/unregistered skeletons. Creation is a direct application operation with a server-owned commit; multiple HTTP requests cannot share an assumed transaction. Dataset restore/import needs a separate server contract for IDs, duplicates, replacement, and transaction semantics. See [architecture](../structural/index.md#http-api-client) and [AT-011](../testing/acceptance.md#at-011-api-console-login-and-paging).
