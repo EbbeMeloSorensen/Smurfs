@@ -43,3 +43,9 @@ The list adapter retains the complete Smurf response in the existing client stor
 Edit in the detail header opens the shared Smurf form at /manage/{id}. It retrieves the current Smurf, prefills name, health, birthday, infection status, and gender, and submits PUT /api/smurfs/{id}. Clearing birthday or selecting Unknown for infection or gender submits null. A successful save clears cached list/detail state and returns to the updated detail view. Cancel returns to details without saving. Load failures show an error; save failures preserve entered values for retry.
 
 The PUT body replaces name, health, birthday, infected, and gender. Omitted nullable fields are treated as null. Pet and Village relationships are preserved.
+
+## Filtering the Smurf list
+
+Smurf Overview submits its filters when Search is clicked. Name contains uses case-insensitive literal substring matching; surrounding search whitespace is trimmed and a blank value includes all names. Infected offers Yes, No, and Unspecified. Selected states are combined with OR; no selections include every infection state. Unspecified matches an unknown (null) value. Name and infection filters are combined with AND.
+
+GET /api/smurfs accepts name and infected query parameters alongside paging. For example, name=pa&infected=true%7Cnull includes matching names whose infection state is true or unknown. Infection tokens are true, false, and null, separated by pipes; invalid tokens return 400. Filtering runs in the database before the total count, ordering, and page selection. Pagination headers report the filtered totals. Search clears loaded rows and resets to page 1, including when only filter values change. Earlier requests cannot replace the results of a newer search.

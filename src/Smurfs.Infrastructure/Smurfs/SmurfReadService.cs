@@ -20,9 +20,28 @@ public sealed class SmurfReadService(DataContext context) : ISmurfReadService
     public async Task<PagedList<SmurfDto>> GetPageAsync(
         int pageNumber,
         int pageSize,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? name = null,
+        IReadOnlyCollection<bool?>? infected = null)
     {
         var smurfs = context.Smurfs.AsNoTracking();
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            var normalizedName = name.Trim().ToLowerInvariant();
+            smurfs = smurfs.Where(smurf => smurf.Name.ToLower().Contains(normalizedName));
+        }
+
+        if (infected is { Count: > 0 })
+        {
+            var includeUnknown = infected.Contains(null);
+            var includeInfected = infected.Contains(true);
+            var includeNotInfected = infected.Contains(false);
+            smurfs = smurfs.Where(smurf =>
+                (includeUnknown && smurf.Infected == null) ||
+                (includeInfected && smurf.Infected == true) ||
+                (includeNotInfected && smurf.Infected == false));
+        }
+
         var count = await smurfs.CountAsync(cancellationToken);
         var offset = (pageNumber - 1L) * pageSize;
 

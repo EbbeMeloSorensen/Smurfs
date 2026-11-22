@@ -55,7 +55,28 @@ public class List
                 return Result<PagedList<SmurfDto>>.Failure("Page number and page size must be positive.");
             }
 
-            var page = await _readService.GetPageAsync(pageNumber, pageSize, cancellationToken);
+            var infected = new HashSet<bool?>();
+            if (!string.IsNullOrWhiteSpace(request.Params.Infected))
+            {
+                foreach (var state in request.Params.Infected.Split('|', StringSplitOptions.TrimEntries))
+                {
+                    if (state.Equals("null", StringComparison.OrdinalIgnoreCase))
+                    {
+                        infected.Add(null);
+                    }
+                    else if (bool.TryParse(state, out var value))
+                    {
+                        infected.Add(value);
+                    }
+                    else
+                    {
+                        return Result<PagedList<SmurfDto>>.Failure("Infected must contain true, false, or null separated by pipes.");
+                    }
+                }
+            }
+
+            var page = await _readService.GetPageAsync(
+                pageNumber, pageSize, cancellationToken, request.Params.Name, infected);
             _logger.LogInformation("Listed page {PageNumber} of Smurfs with {RowCount} rows.", pageNumber, page.Count);
             return Result<PagedList<SmurfDto>>.Success(page);
         }

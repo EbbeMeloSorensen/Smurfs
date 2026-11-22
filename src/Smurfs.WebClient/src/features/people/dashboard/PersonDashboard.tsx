@@ -10,7 +10,7 @@ import PersonListItemPlaceholder from "./PersonListItemPlaceholder";
 
 export default observer(function PersonDashboard() {
     const {personStore} = useStore();
-    const {loadPeople, personRegistry, setPagingParams, pagination} = personStore;
+    const {loadPeople, setPagingParams, pagination} = personStore;
     const [loadingNext, setLoadingNext] = useState(false);
   
     function handleGetNext() {
@@ -20,8 +20,8 @@ export default observer(function PersonDashboard() {
     }
 
     useEffect(() => {
-      if (personRegistry.size <= 1) loadPeople();
-    }, [personRegistry.size, loadPeople])
+      if (!pagination && !personStore.loadingInitial) loadPeople();
+    }, [pagination, loadPeople, personStore])
 
     return (
         <Grid>

@@ -5,7 +5,6 @@ import {
     Checkbox,
     Form,
     Header,
-    Label,
     Radio,
 } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
@@ -15,22 +14,19 @@ export default observer(function PeopleFilters() {
         personStore: { setPredicate, sorting, setSorting },
     } = useStore();
 
-    // Nogle states, vi gerne vil sende til personStore, når man klikker på Search-knappen
     const [nameFilter, setNameFilter] = useState("");
-    const [categoryFilter, setCategoryFilter] = useState("");
-    const [dead, setDead] = useState(false);
-    const [notDead, setNotDead] = useState(false);
-    const [deadUnspecified, setDeadUnspecified] = useState(false);
+    const [infected, setInfected] = useState(false);
+    const [notInfected, setNotInfected] = useState(false);
+    const [infectionUnspecified, setInfectionUnspecified] = useState(false);
     const [sortingLocal, setSortingLocal] = useState(sorting);
 
     function handleClick() {
         setSorting(sortingLocal);
         setPredicate(
             nameFilter,
-            categoryFilter,
-            dead,
-            notDead,
-            deadUnspecified,
+            infected,
+            notInfected,
+            infectionUnspecified,
         );
     }
 
@@ -39,33 +35,33 @@ export default observer(function PeopleFilters() {
             <Header icon="filter" attached color="teal" content="Filters" />
 
             <Header>Name</Header>
-            <Label>Name contains</Label>
-            <input
+            <label htmlFor="nameFilter">Name contains</label>
+            <input id="nameFilter"
                 value={nameFilter}
                 onChange={(e) => setNameFilter(e.target.value)}
             />
 
-            <Header>Black</Header>
+            <Header>Infected</Header>
             <Form>
                 <Form.Field>
                     <Checkbox
                         label="Yes"
-                        defaultChecked={dead}
-                        onChange={() => setDead(!dead)}
+                        checked={infected}
+                        onChange={() => setInfected(!infected)}
                     />
                 </Form.Field>
                 <Form.Field>
                     <Checkbox
                         label="No"
-                        defaultChecked={notDead}
-                        onChange={() => setNotDead(!notDead)}
+                        checked={notInfected}
+                        onChange={() => setNotInfected(!notInfected)}
                     />
                 </Form.Field>
                 <Form.Field>
                     <Checkbox
                         label="Unspecified"
-                        defaultChecked={deadUnspecified}
-                        onChange={() => setDeadUnspecified(!deadUnspecified)}
+                        checked={infectionUnspecified}
+                        onChange={() => setInfectionUnspecified(!infectionUnspecified)}
                     />
                 </Form.Field>
             </Form>

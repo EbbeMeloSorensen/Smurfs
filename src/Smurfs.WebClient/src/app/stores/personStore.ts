@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction, runInAction } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Person, PersonFormValues } from "../models/person";
 import { Pagination, PagingParams } from "../models/pagination";
@@ -17,14 +17,6 @@ export default class PersonStore {
     constructor() {
         makeAutoObservable(this);
 
-        reaction(
-            () => this.predicate.keys(),
-            () => {
-                this.pagingParams = new PagingParams();
-                this.personRegistry.clear();
-                this.loadPeople();
-            }
-        )
     }
 
     setPagingParams = (pagingParams: PagingParams) => {
@@ -41,38 +33,26 @@ export default class PersonStore {
         })
     }
 
-    // Det, du gør i denne funktion, influerer på, hvilke Query Params der sendes med i http requestet
-    // til back enden. Check det f.eks. ved at aktivere dev tools i browseren og navigere hen til
-    // Network tabben
     setPredicate = (
         nameFilter: string,
-        categoryFilter: string,
-        dead: boolean,
-        notDead: boolean,
-        deadUnspecified: boolean) => {
+        infected: boolean,
+        notInfected: boolean,
+        infectionUnspecified: boolean) => {
         this.resetPredicate();
-
-        if (nameFilter.length > 0)
-        {
-            this.predicate.set('name', nameFilter);
+        if (nameFilter.trim()) {
+            this.predicate.set('name', nameFilter.trim());
         }
-
-        if (categoryFilter.length > 0)
-        {
-            this.predicate.set('category', categoryFilter);
-        }
-
-        if (dead || notDead || deadUnspecified)
-        {
-            let deadFilter = new Array<string>();
-            if (dead) deadFilter.push("true");
-            if (notDead) deadFilter.push("false");
-            if (deadUnspecified) deadFilter.push("null");
-    
-            this.predicate.set('dead', deadFilter.join('|'));
-        }
+        const states: string[] = [];
+        if (infected) states.push("true");
+        if (notInfected) states.push("false");
+        if (infectionUnspecified) states.push("null");
+        if (states.length) this.predicate.set('infected', states.join('|'));
 
         this.predicate.set('sorting', this.sorting);
+        this.pagingParams = new PagingParams();
+        this.pagination = null;
+        this.personRegistry.clear();
+        return this.loadPeople();
     }
 
     get axiosParams() {
@@ -100,17 +80,21 @@ export default class PersonStore {
         });
     }
 
+    private listRequestVersion = 0;
+
     loadPeople = async () => {
+        const version = ++this.listRequestVersion;
         this.loadingInitial = true;
         try {
             const result = await agent.People.list(this.axiosParams);
-            console.log(result);
+            if (version !== this.listRequestVersion) return;
             result.data.forEach(person => {
                 this.setPerson(person);
             })
             this.setPagination(result.pagination);
             this.setLoadingInitial(false);
         } catch(error) {
+            if (version !== this.listRequestVersion) return;
             console.log(error);
             this.setLoadingInitial(false);
         }

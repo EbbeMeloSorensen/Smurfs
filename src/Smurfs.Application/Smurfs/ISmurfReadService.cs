@@ -8,7 +8,7 @@ namespace Smurfs.Application.Smurfs;
 public interface ISmurfReadService
 {
     /// <summary>
-    /// Returns a page ordered by name and then identifier, with a total row count.
+    /// Returns a page ordered by name and then identifier, with a filtered total row count.
     /// Page number and page size must be positive.
     /// </summary>
     /// <param name="pageNumber">
@@ -17,11 +17,19 @@ public interface ISmurfReadService
     /// <param name="pageSize">
     /// The maximum number of items to return.
     /// </param>
+    /// <param name="name">
+    /// A case-insensitive literal name substring. Blank means all names.
+    /// </param>
+    /// <param name="infected">
+    /// Infection states to include. Null or empty means all states.
+    /// </param>
     /// <param name="cancellationToken">
     /// Requests cancellation of retrieval.
     /// </param>
     Task<PagedList<SmurfDto>> GetPageAsync(
         int pageNumber,
         int pageSize,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken,
+        string? name = null,
+        IReadOnlyCollection<bool?>? infected = null);
 }
