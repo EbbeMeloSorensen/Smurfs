@@ -8,7 +8,7 @@ namespace Smurfs.Persistence.File;
 
 internal sealed class FileStore
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true,
@@ -32,7 +32,7 @@ internal sealed class FileStore
             await using var input = new FileStream(
                 _path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete,
                 4096, FileOptions.Asynchronous);
-            var document = await JsonSerializer.DeserializeAsync<FileDocument>(input, JsonOptions, cancellationToken);
+            var document = await JsonSerializer.DeserializeAsync<FileDocument>(input, _jsonOptions, cancellationToken);
             return FileCatalog.Restore(document ?? throw new InvalidDataException("The catalog is null."));
         }
         catch (FileNotFoundException)
@@ -100,7 +100,7 @@ internal sealed class FileStore
                 temporaryPath, FileMode.CreateNew, FileAccess.Write, FileShare.None,
                 4096, FileOptions.Asynchronous | FileOptions.WriteThrough))
             {
-                await JsonSerializer.SerializeAsync(output, document, JsonOptions, cancellationToken);
+                await JsonSerializer.SerializeAsync(output, document, _jsonOptions, cancellationToken);
                 await output.FlushAsync(cancellationToken);
                 output.Flush(flushToDisk: true);
             }
