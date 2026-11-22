@@ -10,7 +10,7 @@ public class Smurf
     private string _name = string.Empty;
 
     /// <summary>
-    /// Gets the identifier assigned when this instance is constructed.
+    /// Gets the identifier generated on creation or supplied during rehydration.
     /// </summary>
     public Guid Id { get; private set; } = Guid.NewGuid();
 
@@ -76,4 +76,24 @@ public class Smurf
     /// Null can also mean the navigation has not been loaded by persistence.
     /// </remarks>
     public Pet? Pet { get; set; }
+
+    /// <summary>
+    /// Creates a smurf with a new identifier.
+    /// </summary>
+    public Smurf()
+    {
+    }
+
+    /// <summary>
+    /// Creates a smurf with an existing identifier for import or rehydration.
+    /// </summary>
+    public Smurf(Guid id)
+    {
+        if (id == Guid.Empty)
+        {
+            throw new ArgumentException("The identifier must not be empty.", nameof(id));
+        }
+
+        Id = id;
+    }
 }

@@ -1,12 +1,12 @@
 # Console workflows
 
-The console runs one verb per process. Each diagram assumes argument parsing has selected the verb. After argument parsing selects a verb, the program opens its rolling file logger, builds the host, and opens a service scope. It disposes the scope and host before disposing the logger. Failures during startup are written to the file when the logger is available and reported to stderr with exit code 1. See [Application logging](../structural/index.md#application-logging). All verbs use the configured SQLite or PostgreSQL database. If that database is missing, `createsmurf` and `listsmurfs` run the same migration and seeding operations as `initdb` before dispatch. The diagrams refer to that shared behavior as database setup.
+The console runs one verb per process. Each diagram assumes argument parsing has selected the verb. After argument parsing selects a verb, the program opens its rolling file logger, builds the host, and opens a service scope. It disposes the scope and host before disposing the logger. Failures during startup are written to the file when the logger is available and reported to stderr with exit code 1. See [Application logging](../structural/index.md#application-logging). All verbs use the configured SQLite, PostgreSQL, or JSON file catalog. If that storage is missing, `createsmurf` and `listsmurfs` run the same migration and seeding operations as `initdb` before dispatch. The diagrams refer to that shared behavior as storage setup.
 
 A use-case failure or caught runtime exception is printed to standard error and returns exit code 1. If first-use setup fails after creating the database, run `initdb` to retry. The console filters the MediatR license log category.
 
 ## Database settings
 
-The console loads `appsettings.json` beside its executable, so it can be launched from any working directory. The project copies this file into build and publish output. Set `Database:Provider` to `Postgres` or `Sqlite` and configure `ConnectionStrings:Postgres` or `ConnectionStrings:Sqlite` respectively. The checked-in default targets PostgreSQL `Smurfs_ConsoleApp`, and SQLite defaults to `Data Source=smurfs-console.db` relative to the process working directory.
+The console loads `appsettings.json` beside its executable, so it can be launched from any working directory. The project copies this file into build and publish output. Set `Database:Provider` to `Postgres` or `Sqlite` and configure `ConnectionStrings:Postgres` or `ConnectionStrings:Sqlite` respectively. The checked-in provider is SQLite. PostgreSQL targets `Smurfs_ConsoleApp`, and SQLite defaults to `Data Source=smurfs-console.db` relative to the process working directory.
 
 Edit the deployed settings file before the next invocation to switch providers without rebuilding. Environment variables override file settings, for example:
 
@@ -16,11 +16,19 @@ $env:ConnectionStrings__Sqlite = 'Data Source=smurfs-console.db'
 dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page-size 5
 ```
 
-Provider names are case-insensitive. A missing or unsupported provider, or a missing connection string for the selected provider, produces a startup error and exit code 1. Each provider uses its own AppData migrations and database contents.
+Provider names are case-insensitive. A missing or unsupported provider, or a missing connection string for the selected provider, produces a startup error and exit code 1. Each database provider has its own AppData migrations and contents; the File provider uses its own versioned document. Switching providers does not transfer data.
+
+For JSON storage, set `Database:Provider` to `File` and `FileStore:Path` to the catalog path. The default `smurfs.json` and other relative file paths resolve beside the executable, independently of the process working directory. No connection string is required. The file and its parent directory are created on first use. Existing invalid files produce an error and are preserved. See [file persistence](../structural/index.md#file-persistence) for format, commit, and conflict behavior.
+
+```powershell
+$env:Database__Provider = 'File'
+$env:FileStore__Path = 'C:\SmurfsData\catalog.json'
+dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page-size 5
+```
 
 ## initdb
 
-Explicitly applies outstanding migrations and seeds seven named samples and one randomly named Smurf when the Smurfs table is empty. It also runs against an existing database. This realizes [UC-001 Initialize local storage](../requirements/use-cases.md#uc-001-initialize-local-storage).
+Explicitly applies outstanding migrations and seeds seven named samples and one randomly named Smurf when the Smurfs table is empty. It also runs against an existing database. For File, the same verb creates or validates the version-1 document and seeds an empty catalog; it does not run EF migrations. An existing empty catalog is reseeded only by explicit `initdb`, not by normal listing or creation. The success message is `Application data initialized.` This realizes [UC-001 Initialize local storage](../requirements/use-cases.md#uc-001-initialize-local-storage).
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- initdb
@@ -44,7 +52,7 @@ dotnet run --project src/Smurfs.UI.Console -- createsmurf --name "New Smurf"
 
 ## listsmurfs
 
-Pages start at 1, with a default size of 25 and a maximum of 50. The read adapter counts rows and fetches the requested page ordered by name, then identifier. An out-of-range page is empty. Because count and page retrieval use separate queries, concurrent writes can change page contents or totals. This realizes [UC-003 List Smurfs](../requirements/use-cases.md#uc-003-list-smurfs).
+Pages start at 1, with a default size of 25 and a maximum of 50. The read adapter counts rows and fetches the requested page ordered by name, then identifier. An out-of-range page is empty. For database providers, count and page retrieval use separate queries, so concurrent writes can change page contents or totals. File reads use one snapshot for filtering, totals, ordering, and paging. This realizes [UC-003 List Smurfs](../requirements/use-cases.md#uc-003-list-smurfs).
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page 2 --page-size 5

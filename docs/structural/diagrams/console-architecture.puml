@@ -1,7 +1,8 @@
 @startuml
 allowmixing
+set namespaceSeparator none
 top to bottom direction
-title Smurfs console use-case architecture
+title Smurfs console use-case architecture (EF provider)
 skinparam componentStyle uml2
 skinparam classAttributeIconSize 0
 

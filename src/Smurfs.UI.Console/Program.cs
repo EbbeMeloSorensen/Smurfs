@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Craft.Domain;
 using Smurfs.Persistence;
+using Smurfs.Persistence.File;
 using Smurfs.Persistence.EFCore.AppData;
 using Smurfs.Application.Core;
 using Smurfs.Application.Smurfs;
@@ -62,27 +63,38 @@ internal class Program
                             var sqliteConnection = GetRequiredConnectionString(context.Configuration, "Sqlite");
                             services.AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(sqliteConnection));
                             break;
+                        case "FILE":
+                            var filePath = context.Configuration["FileStore:Path"] ?? "smurfs.json";
+                            services.AddFilePersistence(Path.GetFullPath(filePath, context.HostingEnvironment.ContentRootPath));
+                            break;
                         case "POSTGRES":
                             var postgresConnection = GetRequiredConnectionString(context.Configuration, "Postgres");
                             services.AddAppDataPersistence<PostgresDataContext>(options => options.UseNpgsql(postgresConnection));
                             break;
                         default:
-                            throw new InvalidOperationException("Configure Database:Provider as Sqlite or Postgres.");
+                            throw new InvalidOperationException("Configure Database:Provider as Sqlite, Postgres or File.");
                     }
 
                     services.AddApplication();
-                    services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
-                    services.AddScoped<ISmurfReadService, SmurfReadService>();
+                    if (!string.Equals(provider?.Trim(), "File", StringComparison.OrdinalIgnoreCase))
+                    {
+                        services.AddScoped<IUnitOfWorkFactory, Persistence.EFCore.AppData.UnitOfWorkFactory>();
+                        services.AddScoped<ISmurfReadService, SmurfReadService>();
+                    }
                     services.AddScoped<IBusinessRuleCatalog, BusinessRuleCatalog>();
                 })
                 .Build();
 
             await using var scope = host.Services.CreateAsyncScope();
-            var databaseCreator = scope.ServiceProvider.GetRequiredService<DataContext>()
-                .GetService<IRelationalDatabaseCreator>();
-            if (initialize || !await databaseCreator.ExistsAsync())
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            var isFile = string.Equals(configuration["Database:Provider"]?.Trim(), "File", StringComparison.OrdinalIgnoreCase);
+            var storageMissing = isFile
+                ? !System.IO.File.Exists(Path.GetFullPath(configuration["FileStore:Path"] ?? "smurfs.json", AppContext.BaseDirectory))
+                : !await scope.ServiceProvider.GetRequiredService<DataContext>()
+                    .GetService<IRelationalDatabaseCreator>().ExistsAsync();
+            if (initialize || storageMissing)
             {
-                await InitializeAsync(scope.ServiceProvider);
+                await InitializeAsync(scope.ServiceProvider, initialize);
             }
 
             startupComplete = true;
@@ -116,12 +128,15 @@ internal class Program
     }
 
     private static async Task InitializeAsync(
-        IServiceProvider services)
+        IServiceProvider services, bool reportInitialization)
     {
         var initializer = services.GetRequiredService<IAppDataInitializer>();
         await initializer.MigrateAsync();
         await initializer.SeedAsync();
-        System.Console.WriteLine("Database initialized.");
+        if (reportInitialization)
+        {
+            System.Console.WriteLine("Application data initialized.");
+        }
     }
 
     private static async Task<int> CreateSmurf(

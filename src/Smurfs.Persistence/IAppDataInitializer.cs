@@ -1,17 +1,17 @@
 namespace Smurfs.Persistence;
 
 /// <summary>
-/// Defines setup operations for the application database.
+/// Defines repeatable setup operations for application storage.
 /// </summary>
 public interface IAppDataInitializer
 {
     /// <summary>
-    /// Applies outstanding application database migrations.
+    /// Prepares storage and applies supported schema or file-format upgrades.
     /// </summary>
     Task MigrateAsync();
 
     /// <summary>
-    /// Initializes sample data in the migrated database.
+    /// Initializes sample data when prepared storage is empty.
     /// </summary>
     Task SeedAsync();
 }

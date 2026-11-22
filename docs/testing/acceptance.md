@@ -8,7 +8,7 @@ Each NuGet package ID used as a direct dependency must have one declared version
 
 ## Isolated setup
 
-Use PowerShell 7. For the console cases, build the app from the repository root and capture its absolute path. Stop if the build fails. The WPF case has its own build steps. Run these cases against a disposable local PostgreSQL instance. The console and WPF currently expect their configured credentials at localhost:5432 and use `Smurfs_ConsoleApp` and `Smurfs_WPF` respectively. Start each data-dependent case with its target database absent on that test instance. The applications create and seed it.
+Use PowerShell 7. For the console cases, build the app from the repository root and capture its absolute path. Stop if the build fails. The WPF case has its own build steps. Run these cases against a disposable local PostgreSQL instance. For these PostgreSQL cases, set `Database__Provider=Postgres` explicitly (the console default is SQLite). The console and WPF use their configured credentials at localhost:5432 and use `Smurfs_ConsoleApp` and `Smurfs_WPF` respectively. Start each data-dependent case with its target database absent on that test instance. The applications create and seed it.
 
 ```powershell
 dotnet build src/Smurfs.UI.Console/Smurfs.UI.Console.csproj

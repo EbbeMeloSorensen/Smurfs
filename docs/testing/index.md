@@ -1,11 +1,11 @@
 # Verification and validation
 
-The plan covers console and desktop workflows, JWT API access, WebClient create/detail/edit/delete flows, filtering/sorting, domain rules, and both persistence providers. The [traceability matrix](../_generated/traceability.md) records evidence links and limitations.
+The plan covers console and desktop workflows, JWT API access, WebClient create/detail/edit/delete flows, filtering/sorting, domain rules, and the PostgreSQL/SQLite database providers and JSON file adapter. The [traceability matrix](../_generated/traceability.md) records evidence links and limitations.
 
 | Level | Scope and current evidence |
 | --- | --- |
 | Unit | Isolated rule and handler checks are appropriate. There is no separate C# unit-test project; React component/store tests are listed below. |
-| Integration | The existing xUnit project exercises EF Core with real, in-memory SQLite. Its historical project name contains `UnitTest`. |
+| Integration | The existing xUnit project exercises EF Core with real, in-memory SQLite and isolated temporary JSON files. Its historical project name contains `UnitTest`. |
 | Component/client | The Jest/React Testing Library suite tests forms, detail rendering, store filtering/sorting, stale requests, and canonical/legacy routes. API requests are mocked. |
 | System | Run clients and the API against disposable stores. Live browser-to-API and desktop interaction remain manual. |
 | Acceptance | A human runs the [manual procedures](acceptance.md) against the approved baseline. Proposed cases may be run for review and marked provisional. |
@@ -30,3 +30,7 @@ The tests in `tests/Smurf.Persistence.EFCore.AppData.UnitTest` exercise reposito
 Run npm ci in src/Smurfs.WebClient when dependencies need restoring, then npm test -- --watchAll=false --runInBand. The client uses mocked API responses for create/edit payloads and failures, nullable detail display, filter resets, stale-response suppression, server ordering, and route redirects. These checks do not establish that a deployed browser and API interoperate; AT-009 and AT-010 cover that manual review.
 
 Application integration tests also cover Details, Edit, Delete, filtered totals and paging, creation-time ordering with ties, fixed UTC seed times, and field projection. The traceability matrix links these tests to the corresponding proposed requirements. The complete backend suite should pass against the checked-in migrations. Migration-file presence and snapshot agreement do not prove live PostgreSQL upgrade success.
+
+## File persistence tests
+
+`FilePersistenceTests` uses unique temporary directories and independent factories/sessions. It verifies repeatable/concurrent initialization, restart round trips of IDs and scalar/null values, tracked and detached edits, disposal without commit, shared pets and preserved village membership, existing Create/Edit/Delete handlers and DI registration, AND predicates, filtered/sorted paging, stale-write rejection, cancellation, failed serialization cleanup, and malformed/unsupported file preservation. These checks use the local filesystem; they do not certify network filesystems or power-loss durability. Console smoke checks should run separate `initdb`, `createsmurf`, and `listsmurfs` processes with `Database__Provider=File` and a disposable absolute `FileStore__Path`. Formal human acceptance remains separate.

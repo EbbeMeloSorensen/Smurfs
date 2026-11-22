@@ -7,10 +7,12 @@
       "implementation": "Implemented in console",
       "design": [
         "console-init",
-        "storage"
+        "storage",
+        "file-storage"
       ],
       "automated": [
-        "IT-001"
+        "IT-001",
+        "IT-013"
       ],
       "note": "Fresh-schema migration is covered by the SQLite context and its own migration set. The initializer rerun and preservation scenario still need a PostgreSQL acceptance run."
     },
@@ -23,12 +25,14 @@
         "console-create",
         "catalog",
         "wpf-create",
-        "api-create"
+        "api-create",
+        "file-storage"
       ],
       "automated": [
         "IT-002",
         "IT-006",
-        "WT-001"
+        "WT-001",
+        "IT-014"
       ],
       "note": "SQLite create integration and React form tests cover selected behavior. Manual cases remain unexecuted in the formal execution record."
     },
@@ -40,13 +44,15 @@
       "design": [
         "console-list",
         "wpf-browse",
-        "api-list"
+        "api-list",
+        "file-storage"
       ],
       "automated": [
         "IT-009",
         "IT-010",
         "IT-011",
-        "WT-003"
+        "WT-003",
+        "IT-015"
       ],
       "note": "Backend query and React store tests exist. Console parsing, desktop navigation, live HTTP and browser system acceptance remain manual."
     },
@@ -59,11 +65,13 @@
         "catalog",
         "console-create",
         "wpf-create",
-        "api-create"
+        "api-create",
+        "file-storage"
       ],
       "automated": [
         "IT-006",
-        "WT-001"
+        "WT-001",
+        "IT-014"
       ],
       "note": "SQLite create integration and React form tests cover selected behavior. Manual cases remain unexecuted in the formal execution record."
     },
@@ -137,11 +145,13 @@
       "method": "SQLite edit integration and React form tests",
       "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
       "design": [
-        "api-edit"
+        "api-edit",
+        "file-storage"
       ],
       "automated": [
         "IT-007",
-        "WT-002"
+        "WT-002",
+        "IT-014"
       ],
       "note": "Tests cover validation, persistence, nullable clearing, and retry. Formal browser acceptance is unrecorded."
     },
@@ -151,10 +161,12 @@
       "method": "SQLite deletion integration and manual browser acceptance",
       "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
       "design": [
-        "api-details"
+        "api-details",
+        "file-storage"
       ],
       "automated": [
-        "IT-008"
+        "IT-008",
+        "IT-014"
       ],
       "note": "Deletion and preservation of another Smurf/shared pet are automated; browser deletion and live PostgreSQL execution remain manual."
     },
@@ -164,11 +176,13 @@
       "method": "SQLite filtered-query integration and client store tests",
       "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
       "design": [
-        "api-filters"
+        "api-filters",
+        "file-storage"
       ],
       "automated": [
         "IT-010",
-        "WT-003"
+        "WT-003",
+        "IT-015"
       ],
       "note": "Covers combinations, filtered totals/pages, repeated searches, and stale responses. Live PostgreSQL and full browser acceptance remain manual."
     },
@@ -179,12 +193,14 @@
       "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
       "design": [
         "api-sorting",
-        "creation-times"
+        "creation-times",
+        "file-storage"
       ],
       "automated": [
         "IT-011",
         "IT-012",
-        "WT-004"
+        "WT-004",
+        "IT-015"
       ],
       "note": "Covers ordering before paging, ties, fixed seed times, and retained server order. Historical default timestamps do not reconstruct actual dates."
     },
@@ -430,6 +446,11 @@
       "title": "HTTP authentication",
       "path": "behavioral/http-api.md",
       "anchor": "sign-in"
+    },
+    "file-storage": {
+      "title": "JSON file persistence",
+      "path": "structural/index.md",
+      "anchor": "file-persistence"
     }
   },
   "automated": {
@@ -522,6 +543,26 @@
       "title": "displays the Smurf fields, false infection, and birthday without a timezone shift",
       "file": "src/Smurfs.WebClient/src/features/smurfs/details/SmurfDetailedInfo.test.tsx",
       "symbol": "displays the Smurf fields, false infection, and birthday without a timezone shift"
+    },
+    "IT-013": {
+      "title": "File initialization and seed preservation",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/FilePersistenceTests.cs",
+      "symbol": "Initialization_SeedsOnceAndPreservesExistingRows"
+    },
+    "IT-014": {
+      "title": "Application handlers with file persistence",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/FilePersistenceTests.cs",
+      "symbol": "ApplicationHandlers_CreateEditAndDeleteWithoutEfCore"
+    },
+    "IT-015": {
+      "title": "File filtered/sorted pages",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/FilePersistenceTests.cs",
+      "symbol": "ReadService_FiltersSortsAndPagesSnapshot"
+    },
+    "IT-016": {
+      "title": "File stale write protection",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/FilePersistenceTests.cs",
+      "symbol": "ConflictingSessions_RejectStaleCommitWithoutLosingData"
     }
   }
 }

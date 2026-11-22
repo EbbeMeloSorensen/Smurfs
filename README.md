@@ -65,9 +65,9 @@ Execute the automated tests:
 dotnet test Smurfs.sln
 ```
 
-The test project retains its historical `UnitTest` name, although its current tests exercise persistence against real, in-memory SQLite databases. These tests therefore cover database integration rather than only isolated units of code.
+The test project retains its historical `UnitTest` name, although its current tests exercise persistence against real, in-memory SQLite databases and isolated on-disk JSON catalogs. These tests cover integration as well as isolated behavior.
 
-The tests use in-memory databases. SQLite migration tests use the AppData SQLite context and migration set. PostgreSQL migration discovery and snapshot agreement are checked without opening a database connection.
+SQLite tests use in-memory databases; file tests use temporary directories. SQLite migration tests use the AppData SQLite context and migration set. PostgreSQL migration discovery and snapshot agreement are checked without opening a database connection.
 
 ## Build the documentation
 
@@ -177,7 +177,7 @@ Both scripts should produce equivalent documentation on Windows and Linux. For r
 - [November 2026 persistence baseline](docs/baseline-2026-11-04.md)
 ## Populate a database for paging tests
 
-The current seed configuration creates eight sample rows (seven named samples and one randomly named Smurf) on first initialization of an empty catalog. Select SQLite or PostgreSQL in the console settings and use a disposable test database. See [console database settings](docs/behavioral/console.md#database-settings) for file locations and environment overrides.
+The current seed configuration creates eight sample rows (seven named samples and one randomly named Smurf) on first initialization of an empty catalog. Select SQLite, PostgreSQL, or File in the console settings and use a disposable test database. See [console database settings](docs/behavioral/console.md#database-settings) for file locations and environment overrides.
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- initdb
@@ -192,7 +192,19 @@ For API and WebClient deployment, see the API README at `src/Smurfs.API/README.m
 
 Each persistence assembly keeps its shared model in the abstract `DataContext`. `PostgresDataContext` and `SqliteDataContext` each have their own migrations and model snapshot in the same assembly, under `Migrations/Postgres` and `Migrations/Sqlite`.
 
-WPF selects its AppData provider from `Database:Provider` and defaults to PostgreSQL. Its [database settings](docs/behavioral/wpf.md#database-settings) also support SQLite. Avalonia also selects its AppData provider from `Database:Provider` and defaults to PostgreSQL. WinForms also selects its AppData provider from `Database:Provider` and defaults to PostgreSQL. See [WinForms database settings](docs/behavioral/winforms.md#database-settings). The console selects its AppData provider from `Database:Provider` and defaults to PostgreSQL. The API selects both contexts from `Database:Provider` at startup, defaulting to the checked-in `Sqlite` setting. See `src/Smurfs.API/README.md` for connection settings and Heroku overrides. To compose an AppData host with SQLite, register `AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))`. The registration also exposes the selected context and its factory through the shared `DataContext` contract. Identity uses the same sibling provider context structure. Register its selected provider with `AddIdentityPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))` when composing a SQLite host. Both extension methods live in their respective persistence namespaces.
+WPF selects its AppData provider from `Database:Provider` and defaults to PostgreSQL. Its [database settings](docs/behavioral/wpf.md#database-settings) also support SQLite. Avalonia also selects its AppData provider from `Database:Provider` and defaults to PostgreSQL. WinForms also selects its AppData provider from `Database:Provider` and defaults to PostgreSQL. See [WinForms database settings](docs/behavioral/winforms.md#database-settings). The console selects its AppData provider from `Database:Provider` and defaults to SQLite. It also supports `File`; see [file persistence](docs/structural/index.md#file-persistence). The API selects both contexts from `Database:Provider` at startup, defaulting to the checked-in `Sqlite` setting. See `src/Smurfs.API/README.md` for connection settings and Heroku overrides. To compose an AppData host with SQLite, register `AddAppDataPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))`. The registration also exposes the selected context and its factory through the shared `DataContext` contract. Identity uses the same sibling provider context structure. Register its selected provider with `AddIdentityPersistence<SqliteDataContext>(options => options.UseSqlite(connectionString))` when composing a SQLite host. Both extension methods live in their respective persistence namespaces.
+
+The JSON file adapter in `Smurfs.Persistence.File` implements the same unit-of-work/repository and initializer contracts. Select it in the console with `Database:Provider=File` and configure `FileStore:Path` (default `smurfs.json` beside the executable). For example:
+
+```powershell
+$env:Database__Provider = 'File'
+$env:FileStore__Path = 'C:\SmurfsData\catalog.json'
+dotnet run --project src/Smurfs.UI.Console -- initdb
+dotnet run --project src/Smurfs.UI.Console -- createsmurf --name "File Smurf"
+dotnet run --project src/Smurfs.UI.Console -- listsmurfs --page-size 5
+```
+
+The first command creates the directory/file and seeds eight rows when empty. Repeating it preserves existing Smurfs. File persistence needs no EF migrations or database connection. It uses a versioned JSON format, atomic replacement, and conflict detection; stale writers must reload and retry. SQLite and PostgreSQL remain supported, and the other frontends retain their current database settings. No data is transferred automatically between providers. See [file storage behavior](docs/structural/index.md#file-persistence) for format and concurrency limits. Other hosts can register `services.AddFilePersistence(filePath)` instead of their EF initializer, unit-of-work factory, and read-service registrations.
 
 For each model change, generate one migration per provider in the affected persistence project from the repository root with the EF Core CLI:
 

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Smurfs.Persistence.File\Smurfs.Persistence.File.csproj" />
     <ProjectReference Include="..\..\src\Smurfs.Persistence.EFCore.Identity\Smurfs.Persistence.EFCore.Identity.csproj" />
     <ProjectReference Include="..\..\src\Smurfs.Application\Smurfs.Application.csproj" />
     <ProjectReference Include="..\..\src\Smurfs.Infrastructure\Smurfs.Infrastructure.csproj" />

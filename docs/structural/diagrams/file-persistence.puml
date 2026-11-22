@@ -1,0 +1,60 @@
+@startuml
+allowmixing
+set namespaceSeparator none
+skinparam componentStyle uml2
+skinparam classAttributeIconSize 0
+title JSON file persistence (selected public types)
+component "Smurfs.Domain" as DomainAssembly {
+  class Smurf
+  class Pet
+}
+component "Smurfs.Persistence" as ContractsAssembly {
+  interface IUnitOfWork
+  interface IUnitOfWorkFactory
+  interface ISmurfRepository
+  interface IAppDataInitializer
+  class SampleSmurfs
+}
+component "Smurfs.Application" as ApplicationAssembly {
+  interface ISmurfReadService
+  class SmurfDto
+  class "PagedList<T>" as PagedList
+}
+component "Smurfs.Persistence.File" as FileAssembly {
+  class UnitOfWork
+  class UnitOfWorkFactory
+  class SmurfRepository
+  class AppDataInitializer
+  class SmurfReadService
+  class FileConflictException
+}
+DomainAssembly -[hidden]right- ContractsAssembly
+ContractsAssembly -[hidden]down-> ApplicationAssembly
+ApplicationAssembly -[hidden]down-> FileAssembly
+UnitOfWork .up.|> IUnitOfWork
+UnitOfWorkFactory .up.|> IUnitOfWorkFactory
+SmurfRepository .up.|> ISmurfRepository
+AppDataInitializer .up.|> IAppDataInitializer
+SmurfReadService .up.|> ISmurfReadService
+IUnitOfWork --> ISmurfRepository : exposes
+IUnitOfWorkFactory .up.> IUnitOfWork : creates
+ISmurfRepository .up.> Smurf : repository entity
+SampleSmurfs .up.> Smurf : creates
+UnitOfWorkFactory ..> UnitOfWork : creates snapshot session
+UnitOfWork --> SmurfRepository : constructs
+SmurfRepository --> UnitOfWork : session state
+SmurfRepository .up.> Smurf : queries / stages
+AppDataInitializer ..> UnitOfWorkFactory : creates sessions
+AppDataInitializer .up.> SampleSmurfs : seeds
+AppDataInitializer ..> FileConflictException : retries seed conflict
+SmurfReadService .up.> IUnitOfWorkFactory : opens snapshot
+SmurfReadService .up.> Smurf : filters / orders
+SmurfReadService .up.> SmurfDto : projects
+SmurfReadService .up.> PagedList : returns
+legend bottom
+  Components represent assemblies; arrows connect selected types.
+  Internal JSON store/record helpers and BCL nodes are omitted.
+  Pet records are restored by internal helpers; domain relationships
+  remain in the conceptual model. EF adapters have a separate view.
+endlegend
+@enduml

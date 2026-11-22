@@ -8,7 +8,7 @@
 
 ## Shared persistence behavior
 
-The generic repository and unit-of-work behavior below is covered by the SQLite integration tests. The console, desktop clients, and HTTP API use a separate read service for listing.
+The EF repository and unit-of-work behavior below is covered by the SQLite integration tests. The console, desktop clients, and HTTP API use a separate read service for listing.
 
 1. A caller obtains a UnitOfWork owning a DataContext and its SmurfRepository. The runtime factory creates a context per session. The console registers the factory in its composition root.
 2. CountAsync and FindAsync apply successive predicates using logical AND. An empty sequence selects all persisted rows. Results have no guaranteed ordering. Find uses configured tracking (tracking by default), with no explicit navigation Includes. A read-only result list contains mutable entities.
@@ -19,6 +19,8 @@ The generic repository and unit-of-work behavior below is covered by the SQLite 
 Queries execute against database state rather than combining staged additions into query results. Plain CLR Pet/PetId assignments do not maintain consistency; an unloaded navigation may be null even when a foreign key exists.
 
 See [IUnitOfWork](xref:Smurfs.Persistence.IUnitOfWork), [Repository](xref:Craft.Persistence.EFCore.Repository`1), the [structural perspective](../structural/index.md), and [historical coverage and gaps](../baseline-review.md). Cancellation timing, input errors, graph conflicts and failure/retry policies remain questions for review.
+
+The JSON file adapter implements the same contracts with independent tracked snapshots, including staged changes in queries. CompleteAsync replaces the document only after a revision check; a stale session fails with FileConflictException. Disposing never commits. Its read service counts and pages one snapshot. See [file persistence](../structural/index.md#file-persistence) for initialization, data format, and filesystem limits.
 
 ## Console workflow
 

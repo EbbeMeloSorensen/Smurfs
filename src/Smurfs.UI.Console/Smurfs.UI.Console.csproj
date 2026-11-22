@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Smurfs.Persistence.File\Smurfs.Persistence.File.csproj" />
     <ProjectReference Include="..\Smurfs.Application\Smurfs.Application.csproj" />
     <ProjectReference Include="..\Smurfs.Infrastructure\Smurfs.Infrastructure.csproj" />
     <ProjectReference Include="..\Smurfs.Persistence.EFCore.AppData\Smurfs.Persistence.EFCore.AppData.csproj" />

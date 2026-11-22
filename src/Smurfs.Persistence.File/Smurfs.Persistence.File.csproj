@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Smurfs.Persistence\Smurfs.Persistence.csproj" />
+    <ProjectReference Include="..\Smurfs.Application\Smurfs.Application.csproj" />
   </ItemGroup>
 
 </Project>

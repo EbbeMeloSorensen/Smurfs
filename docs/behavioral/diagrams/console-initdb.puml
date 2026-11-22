@@ -3,16 +3,16 @@ title Console — initdb
 actor Operator
 participant "Console Program" as CLI
 participant IAppDataInitializer as Setup
-database "Configured SQLite or PostgreSQL" as DB
+database "Configured catalog (SQLite / PostgreSQL / File)" as DB
 
 Operator -> CLI : initdb
 CLI -> CLI : Open console rolling file logger
 CLI -> CLI : Build host and open service scope
 CLI -> Setup : MigrateAsync()
-Setup -> DB : Apply outstanding migrations
+Setup -> DB : Apply database migrations / create or validate JSON
 CLI -> Setup : SeedAsync()
 Setup -> DB : Seed sample Smurfs if empty
-CLI --> Operator : Print database initialized
+CLI --> Operator : Print application data initialized
 CLI -> CLI : Dispose scope, host, and then file logger
 CLI --> Operator : Exit 0
 @enduml
