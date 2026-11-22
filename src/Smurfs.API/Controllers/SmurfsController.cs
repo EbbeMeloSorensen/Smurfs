@@ -1,3 +1,4 @@
+using Smurfs.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Smurfs.Application.Smurfs;
 
@@ -42,7 +43,7 @@ public class SmurfsController : BaseApiController
     }
 
     /// <summary>
-    /// Replaces the name and health of the Smurf identified by the route.
+    /// Replaces the editable details of the Smurf identified by the route.
     /// </summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> EditSmurf(
@@ -54,7 +55,10 @@ public class SmurfsController : BaseApiController
         {
             Id = id,
             Name = request.Name,
-            Health = request.Health
+            Health = request.Health,
+            Birthday = request.Birthday,
+            Infected = request.Infected,
+            Gender = request.Gender
         };
 
         return HandleResult(await Mediator.Send(command, cancellationToken));
@@ -85,5 +89,21 @@ public class SmurfsController : BaseApiController
         /// Gets the replacement health.
         /// </summary>
         public required int Health { get; init; }
+
+        /// <summary>
+        /// Gets the replacement birthday, or null when unknown.
+        /// </summary>
+        public DateTime? Birthday { get; init; }
+
+        /// <summary>
+        /// Gets replacement infection status, or null when unknown.
+        /// </summary>
+        public bool? Infected { get; init; }
+
+        /// <summary>
+        /// Gets the replacement gender, or null when unknown.
+        /// </summary>
+        public Gender? Gender { get; init; }
+
     }
 }

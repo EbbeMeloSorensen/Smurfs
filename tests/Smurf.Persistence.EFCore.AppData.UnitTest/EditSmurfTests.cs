@@ -57,12 +57,23 @@ public sealed class EditSmurfTests
         Assert.Equal("Smurf not found.", missing.Error);
 
         var saved = await handler.Handle(
-            new Edit.Command { Id = original.Id, Name = "Edited", Health = 12 }, CancellationToken.None);
+            new Edit.Command { Id = original.Id, Name = "Edited", Health = 12, Birthday = new DateTime(2000, 1, 2), Infected = false, Gender = Gender.Female }, CancellationToken.None);
         Assert.True(saved.IsSuccess);
         await context.Entry(original).ReloadAsync();
         Assert.Equal("Edited", original.Name);
         Assert.Equal(12, original.Health);
         Assert.Equal(petId, original.PetId);
+        Assert.Equal(new DateTime(2000, 1, 2), original.Birthday);
+        Assert.Equal(false, original.Infected);
+        Assert.Equal(Gender.Female, original.Gender);
+        var cleared = await handler.Handle(
+            new Edit.Command { Id = original.Id, Name = "Edited", Health = 12 }, CancellationToken.None);
+        Assert.True(cleared.IsSuccess);
+        await context.Entry(original).ReloadAsync();
+        Assert.Null(original.Birthday);
+        Assert.Null(original.Infected);
+        Assert.Null(original.Gender);
+
         Assert.Single(await context.Smurfs.ToListAsync());
     }
 

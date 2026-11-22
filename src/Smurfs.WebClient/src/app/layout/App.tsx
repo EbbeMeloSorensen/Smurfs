@@ -6,7 +6,6 @@ import { observer } from 'mobx-react-lite';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import HomePage from '../../features/home/HomePage';
 import SmurfForm from '../../features/people/form/SmurfForm';
-import PersonForm from '../../features/people/form/PersonForm';
 import PersonDetails from '../../features/people/details/PersonDetails';
 import TestErrors from '../../features/errors/TestError';
 import { ToastContainer } from 'react-toastify';
@@ -46,7 +45,7 @@ function App() {
                 <PrivateRoute exact path='/people' component={PersonDashboard} />
                 <PrivateRoute path='/people/:id' component={PersonDetails} />
                 <PrivateRoute key={location.key} path={['/createSmurf', '/createPerson']} component={SmurfForm} />
-                <PrivateRoute path='/manage/:id' component={PersonForm} />
+                <PrivateRoute key={location.key} path='/manage/:id' component={SmurfForm} />
                 <PrivateRoute path='/errors' component={TestErrors} />
                 <Route path='/server-error' component={ServerError} />
                 <Route component={NotFound} />

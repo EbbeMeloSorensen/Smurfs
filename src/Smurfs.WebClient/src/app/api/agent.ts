@@ -123,7 +123,9 @@ const Account = {
 
 const agent = {
     Smurfs: {
-        create: (request: CreateSmurfRequest) => requests.post<void>('/smurfs', request)
+        create: (request: CreateSmurfRequest) => requests.post<void>('/smurfs', request),
+        details: (id: string) => requests.get<Smurf>('/smurfs/' + id),
+        update: (id: string, request: CreateSmurfRequest) => requests.put<void>('/smurfs/' + id, request)
     },
     People,
     Account

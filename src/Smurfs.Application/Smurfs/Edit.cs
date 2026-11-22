@@ -9,12 +9,12 @@ using Smurfs.Persistence;
 namespace Smurfs.Application.Smurfs;
 
 /// <summary>
-/// Defines the use case for editing a Smurf's name and health.
+/// Defines the use case for editing a Smurf's details.
 /// </summary>
 public class Edit
 {
     /// <summary>
-    /// Identifies the Smurf and supplies its replacement name and health.
+    /// Identifies the Smurf and supplies its replacement details.
     /// </summary>
     public class Command : IRequest<Result<Unit>>
     {
@@ -32,6 +32,22 @@ public class Edit
         /// Gets the replacement health. No health range restriction is applied.
         /// </summary>
         public required int Health { get; init; }
+
+        /// <summary>
+        /// Gets the replacement birthday, or null when unknown.
+        /// </summary>
+        public DateTime? Birthday { get; init; }
+
+        /// <summary>
+        /// Gets replacement infection status, or null when unknown.
+        /// </summary>
+        public bool? Infected { get; init; }
+
+        /// <summary>
+        /// Gets the replacement gender, or null when unknown.
+        /// </summary>
+        public Gender? Gender { get; init; }
+
     }
 
     /// <summary>
@@ -85,6 +101,9 @@ public class Edit
 
             smurf.Name = request.Name;
             smurf.Health = request.Health;
+            smurf.Birthday = request.Birthday;
+            smurf.Infected = request.Infected;
+            smurf.Gender = request.Gender;
             var entityErrors = _businessRuleCatalog.ValidateAtomic(smurf);
             if (entityErrors.Count > 0)
             {

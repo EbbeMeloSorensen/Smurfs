@@ -37,3 +37,9 @@ Create.Command defaults the added fields so existing name-only desktop and conso
 Selecting a Smurf in the overview shows its name, health, birthday, infection status, and gender. Unknown optional values display Unknown; false infection displays No and true displays Yes. Birthday displays the stored calendar date without shifting it to the browser timezone. Legacy address, nickname, category, death status, and person-relations fields are removed from this view.
 
 The list adapter retains the complete Smurf response in the existing client store. Opening or refreshing a detail URL retrieves GET /api/smurfs/{id}, which returns the same DTO fields as the paged list, or 404 for a missing identifier. The detail header's Delete action calls DELETE /api/smurfs/{id}.
+
+## WebClient editing
+
+Edit in the detail header opens the shared Smurf form at /manage/{id}. It retrieves the current Smurf, prefills name, health, birthday, infection status, and gender, and submits PUT /api/smurfs/{id}. Clearing birthday or selecting Unknown for infection or gender submits null. A successful save clears cached list/detail state and returns to the updated detail view. Cancel returns to details without saving. Load failures show an error; save failures preserve entered values for retry.
+
+The PUT body replaces name, health, birthday, infected, and gender. Omitted nullable fields are treated as null. Pet and Village relationships are preserved.
