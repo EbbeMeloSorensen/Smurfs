@@ -96,12 +96,7 @@ internal sealed class WindowsTokenStore : ITokenStore
         }
     }
 
-    internal static string GetTarget(Uri address)
-    {
-        // Uri canonicalizes host names and default ports; preserve scheme, port, and base path isolation.
-        var digest = SHA256.HashData(Encoding.UTF8.GetBytes(address.AbsoluteUri));
-        return "Smurfs.API/" + Convert.ToHexString(digest);
-    }
+    internal static string GetTarget(Uri address) => "Smurfs.API/" + TokenStoreKey.HashAddress(address);
 
     private static void EnsureSupported()
     {

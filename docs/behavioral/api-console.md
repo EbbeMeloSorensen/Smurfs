@@ -12,9 +12,13 @@ Parsing precedes configuration/credential access. Help/version exit 0, invalid s
 
 ## Saved login and script authentication
 
-Windows Credential Manager stores a generic credential under Smurfs.API/ plus the SHA-256 hash of the canonical API base URL. Scheme, host, port, and base path isolate entries; Uri normalizes equivalent host casing and default ports. Credentials belong to the current Windows user on this machine and persist across processes/logon sessions. The UTF-8 token is the secret blob. Passwords are never saved and there is no plaintext token file. One account is saved per endpoint; successful login replaces it. Native-store failures are reported without plaintext fallback.
+Windows Credential Manager stores a generic credential under Smurfs.API/ plus the SHA-256 hash of the canonical API base URL. Scheme, host, port, and base path isolate entries; Uri normalizes equivalent host casing and default ports. Credentials belong to the current Windows user on this machine and persist across processes/logon sessions. The UTF-8 token is the secret blob. Passwords are never saved; Windows uses no plaintext token file. One account is saved per endpoint; successful login replaces it. Native-store failures are reported without plaintext fallback.
 
-SMURFS_API_TOKEN takes precedence over saved credentials for list/create. A blank override is ignored; an override is never persisted. This is the portable/unattended path: saved login/logout currently require Windows. Ordinary override-authenticated commands bypass native storage. Obtain secrets from an existing protected source, avoid logging them, and unset the override when finished. A rejected override never falls back to another saved account.
+Linux uses `LinuxTokenStore` under an absolute `$XDG_CONFIG_HOME/smurfs-api`, or `~/.config/smurfs-api` when XDG_CONFIG_HOME is missing/relative. It uses the same canonical-address hash as the Windows key, with one `.token` file per endpoint. Files contain **unencrypted bearer tokens**, protected by owner-only Unix permissions: the directory is created as `0700` and files as `0600`. This is an intentional headless-compatible storage policy, not an encrypted keyring or a fallback after Windows credential failure. No desktop service or extra package is needed. The credential directory must be on a filesystem that honors Unix permissions. The application user and root can read these files; keep them out of shared directories and backups that should not contain credentials.
+
+Reads, writes, and deletion reject symbolic links at the credential directory or entry, and reject group/other-accessible modes rather than silently repairing them. If modes were changed, restore `700` on the directory and `600` on the affected file before retrying. New files are created privately from the outset, flushed, and atomically renamed over the old entry; failed writes do not truncate the saved token. Missing reads/logout do not create a directory. Concurrent login/logout is last-writer-wins, not a server transaction. Windows credential names and existing saved logins are preserved.
+
+SMURFS_API_TOKEN takes precedence over saved credentials for list/create. A blank override is ignored; an override is never persisted. This is the portable/unattended path: saved login/logout support Windows and Linux. Ordinary override-authenticated commands bypass credential storage. Obtain secrets from an existing protected source, avoid logging them, and unset the override when finished. A rejected override never falls back to another saved account.
 
 Rejected/expired tokens exit 1 without prompting, refreshing, or replaying. The adapter clears its in-memory rejected token. The CLI leaves the saved entry untouched, avoiding interference with a concurrent login; login replaces it and logout explicitly deletes it. Development API restarts can invalidate tokens without a stable TokenKey. Local logout does not revoke the server JWT.
 
@@ -30,6 +34,29 @@ dotnet $app logout
 ```
 
 These are separate processes sharing a saved token. List/create each perform one operation request, without an extra login or session-validation round trip. No execution-time threshold is claimed. See [SR-002](../requirements/index.md#sr-002-run-cli-operations-from-scripts).
+
+## Linux usage
+
+Install the .NET 10 SDK to build, or publish a self-contained executable for the target Linux architecture. From the solution root:
+
+```bash
+dotnet publish src/Smurfs.UI.Console.API -c Release -r linux-x64 --self-contained true -o ./artifacts/api-console-linux
+export Api__BaseUrl='https://your-server/'
+./artifacts/api-console-linux/Smurfs.UI.Console.API login
+./artifacts/api-console-linux/Smurfs.UI.Console.API listsmurfs --page 1 --page-size 5
+./artifacts/api-console-linux/Smurfs.UI.Console.API createsmurf --name Kylling
+./artifacts/api-console-linux/Smurfs.UI.Console.API logout
+```
+
+Use `linux-arm64` for an ARM64 Linux machine. When copying a publish made on Windows, preserve/set executable permission on Linux with `chmod +x Smurfs.UI.Console.API`. A framework-dependent DLL can instead run with `dotnet Smurfs.UI.Console.API.dll` and the .NET 10 runtime. Publishing targets a Linux build; successful cross-publishing does not establish execution on Linux. Use HTTPS with a trusted certificate and a reachable API address; localhost refers to the Linux machine itself.
+
+Login and `--email ... --password-stdin` work identically on both supported systems. For isolated Linux-native verification without a running API or keyring, use the .NET 10 SDK:
+
+```bash
+bash scripts/test-api-console-linux.sh
+```
+
+This runs the Linux file-permission/symlink tests plus shared HTTP/command tests. Linux-native cases are explicitly skipped on Windows; Windows-native cases are skipped on Linux. [AT-013](../testing/acceptance.md#at-013-linux-saved-login-and-permissions) describes cross-process acceptance. Never claim native Linux execution merely from a Windows build.
 
 ## Login
 

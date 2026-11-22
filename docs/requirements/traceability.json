@@ -238,16 +238,18 @@
       "design": [
         "api-auth",
         "api-console",
-        "api-console-auth"
+        "api-console-auth",
+        "linux-cli"
       ],
       "automated": [
         "IT-017",
         "IT-018",
         "IT-022",
         "IT-023",
-        "IT-024"
+        "IT-024",
+        "IT-026"
       ],
-      "note": "JWT login/register are implemented. Formal manual acceptance has not been recorded. API console saved login and independent commands are implemented; adapter tests mock HTTP. Manual acceptance remains separate."
+      "note": "JWT login/register are implemented. Formal manual acceptance has not been recorded. API console saved login and independent commands are implemented; adapter tests mock HTTP. Manual acceptance remains separate. Linux supports saved login using unencrypted owner-only files; native Linux tests are OS-gated."
     },
     "SR-002": {
       "classification": "Supportability",
@@ -257,14 +259,16 @@
       "design": [
         "api-console",
         "api-console-auth",
-        "api-console-create"
+        "api-console-create",
+        "linux-cli"
       ],
       "automated": [
         "IT-022",
         "IT-024",
-        "IT-025"
+        "IT-025",
+        "IT-026"
       ],
-      "note": "Approval is the request to align console UX and support repeated script calls. No quantitative performance target or dataset import acceptance is claimed."
+      "note": "Approval is the request to align console UX and support repeated script calls. No quantitative performance target or dataset import acceptance is claimed. Linux supports saved login using unencrypted owner-only files; native Linux tests are OS-gated."
     }
   },
   "useCases": {
@@ -421,6 +425,16 @@
         "FR-004",
         "SR-002"
       ]
+    },
+    "AT-013": {
+      "useCases": [
+        "UC-007",
+        "UC-003"
+      ],
+      "requirements": [
+        "FR-010",
+        "SR-002"
+      ]
     }
   },
   "design": {
@@ -528,6 +542,11 @@
       "title": "Saved login and script authentication",
       "path": "behavioral/api-console.md",
       "anchor": "saved-login-and-script-authentication"
+    },
+    "linux-cli": {
+      "title": "Linux CLI and credential storage",
+      "path": "behavioral/api-console.md",
+      "anchor": "linux-usage"
     }
   },
   "automated": {
@@ -685,6 +704,21 @@
       "title": "Single create command and consistent output",
       "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiConsoleTests.cs",
       "symbol": "Create_PerformsOneOperationAndMatchesOriginalOutput"
+    },
+    "IT-026": {
+      "title": "Linux token persistence and permissions",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/LinuxTokenStoreTests.cs",
+      "symbol": "LinuxStore_RoundTripsWithOwnerOnlyPermissions"
+    },
+    "IT-027": {
+      "title": "Linux credential symlink rejection",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/LinuxTokenStoreTests.cs",
+      "symbol": "LinuxStore_RejectsTokenSymlink"
+    },
+    "IT-028": {
+      "title": "Linux shared-token rejection",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/LinuxTokenStoreTests.cs",
+      "symbol": "LinuxStore_RejectsSharedTokenFile"
     }
   }
 }

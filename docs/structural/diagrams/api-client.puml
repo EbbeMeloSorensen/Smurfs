@@ -27,6 +27,8 @@ component "Smurfs.UI.Console.API" as Console {
   class Program
   class ApiConsole
   interface ITokenStore
+  class PlatformTokenStore
+  class LinuxTokenStore
   class WindowsTokenStore
 }
 SmurfsApiClient .up.|> ISmurfReadService
@@ -41,11 +43,15 @@ ISmurfReadService ..> SmurfDto : item type
 ISmurfReadService ..> Page : returns
 SmurfDto .up.> Gender : optional value
 Program ..> ApiConsole : constructs / dispatches
-Program ..> WindowsTokenStore : constructs
+Program ..> PlatformTokenStore : constructs
 Program .up.> SmurfsApiClient : constructs
 Program .up.> ApiException : handles failures
 ApiConsole --> ITokenStore : reads / saves / deletes
+PlatformTokenStore .up.|> ITokenStore
+PlatformTokenStore ..> WindowsTokenStore : selects on Windows
+PlatformTokenStore ..> LinuxTokenStore : selects on Linux
 WindowsTokenStore .up.|> ITokenStore
+LinuxTokenStore .up.|> ITokenStore
 ApiConsole .up.> SmurfsApiClient : login / token / create
 ApiConsole .up.> ApiUser : displays account
 ApiConsole .up.> ApiException : handles 401
@@ -57,7 +63,8 @@ legend bottom
   Components represent production assemblies.
   Selected direct type dependencies; verb DTOs, BCL, native fields,
   and internal wire models omitted. Server communication is HTTP.
-  Windows Credential Manager is native OS infrastructure.
+  Platform path/key helpers omitted. Windows uses native Credential Manager;
+  Linux uses owner-only, unencrypted files without a desktop keyring.
   Unimplemented repository/unit-of-work skeletons are outside this view.
 endlegend
 @enduml

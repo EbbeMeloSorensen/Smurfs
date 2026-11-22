@@ -193,9 +193,9 @@ For the hosted WebClient, reload `/smurfs` and confirm it loads the client. Requ
 5. Restart the Development API without a stable TokenKey. Listing should exit 1 with a login instruction, without automatic login or retry. Re-login and verify listing works.
 6. Use `login --email bob@test.com --password-stdin` with a protected password source. Expect no prompts and reuse by later processes. Redirected login without the explicit flag must fail promptly. Missing verb options/unknown commands exit 2; help exits 0.
 7. Supply SMURFS_API_TOKEN from a protected source. Verify commands bypass saved credentials. Invalid overrides must not fall back to another account. Logout removes the saved entry and explains that the override remains active until unset; it does not revoke the server JWT.
-8. Unset the override, logout, and verify later listing fails. Stop the API: logout still works locally; an authenticated list fails on transport. No password/token should appear in output or a plaintext token file.
+8. Unset the override, logout, and verify later listing fails. Stop the API: logout still works locally; an authenticated list fails on transport. No password/token should appear in output. Windows creates no plaintext token file; Linux token files must have owner-only permissions.
 
-**Evidence** — Record command options, endpoint, outcomes, and exit codes without secrets. Confirm test Credential Manager entries are removed. Saved login is Windows-specific; environment-token commands also work on other platforms. Use the execution-record template for human acceptance.
+**Evidence** — Record command options, endpoint, outcomes, and exit codes without secrets. Confirm test Credential Manager entries are removed. Saved login supports Windows and Linux; environment-token commands bypass storage. Use the execution-record template for human acceptance.
 
 ## AT-012 API console name-only creation
 
@@ -209,3 +209,18 @@ For the hosted WebClient, reload `/smurfs` and confirm it loads the client. Requ
 4. Using a controlled stub/proxy, drop the response after a completed create. Expect uncertainty feedback, exit 1, no false success, and exactly one POST. List separately to check the outcome before trying again.
 
 **Evidence** — Record commands, counts, failure setup, and exit codes without credentials. Stopping the API before a request does not establish a lost response after commit.
+
+## AT-013 Linux saved login and permissions
+
+**Scope** — UC-007, UC-003, FR-010, and SR-002. Proposed manual Linux acceptance; record native execution separately.
+
+**Setup** — Use Linux with the .NET 10 SDK, a reachable disposable API, and an isolated absolute XDG_CONFIG_HOME pointing to a temporary directory. Do not use a shared real credential directory. Run `bash scripts/test-api-console-linux.sh` so native permission/link tests execute. Publish the CLI as described in the Linux usage guide. Unset SMURFS_API_TOKEN initially.
+
+1. Login, then run list/create as separate processes. Expect reuse without a keyring service or repeated login.
+2. Inspect `$XDG_CONFIG_HOME/smurfs-api`: directory permissions must be 700 and `.token` files 600. Files contain the bearer token unencrypted, not the password; do not copy their contents into the execution record.
+3. Change the configured API base URL. Expect missing authentication for the new endpoint; the original endpoint's entry remains usable.
+4. In the isolated directory, grant group-read to the token file. Listing must refuse it and exit 1 without exposing the token. Restore mode 600. Repeat with a shared directory mode, restoring 700 afterward. Symlink refusal and atomic replacement are covered by native integration tests.
+5. Logout and verify the selected file is removed and later listing fails without prompting. Logout with no entry succeeds. Environment-token commands must work without creating credential files.
+6. Verify default lookup uses ~/.config when XDG_CONFIG_HOME is unset, and relative XDG values are ignored. Keep this check isolated from any real saved login.
+
+**Evidence** — Record OS, SDK, endpoint, commands, exit codes, file permission modes, and test results without secrets. Cross-publishing on Windows is not evidence that native Linux tests ran.

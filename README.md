@@ -207,7 +207,9 @@ dotnet run --project src/Smurfs.UI.Console.API -- createsmurf --name "Kylling"
 dotnet run --project src/Smurfs.UI.Console.API -- logout
 ```
 
-Login prompts for email and a hidden password, saves the token in Windows Credential Manager for the configured API address, and exits. Later processes reuse it without signing in again. Use an existing account or Development sample `bob@test.com` / `Pa$$w0rd`. Passwords are not saved. Logout removes the local saved token, without revoking the server JWT. Rejected/expired tokens require another login. There is no command loop.
+Login prompts for email and a hidden password, saves an endpoint-scoped token in Windows Credential Manager on Windows or an owner-only credential file on Linux, and exits. Later processes reuse it without signing in again. Use an existing account or Development sample `bob@test.com` / `Pa$$w0rd`. Passwords are not saved. Logout removes the local saved token, without revoking the server JWT. Rejected/expired tokens require another login. There is no command loop.
+
+On Linux, saved login works without a desktop/keyring service. Tokens are stored under `$XDG_CONFIG_HOME/smurfs-api` (default `~/.config/smurfs-api`), in a `0700` directory with `0600` files. The files contain unencrypted bearer tokens protected by Unix access permissions. Passwords are not stored. See [Linux usage](docs/behavioral/api-console.md#linux-usage) for publishing, commands, and native verification.
 
 For scripts, `login --email bob@test.com --password-stdin` reads one password line from a pipe without prompting; obtain the password from your secret source instead of passing it as an argument. Alternatively provide a bearer token through `SMURFS_API_TOKEN`, which overrides saved credentials and works on non-Windows systems too. Ordinary commands never prompt: operation/authentication failures exit 1, invalid syntax exits 2, and success/help exits 0. Results go to stdout and diagnostics to stderr. Creation is never automatically retried after an uncertain outcome. For many calls, run the built/published executable or DLL instead of rebuilding with `dotnet run` every time.
 

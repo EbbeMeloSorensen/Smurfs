@@ -40,7 +40,7 @@ internal static class Program
                 Timeout = TimeSpan.FromSeconds(30)
             };
             var api = new SmurfsApiClient(http);
-            var console = new ApiConsole(api, address, new WindowsTokenStore(), System.Console.In,
+            var console = new ApiConsole(api, address, new PlatformTokenStore(), System.Console.In,
                 System.Console.Out, System.Console.Error, ReadPassword, System.Console.IsInputRedirected,
                 Environment.GetEnvironmentVariable("SMURFS_API_TOKEN"));
             return await operation(console);
@@ -50,7 +50,7 @@ internal static class Program
             System.Console.Error.WriteLine($"Could not access Windows Credential Manager (error {exception.NativeErrorCode}).");
             return 1;
         }
-        catch (Exception exception) when (exception is HttpRequestException or IOException or ArgumentException or
+        catch (Exception exception) when (exception is HttpRequestException or IOException or UnauthorizedAccessException or ArgumentException or
             InvalidOperationException or OperationCanceledException or PlatformNotSupportedException)
         {
             System.Console.Error.WriteLine(exception is HttpRequestException and not ApiException

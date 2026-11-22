@@ -244,7 +244,7 @@ public sealed class ApiConsoleTests
     /// <summary>
     /// Exercises the real Windows credential API using a unique test-only entry and always removes it.
     /// </summary>
-    [Fact]
+    [WindowsFact]
     public void WindowsCredentialStore_RoundTripsAcrossInstances()
     {
         if (!OperatingSystem.IsWindows())

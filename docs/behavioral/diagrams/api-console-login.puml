@@ -17,7 +17,7 @@ alt valid credentials
   Command -> Client : GetAccessToken()
   Client --> Command : Secret token
   Command -> Store : Save(API address, token)
-  Store --> Command : Saved in Windows Credential Manager
+  Store --> Command : Saved in platform store (Windows / Linux)
   Command --> Operator : Account confirmation
   CLI --> Operator : Exit 0
 else authentication or credential storage failed
