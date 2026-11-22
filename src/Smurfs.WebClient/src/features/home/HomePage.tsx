@@ -23,7 +23,7 @@ export default observer(function HomePage() {
                 {userStore.isLoggedIn ? (
                     <>
                         <Header as="h2" inverted content="Welcome" />
-                        <Button as={Link} to="/people" size="huge" inverted>
+                        <Button as={Link} to="/smurfs" size="huge" inverted>
                             Go to Smurfs
                         </Button>
                     </>

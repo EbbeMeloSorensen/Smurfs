@@ -2,24 +2,24 @@ import { observer } from "mobx-react-lite";
 import React, { SyntheticEvent } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Button, Header, Segment } from "semantic-ui-react";
-import { Person } from "../../../app/models/person";
+import { Smurf } from "../../../app/models/smurf";
 import { useStore } from "../../../app/stores/store";
 
 interface Props {
-  person: Person;
+  smurf: Smurf;
 }
 
-export default observer(function PersonDetailedHeader({ person }: Props) {
+export default observer(function SmurfDetailedHeader({ smurf }: Props) {
   const history = useHistory();
-  const { personStore } = useStore();
-  const { deletePerson, loading } = personStore;
+  const { smurfStore } = useStore();
+  const { deleteSmurf, loading } = smurfStore;
 
-  function handlePersonDelete(
+  function handleSmurfDelete(
     e: SyntheticEvent<HTMLButtonElement>,
     id: string
   ) {
     if (window.confirm("Do you want to delete this Smurf?") === true) {
-      deletePerson(id).then(() => history.push(`/people`));
+      deleteSmurf(id).then(() => history.push(`/smurfs`));
     }
   }
 
@@ -27,12 +27,12 @@ export default observer(function PersonDetailedHeader({ person }: Props) {
     <Segment.Group>
       <Segment clearing attached="bottom">
         <Header>
-          {person.firstName}
+          {smurf.name}
         </Header>
         <Button.Group floated="right">
           <Button
             loading={loading}
-            onClick={(e) => handlePersonDelete(e, person.id)}
+            onClick={(e) => handleSmurfDelete(e, smurf.id)}
             color="red"
             type="button"
           >
@@ -40,7 +40,7 @@ export default observer(function PersonDetailedHeader({ person }: Props) {
           </Button>
           <Button
             as={Link}
-            to={`/manage/${person.id}`}
+            to={`/smurfs/${smurf.id}/edit`}
             color="orange"
             floated="right"
             type="button"

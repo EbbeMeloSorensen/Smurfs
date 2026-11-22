@@ -1,13 +1,13 @@
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
-import { Person } from "../../../app/models/person";
-import PersonDetailedInfo from "./PersonDetailedInfo";
+import { Smurf } from "../../../app/models/smurf";
+import SmurfDetailedInfo from "./SmurfDetailedInfo";
 
 test("displays the Smurf fields, false infection, and birthday without a timezone shift", () => {
-    render(<PersonDetailedInfo person={{
-        firstName: "Kylling", health: 42, birthday: new Date("2000-01-02T00:00:00Z"),
+    render(<SmurfDetailedInfo smurf={{
+        name: "Kylling", health: 42, birthday: "2000-01-02T00:00:00Z",
         infected: false, gender: "Female"
-    } as Person} />);
+    } as Smurf} />);
     expect(screen.getByText("Kylling")).toBeInTheDocument();
     expect(screen.getByText("42")).toBeInTheDocument();
     expect(screen.getByText("2000-01-02")).toBeInTheDocument();
@@ -18,15 +18,15 @@ test("displays the Smurf fields, false infection, and birthday without a timezon
 });
 
 test("displays unknown optional values and true infection", () => {
-    const { rerender } = render(<PersonDetailedInfo person={{
-        firstName: "Papa", health: 0, birthday: null, infected: null, gender: null
-    } as Person} />);
+    const { rerender } = render(<SmurfDetailedInfo smurf={{
+        name: "Papa", health: 0, birthday: null, infected: null, gender: null
+    } as Smurf} />);
     expect(screen.getAllByText("Unknown")).toHaveLength(3);
     const row = screen.getByText("Health").closest("tr")!;
     expect(within(row).getByText("0")).toBeInTheDocument();
-    rerender(<PersonDetailedInfo person={{
-        firstName: "Papa", health: 0, birthday: null, infected: true, gender: "Male"
-    } as Person} />);
+    rerender(<SmurfDetailedInfo smurf={{
+        name: "Papa", health: 0, birthday: null, infected: true, gender: "Male"
+    } as Smurf} />);
     expect(screen.getByText("Yes")).toBeInTheDocument();
     expect(screen.getByText("Male")).toBeInTheDocument();
 });

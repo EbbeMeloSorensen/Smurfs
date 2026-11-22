@@ -147,4 +147,4 @@ Set `Database__Provider=Postgres` and `ConnectionStrings__Postgres` to a connect
 3. Sign in as a seeded development user. Send the returned bearer token with the same GET. Expect 200, up to two Smurf summaries, and a `Pagination` header with the page number, page size, row count, and page count.
 4. Send `pageNumber=0` with the bearer token. Expect 400. Correct the page number and expect 200.
 
-For the hosted WebClient, reload `/people` and confirm it loads the client. Request an unknown path such as `/api/typo` and expect 404. Request `GET /api/account` without a bearer token and expect 401.
+For the hosted WebClient, reload `/smurfs` and confirm it loads the client. Request an unknown path such as `/api/typo` and expect 404. Request `GET /api/account` without a bearer token and expect 401.

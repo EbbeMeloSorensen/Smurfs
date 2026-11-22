@@ -6,7 +6,7 @@ The API migrates Identity and AppData in the same database using the configured 
 
 The API selects both context types from `Database:Provider` at startup. `Sqlite` uses `ConnectionStrings:Sqlite`. `Postgres` uses `DATABASE_URL` when supplied, requiring TLS, or `ConnectionStrings:Postgres` otherwise. Selection is independent of the host environment. Change the deployed setting and restart the API to switch providers without rebuilding. On Heroku, set `Database__Provider=Postgres`. In Development, an absent `TokenKey` generates a key for the current process. Sign in again after a restart if the API generated the key. A configured key of at least 64 UTF-8 bytes is required outside Development.
 
-The API serves the production WebClient from `wwwroot`. Browser routes such as `/people` load `index.html`, and unmatched `/api` routes return 404.
+The API serves the production WebClient from `wwwroot`. Browser routes such as `/smurfs` load `index.html`, and unmatched `/api` routes return 404.
 
 ## Sign in
 
@@ -28,7 +28,7 @@ For [UC-003](../requirements/use-cases.md#uc-003-list-smurfs), send `GET /api/sm
 
 ## WebClient creation
 
-The Create Smurf button opens /createSmurf. The form accepts a required nonblank name up to 20 characters, an integer health value (default zero), an optional birthday, infection status (Unknown, Yes, or No), and gender (Unknown, Male, or Female). It posts name, health, birthday, infected, and gender to the authenticated POST /api/smurfs endpoint. Unknown values are sent as null. Birthdays use midnight UTC for the selected calendar date. Successful submission returns to Smurf Overview and resets the list so its next load reads the saved catalog. Failed submission keeps the form values and shows an error. Submission is disabled while saving.
+The Create Smurf button opens /smurfs/new. The form accepts a required nonblank name up to 20 characters, an integer health value (default zero), an optional birthday, infection status (Unknown, Yes, or No), and gender (Unknown, Male, or Female). It posts name, health, birthday, infected, and gender to the authenticated POST /api/smurfs endpoint. Unknown values are sent as null. Birthdays use midnight UTC for the selected calendar date. Successful submission returns to Smurf Overview and resets the list so its next load reads the saved catalog. Failed submission keeps the form values and shows an error. Submission is disabled while saving.
 
 Create.Command defaults the added fields so existing name-only desktop and console callers continue to create Smurfs with zero health and unknown birthday and infection status.
 
@@ -40,7 +40,7 @@ The list adapter retains the complete Smurf response in the existing client stor
 
 ## WebClient editing
 
-Edit in the detail header opens the shared Smurf form at /manage/{id}. It retrieves the current Smurf, prefills name, health, birthday, infection status, and gender, and submits PUT /api/smurfs/{id}. Clearing birthday or selecting Unknown for infection or gender submits null. A successful save clears cached list/detail state and returns to the updated detail view. Cancel returns to details without saving. Load failures show an error; save failures preserve entered values for retry.
+Edit in the detail header opens the shared Smurf form at /smurfs/{id}/edit. It retrieves the current Smurf, prefills name, health, birthday, infection status, and gender, and submits PUT /api/smurfs/{id}. Clearing birthday or selecting Unknown for infection or gender submits null. A successful save clears cached list/detail state and returns to the updated detail view. Cancel returns to details without saving. Load failures show an error; save failures preserve entered values for retry.
 
 The PUT body replaces name, health, birthday, infected, and gender. Omitted nullable fields are treated as null. Pet and Village relationships are preserved.
 
@@ -55,3 +55,5 @@ GET /api/smurfs accepts name and infected query parameters alongside paging. For
 Select Name or Newest first and click Search. Both modes reset the loaded list to page 1 while retaining the selected filters. GET /api/smurfs accepts sorting=name (the default) or sorting=created. Unknown sorting values return 400. The database applies name ascending or creation time descending, then the identifier for ties, before paging. The client displays the returned order across all loaded pages.
 
 The API includes createdUtc in both list and detail DTOs as a UTC timestamp. Creation assigns it automatically; editing leaves it unchanged.
+
+The WebClient uses Smurf types, stores, components, and API methods directly. Canonical browser routes are /smurfs, /smurfs/new, /smurfs/{id}, and /smurfs/{id}/edit. Old overview/detail URLs and the former create/manage URLs redirect to these routes to preserve bookmarks. The client keeps API timestamps as ISO strings and displays calendar birthdays without timezone conversion.

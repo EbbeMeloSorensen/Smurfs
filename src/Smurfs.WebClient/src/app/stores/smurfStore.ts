@@ -1,12 +1,11 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
-import { Person, PersonFormValues } from "../models/person";
+import { Smurf } from "../models/smurf";
 import { Pagination, PagingParams } from "../models/pagination";
 
-export default class PersonStore {
-    personRegistry = new Map<string, Person>();
-    selectedPerson: Person | undefined = undefined;
-    editMode = false;
+export default class SmurfStore {
+    smurfRegistry = new Map<string, Smurf>();
+    selectedSmurf: Smurf | undefined = undefined;
     loading = false;
     loadingInitial = false;
     pagination: Pagination | null = null;
@@ -16,7 +15,6 @@ export default class PersonStore {
 
     constructor() {
         makeAutoObservable(this);
-
     }
 
     setPagingParams = (pagingParams: PagingParams) => {
@@ -51,8 +49,8 @@ export default class PersonStore {
         this.predicate.set('sorting', this.sorting);
         this.pagingParams = new PagingParams();
         this.pagination = null;
-        this.personRegistry.clear();
-        return this.loadPeople();
+        this.smurfRegistry.clear();
+        return this.loadSmurfs();
     }
 
     get axiosParams() {
@@ -64,20 +62,20 @@ export default class PersonStore {
         return params;
     }
 
-    get sortedPeople() {
-        return Array.from(this.personRegistry.values());
+    get smurfs() {
+        return Array.from(this.smurfRegistry.values());
     }
 
     private listRequestVersion = 0;
 
-    loadPeople = async () => {
+    loadSmurfs = async () => {
         const version = ++this.listRequestVersion;
         this.loadingInitial = true;
         try {
-            const result = await agent.People.list(this.axiosParams);
+            const result = await agent.Smurfs.list(this.axiosParams);
             if (version !== this.listRequestVersion) return;
-            result.data.forEach(person => {
-                this.setPerson(person);
+            result.data.forEach(smurf => {
+                this.setSmurf(smurf);
             })
             this.setPagination(result.pagination);
             this.setLoadingInitial(false);
@@ -92,21 +90,21 @@ export default class PersonStore {
         this.pagination = pagination;
     }
 
-    loadPerson = async (id: string) => {
-        let person = this.getPerson(id);
-        if (person) {
-            this.selectedPerson = person;
-            return person; 
+    loadSmurf = async (id: string) => {
+        let smurf = this.getSmurf(id);
+        if (smurf) {
+            this.selectedSmurf = smurf;
+            return smurf; 
         } else {
             this.loadingInitial = true;
             try {
-                person = await agent.People.details(id);
-                this.setPerson(person);
+                smurf = await agent.Smurfs.details(id);
+                this.setSmurf(smurf);
                 runInAction(() => {
-                    this.selectedPerson = person;
+                    this.selectedSmurf = smurf;
                 })
                 this.setLoadingInitial(false);
-                return person; 
+                return smurf; 
             } catch (error) {
                 console.log(error);
                 this.setLoadingInitial(false);
@@ -114,53 +112,24 @@ export default class PersonStore {
         }
     }
 
-    private setPerson = (person: Person) => {
-        person.birthday = person.birthday === null ? null : new Date(person.birthday);
-        this.personRegistry.set(person.id, person);
+    private setSmurf = (smurf: Smurf) => {
+        this.smurfRegistry.set(smurf.id, smurf);
     }
 
-    private getPerson = (id: string) => {
-        return this.personRegistry.get(id);
+    private getSmurf = (id: string) => {
+        return this.smurfRegistry.get(id);
     }
 
     setLoadingInitial = (state: boolean) => {
         this.loadingInitial = state;
     }
 
-    createPerson = async (person: PersonFormValues) => {
-        try {
-            await agent.People.create(person);
-            const newPerson = new Person(person);
-            this.setPerson(newPerson);
-            runInAction(() => {
-                this.selectedPerson = newPerson;
-            })
-        } catch(error) {
-            console.log(error);
-        }
-    }
-
-    updatePerson = async (person: PersonFormValues) => {
-        try {
-            await agent.People.update(person);
-            runInAction(() => {
-                if (person.id) {
-                    let updatedPerson = {...this.getPerson(person.id), ...person}
-                    this.personRegistry.set(person.id, updatedPerson as Person);
-                    this.selectedPerson = updatedPerson as Person;
-                }
-            })
-        } catch(error) {
-            console.log(error);
-        }
-    }
-
-    deletePerson = async (id: string) => {
+    deleteSmurf = async (id: string) => {
         this.loading = true;
         try {
-            await agent.People.delete(id);
+            await agent.Smurfs.delete(id);
             runInAction(() => {
-                this.personRegistry.delete(id);
+                this.smurfRegistry.delete(id);
                 this.loading = false;
             })
         } catch(error) {
@@ -171,14 +140,14 @@ export default class PersonStore {
         }
     }
 
-    resetPeople = () => {
-        this.personRegistry.clear();
-        this.selectedPerson = undefined;
+    resetSmurfs = () => {
+        this.smurfRegistry.clear();
+        this.selectedSmurf = undefined;
         this.pagingParams = new PagingParams();
         this.pagination = null;
     }
 
-    clearSelectedPerson = () => {
-        this.selectedPerson = undefined;
+    clearSelectedSmurf = () => {
+        this.selectedSmurf = undefined;
     }
 }

@@ -1,18 +1,18 @@
 import { createContext, useContext } from "react"
-import PersonStore from "./personStore"
+import SmurfStore from "./smurfStore"
 import CommonStore from "./commonStore";
 import ModalStore from "./modalStore";
 import UserStore from "./userStore";
 
 interface Store {
-    personStore: PersonStore;
+    smurfStore: SmurfStore;
     commonStore: CommonStore;
     userStore: UserStore;
     modalStore: ModalStore;
 }
 
 export const store: Store = {
-    personStore: new PersonStore(),
+    smurfStore: new SmurfStore(),
     commonStore: new CommonStore(),
     userStore: new UserStore(),
     modalStore: new ModalStore()

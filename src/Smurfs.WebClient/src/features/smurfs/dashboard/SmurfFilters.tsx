@@ -9,9 +9,9 @@ import {
 } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
 
-export default observer(function PeopleFilters() {
+export default observer(function SmurfsFilters() {
     const {
-        personStore: { setPredicate, sorting, setSorting },
+        smurfStore: { setPredicate, sorting, setSorting },
     } = useStore();
 
     const [nameFilter, setNameFilter] = useState("");

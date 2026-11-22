@@ -2,7 +2,6 @@ import axios, { AxiosResponse, AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import { history } from '../..';
 import { CreateSmurfRequest, Smurf } from '../models/smurf';
-import { Person, PersonFormValues } from '../models/person';
 import { PaginatedResult } from '../models/pagination';
 import { User, UserFormValues } from '../models/user';
 import { store } from '../stores/store';
@@ -82,38 +81,14 @@ const requests = {
     del: <T> (url: string) => axios.delete<T>(url).then(responseBody),
 }
 
-function toPerson(smurf: Smurf): Person {
-    return {
-        ...smurf,
-        firstName: smurf.name,
-        surname: null,
-        birthday: smurf.birthday ? new Date(smurf.birthday) : null,
-        start: null,
-        end: null,
-        created: new Date(smurf.createdUtc),
-        superseded: null,
-        nickname: null,
-        address: null,
-        zipCode: null,
-        city: null,
-        category: null,
-        description: null,
-        dead: null,
-        latitude: null,
-        longitude: null
-    };
-}
-
-const People = {
+const Smurfs = {
     list: (params: URLSearchParams) =>
-        axios.get<PaginatedResult<Smurf[]>>('/smurfs', { params })
-            .then(responseBody)
-            .then(result => new PaginatedResult(result.data.map(toPerson), result.pagination)),
-    details: (id: string) => requests.get<Smurf>('/smurfs/' + id).then(toPerson),
-    create: (person: PersonFormValues) => requests.post<void>('/people', person),
-    update: (person: PersonFormValues) => requests.put<void>(`/people/${person.id}`, person),
-    delete: (id: string) => requests.del<void>(`/smurfs/${id}`)
-}
+        axios.get<PaginatedResult<Smurf[]>>('/smurfs', { params }).then(responseBody),
+    details: (id: string) => requests.get<Smurf>('/smurfs/' + id),
+    create: (request: CreateSmurfRequest) => requests.post<void>('/smurfs', request),
+    update: (id: string, request: CreateSmurfRequest) => requests.put<void>('/smurfs/' + id, request),
+    delete: (id: string) => requests.del<void>('/smurfs/' + id)
+};
 
 const Account = {
     current: () => requests.get<User>(currentAccountUrl),
@@ -122,13 +97,8 @@ const Account = {
 }
 
 const agent = {
-    Smurfs: {
-        create: (request: CreateSmurfRequest) => requests.post<void>('/smurfs', request),
-        details: (id: string) => requests.get<Smurf>('/smurfs/' + id),
-        update: (id: string, request: CreateSmurfRequest) => requests.put<void>('/smurfs/' + id, request)
-    },
-    People,
+    Smurfs,
     Account
-}
+};
 
 export default agent;

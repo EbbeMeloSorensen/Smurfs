@@ -27,7 +27,7 @@ const validationSchema = Yup.object({
 
 export default function SmurfForm() {
     const history = useHistory();
-    const { personStore } = useStore();
+    const { smurfStore } = useStore();
     const saving = useRef(false);
     const { id } = useParams<{ id: string }>();
     const [initialValues, setInitialValues] = useState(emptyValues);
@@ -58,7 +58,7 @@ export default function SmurfForm() {
     if (loading) return <Segment loading aria-label="Loading Smurf" />;
     if (loadError) return <Message negative>
         <p>Could not load the Smurf. Please reopen it and try again.</p>
-        <Link to="/people">Back to Smurf Overview</Link>
+        <Link to="/smurfs">Back to Smurf Overview</Link>
     </Message>;
 
     return (
@@ -86,8 +86,8 @@ export default function SmurfForm() {
                         } else {
                             await agent.Smurfs.create(request);
                         }
-                        personStore.resetPeople();
-                        history.push(id ? "/people/" + id : "/people");
+                        smurfStore.resetSmurfs();
+                        history.push(id ? "/smurfs/" + id : "/smurfs");
                     } catch (error) {
                         const message = Array.isArray(error) ? error.join(" ")
                             : axios.isAxiosError(error) && typeof error.response?.data === "string"
@@ -125,7 +125,7 @@ export default function SmurfForm() {
                             {status && <Message negative content={status} />}
                             <Button positive type="submit" loading={isSubmitting}
                                 disabled={isSubmitting || !isValid} content={id ? "Save changes" : "Create Smurf"} />
-                            <Button as={Link} to={id ? "/people/" + id : "/people"} type="button" disabled={isSubmitting} content="Cancel" />
+                            <Button as={Link} to={id ? "/smurfs/" + id : "/smurfs"} type="button" disabled={isSubmitting} content="Cancel" />
                         </fieldset>
                     </Form>
                 )}
