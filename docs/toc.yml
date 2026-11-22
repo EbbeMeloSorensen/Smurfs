@@ -11,6 +11,8 @@
   items:
   - name: Console workflows
     href: behavioral/console.md
+  - name: API console workflows
+    href: behavioral/api-console.md
   - name: WPF workflows
     href: behavioral/wpf.md
   - name: WinForms browsing

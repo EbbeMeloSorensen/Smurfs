@@ -13,6 +13,8 @@ package "Production projects (src)" {
   component "Smurfs.Infrastructure" as Smurfs_Infrastructure
   component "Smurfs.Persistence" as Smurfs_Persistence
   component "Smurfs.Persistence.EFCore.AppData" as Smurfs_Persistence_EFCore_AppData
+  component "Smurfs.Persistence.API" as Smurfs_Persistence_API
+  component "Smurfs.UI.Console.API" as Smurfs_UI_Console_API
   component "Smurfs.Persistence.File" as Smurfs_Persistence_File
   component "Smurfs.Persistence.EFCore.Identity" as Smurfs_Persistence_EFCore_Identity
   component "Smurfs.UI.Avalonia" as Smurfs_UI_Avalonia
@@ -55,6 +57,12 @@ Smurfs_Persistence_File -up-> Smurfs_Persistence
 Smurfs_Persistence_File -up-> Smurfs_Application
 Smurfs_UI_Console -up-> Smurfs_Persistence_File
 Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Persistence_File
+
+Smurfs_Persistence_API -up-> Smurfs_Persistence
+Smurfs_Persistence_API -up-> Smurfs_Application
+Smurfs_UI_Console_API -up-> Smurfs_Persistence_API
+Smurfs_UI_Console_API -up-> Smurfs_Application
+Smurf_Persistence_EFCore_AppData_UnitTest -up-> Smurfs_Persistence_API
 
 legend bottom
   Arrow points from the referencing project to the referenced project.

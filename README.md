@@ -188,6 +188,26 @@ The legacy `scripts/add-random-smurfs.ps1` inserts into a SQLite file. It cannot
 
 For API and WebClient deployment, see the API README at `src/Smurfs.API/README.md`.
 
+## API console: login and paging
+
+`Smurfs.UI.Console.API` is a separate HTTP frontend. It uses `Smurfs.Persistence.API` to sign in and implements listing through the existing application read contract. Identity and catalog storage remain on the server; the original `Smurfs.UI.Console` remains a direct-persistence client.
+
+Start the API with a trusted development HTTPS certificate:
+
+```powershell
+dotnet run --project src/Smurfs.API --launch-profile https
+```
+
+In another terminal:
+
+```powershell
+dotnet run --project src/Smurfs.UI.Console.API
+```
+
+Sign in with a registered account, or the Development sample `bob@test.com` / `Pa$$w0rd`. The password is hidden during interactive entry. After login the console loads five Smurfs per page; use **n** (next), **p** (previous), **r** (reload), **l** (sign in again), and **q** (quit). Blank email or end-of-input also exits. Credentials and tokens are not stored or logged; restart requires another login. The API client does not initialize storage or support writes in this milestone.
+
+The client loads `Api:BaseUrl` from `appsettings.json` beside its executable, defaulting to `https://localhost:7231/`. Override it with `Api__BaseUrl`; use a server-root HTTP(S) URL ending in `/`. Use HTTPS for remote servers. Normal certificate validation remains enabled. See [API console workflows](docs/behavioral/api-console.md) for errors, scope, and verification.
+
 ## AppData and Identity providers and migrations
 
 Each persistence assembly keeps its shared model in the abstract `DataContext`. `PostgresDataContext` and `SqliteDataContext` each have their own migrations and model snapshot in the same assembly, under `Migrations/Postgres` and `Migrations/Sqlite`.

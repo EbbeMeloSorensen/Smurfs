@@ -1,0 +1,24 @@
+@startuml
+title API console — load and navigate a page
+actor Operator
+participant "API console" as CLI
+participant "List.Handler" as List
+participant "SmurfsApiClient\nISmurfReadService" as Client
+participant "Smurfs.API catalog endpoint" as API
+Operator -> CLI : Login completes / next / previous / reload
+CLI -> List : Handle(List.Query)
+List -> Client : GetPageAsync(page, size)
+Client -> API : GET /api/smurfs?pageNumber=...&pageSize=...\nAuthorization: Bearer token
+alt authorized
+  API --> Client : JSON item array and Pagination header
+  Client -> Client : Validate and construct PagedList<SmurfDto>
+  Client --> List : Page and totals
+  List --> CLI : Successful result
+  CLI --> Operator : Names and totals, navigation prompt
+else token rejected
+  API --> Client : 401
+  Client -> Client : Discard token
+  Client --> CLI : ApiException (401) propagated through handler
+  CLI --> Operator : Authentication error and login prompt
+end
+@enduml

@@ -179,3 +179,18 @@ For the hosted WebClient, reload `/smurfs` and confirm it loads the client. Requ
 6. Send infected=invalid and sorting=invalid separately. Expect 400. Correct them and expect 200.
 
 **Acceptance criteria** — Filtering precedes counting and paging; sorting is global across pages, changed filter values take effect, and unknown infection is distinct from false.
+
+## AT-011 API console login and paging
+
+**Scope** — UC-003 and UC-007, FR-003 and FR-010. Proposed manual acceptance; record human execution separately.
+
+**Setup** — Start Smurfs.API in Development against a disposable SQLite database with its sample accounts and eight catalog rows. Use a trusted HTTPS development certificate and the HTTPS launch profile. In another terminal run `dotnet run --project src/Smurfs.UI.Console.API`. Override Api__BaseUrl if the server address differs.
+
+1. Enter a known email and an incorrect password. Expect a sign-in error, no catalog output, and another login prompt.
+2. Sign in as `bob@test.com` with the Development sample password `Pa$$w0rd`. Expect hidden password entry, account confirmation, and five names with page 1, two total pages, and eight rows.
+3. Enter `n`; expect page 2 with three names. Enter `p`; expect the original page 1. At the first/last page, navigation cannot move beyond its known bounds. Enter `r` to reload.
+4. Enter `l` and sign in again. Expect page 1. Restarting the client requires credentials again; no token or password file is created.
+5. Restart the API without a configured Development TokenKey, then reload in the still-running client. Expect a rejected-token error and a login prompt. Sign in again and verify listing resumes.
+6. Quit with `q`; expect exit code 0. Stop the API and relaunch/sign in; expect a concise transport error and exit code 1. No token, password, or raw server exception body should appear in output.
+
+**Evidence** — Record client/API commit, disposable database, server URL, commands, visible outcomes, and exit codes without recording credentials or tokens.

@@ -29,7 +29,7 @@ The catalog operator is the external actor. These specifications describe the cu
 ## UC-003 List Smurfs
 
 - **Purpose and actor** — The catalog operator reviews stored Smurfs.
-- **Preconditions** — Local storage is readable.
+- **Preconditions** — Storage is readable locally or through an authenticated HTTP connection.
 - **Trigger** — The operator requests a page.
 - **Main success scenario** — The system applies selected name/infection filters and ordering, then presents the requested page and matching row count where the client exposes it.
 - **Alternatives and exceptions** — A page past the available rows is empty. Nonpositive paging inputs produce an input error and can be corrected. A storage failure is reported.
@@ -76,3 +76,5 @@ Avalonia and WinForms use the shared desktop paging view model. The [HTTP API](.
 - **Requirements** — See the [UC-007 mapping](../_generated/traceability.md#uc-007).
 
 The client-side logout removes the stored token. Production token lifecycle, authorization roles, and account policies are review items rather than new acceptance claims.
+
+The separate API console realizes UC-007 through interactive sign-in and UC-003 through adjacent pages of five rows. Tokens remain in memory for that process. It does not expose account registration, catalog writes, filters, or sorting controls in this milestone.

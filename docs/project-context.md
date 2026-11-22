@@ -41,6 +41,10 @@ If a change affects classes, property types, associations, multiplicities or nav
 
 Reconcile `docs/structural/diagrams/persistence-model.puml` against both the runtime EF model and the checked-in migration/snapshot, including table names, nullable and shadow foreign keys, indexes and delete behavior. Record differences explicitly. When migrations are regenerated, update any discrepancy documentation and tests that previously expected pending model changes. Behavioral diagrams should only be added for meaningful interactions or workflows, not fabricated to populate the documentation tree.
 
+## API console milestone
+
+Smurfs.UI.Console.API is a separate HTTP client for login and adjacent-page browsing through Smurfs.Persistence.API. The adapter implements ISmurfReadService and keeps its bearer token in memory. The client neither references Identity persistence nor initializes server storage. Its write repository/unit-of-work classes remain unregistered skeletons; completing them requires an explicit HTTP commit policy. See behavioral/api-console.md for supported commands and error handling.
+
 ## HTTP API baseline
 
 Smurfs.API composes Identity, JWT bearer authentication and the shared MediatR catalog handlers. Its two EF Core contexts share a database selected by `Database:Provider`, using matching SQLite or PostgreSQL context types and migration sets. The API also hosts the production WebClient. See the [HTTP API workflows](behavioral/http-api.md).

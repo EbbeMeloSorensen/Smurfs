@@ -1,0 +1,21 @@
+@startuml
+title API console — login
+actor Operator
+participant "API console" as CLI
+participant SmurfsApiClient as Client
+participant "Smurfs.API account endpoint" as API
+Operator -> CLI : Enter email and hidden password
+CLI -> Client : LoginAsync(email, password)
+Client -> Client : Clear previous token
+Client -> API : POST /api/account/login
+alt valid credentials
+  API --> Client : Account information and token
+  Client -> Client : Validate response and retain token in memory
+  Client --> CLI : ApiUser (no token)
+  CLI --> Operator : Signed-in confirmation
+else invalid credentials
+  API --> Client : 401
+  Client --> CLI : ApiException (401)
+  CLI --> Operator : Failure and another login prompt
+end
+@enduml

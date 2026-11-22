@@ -1,0 +1,47 @@
+@startuml
+allowmixing
+set namespaceSeparator none
+skinparam componentStyle uml2
+skinparam classAttributeIconSize 0
+title API client milestone (selected implemented types)
+component "Smurfs.Domain" as Domain {
+  enum Gender
+}
+component "Smurfs.Application" as Application {
+  interface ISmurfReadService
+  class "List.Handler" as Handler
+  class "List.Query" as Query
+  class SmurfDto
+  class "PagedList<T>" as Page
+}
+component "Smurfs.Persistence.API" as Adapter {
+  class SmurfsApiClient
+  class ApiUser
+  class ApiException
+}
+component "Smurfs.UI.Console.API" as Console {
+  class Program
+}
+SmurfsApiClient .up.|> ISmurfReadService
+SmurfsApiClient .up.> Gender : JSON converter
+SmurfsApiClient .up.> SmurfDto : decodes
+SmurfsApiClient .up.> Page : constructs
+SmurfsApiClient --> ApiUser : returns from login
+SmurfsApiClient ..> ApiException : reports HTTP status
+Handler --> ISmurfReadService : requests page
+Handler ..> Query : handles
+ISmurfReadService ..> SmurfDto : item type
+ISmurfReadService ..> Page : returns
+SmurfDto .up.> Gender : optional value
+Program .up.> SmurfsApiClient : constructs / signs in
+Program .up.> ApiUser : displays account
+Program .up.> ApiException : handles authentication failure
+Program .up.> Handler : constructs / invokes
+Program .up.> Query : constructs
+legend bottom
+  Components represent production assemblies.
+  Selected direct type dependencies; BCL and internal wire models omitted.
+  Unimplemented write skeletons are outside this milestone.
+  Server interaction is HTTP, not an assembly reference.
+endlegend
+@enduml

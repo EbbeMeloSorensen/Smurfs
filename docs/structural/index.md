@@ -42,6 +42,14 @@ The UTF-8 JSON document has `version` (currently 1), `revision`, and separate `s
 
 This provider loads and rewrites the complete catalog and targets small local stores on a filesystem supporting exclusive handles and same-directory atomic rename. It does not coordinate manual edits, synchronize machines, provide database-scale querying, or claim crash durability on arbitrary/network filesystems. Back up the JSON file after writes have stopped. Name matching uses ordinal case-insensitive literal substring matching and alphabetical ordering uses ordinal comparison; database collation can produce a different name ordering for some characters. Identifier tie-breaking and newest-first sorting remain deterministic.
 
+## HTTP API client
+
+`Smurfs.Persistence.API.SmurfsApiClient` implements the application-owned `ISmurfReadService` using the existing authenticated HTTP endpoints. It also provides LoginAsync and returns ApiUser display information while retaining the token privately in memory. ApiException carries unsuccessful HTTP status codes without copying server error bodies. The separate `Smurfs.UI.Console.API` composes this adapter and List.Handler; it has no dependency on Smurfs.API, EF Core, Identity persistence, or the EF-dependent Infrastructure assembly. Server DTO classes are not referenced: the client uses private wire models for sign-in/header metadata and the shared application SmurfDto for catalog rows.
+
+![HTTP API client architecture](../_generated/diagrams/structural/diagrams/api-client.svg)
+
+Source: [api-client.puml](diagrams/api-client.puml). Components denote assemblies, and arrows show selected direct type dependencies. The remote HTTP interaction is shown in the [client workflow sequences](../behavioral/api-console.md). The write skeletons are omitted from this implemented view because they are unregistered and unimplemented. A repository/unit-of-work implementation would need an explicit HTTP commit policy before registration. The server remains responsible for Identity and catalog storage. Domain, File, EF mapping, and migration models are unchanged.
+
 ## Console use cases
 
 The console is the composition root for Application, the selected persistence adapter and Infrastructure logging. Application owns the MediatR requests, handlers and read contract. It depends on provider-neutral persistence contracts for writes. Infrastructure implements the read contract using the EF app-data context, with ordering and DTO projection in SQL. The EF read and write paths share the app-data database. Selecting File registers its repository, factory, initializer, and read adapter instead.

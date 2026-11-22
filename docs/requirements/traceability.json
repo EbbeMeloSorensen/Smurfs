@@ -45,16 +45,19 @@
         "console-list",
         "wpf-browse",
         "api-list",
-        "file-storage"
+        "file-storage",
+        "api-console"
       ],
       "automated": [
         "IT-009",
         "IT-010",
         "IT-011",
         "WT-003",
-        "IT-015"
+        "IT-015",
+        "IT-017",
+        "IT-019"
       ],
-      "note": "Backend query and React store tests exist. Console parsing, desktop navigation, live HTTP and browser system acceptance remain manual."
+      "note": "Backend query and React store tests exist. Console parsing, desktop navigation, live HTTP and browser system acceptance remain manual. API console login/paging is implemented; adapter tests mock HTTP. Manual acceptance remains separate."
     },
     "FR-004": {
       "classification": "Functionality",
@@ -224,10 +227,14 @@
       "method": "Manual HTTP authentication checks",
       "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
       "design": [
-        "api-auth"
+        "api-auth",
+        "api-console"
       ],
-      "automated": [],
-      "note": "JWT login/register are implemented. Formal manual acceptance has not been recorded."
+      "automated": [
+        "IT-017",
+        "IT-018"
+      ],
+      "note": "JWT login/register are implemented. Formal manual acceptance has not been recorded. API console login/paging is implemented; adapter tests mock HTTP. Manual acceptance remains separate."
     }
   },
   "useCases": {
@@ -359,6 +366,16 @@
         "FR-007",
         "FR-008"
       ]
+    },
+    "AT-011": {
+      "useCases": [
+        "UC-003",
+        "UC-007"
+      ],
+      "requirements": [
+        "FR-003",
+        "FR-010"
+      ]
     }
   },
   "design": {
@@ -451,6 +468,11 @@
       "title": "JSON file persistence",
       "path": "structural/index.md",
       "anchor": "file-persistence"
+    },
+    "api-console": {
+      "title": "API console login and paging",
+      "path": "behavioral/api-console.md",
+      "anchor": "login"
     }
   },
   "automated": {
@@ -563,6 +585,21 @@
       "title": "File stale write protection",
       "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/FilePersistenceTests.cs",
       "symbol": "ConflictingSessions_RejectStaleCommitWithoutLosingData"
+    },
+    "IT-017": {
+      "title": "HTTP login and page projection",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiClientTests.cs",
+      "symbol": "LoginAndList_SendBearerAndPreserveFieldsAndServerPaging"
+    },
+    "IT-018": {
+      "title": "HTTP token invalidation and reauthentication",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiClientTests.cs",
+      "symbol": "UnauthorizedRead_RequiresNewLogin"
+    },
+    "IT-019": {
+      "title": "HTTP pagination contract validation",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/ApiClientTests.cs",
+      "symbol": "InvalidPagination_IsRejected"
     }
   }
 }

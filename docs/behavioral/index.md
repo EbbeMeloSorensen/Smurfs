@@ -1,6 +1,7 @@
 # Behavioral perspective
 
 - [Console workflows](console.md) shows one sequence per verb.
+- [API console workflows](api-console.md) covers interactive login and HTTP paging.
 - [WPF workflows](wpf.md) separates application lifetime from operator actions.
 
 - [WinForms browsing](winforms.md) and Avalonia use the shared desktop paging view model.
