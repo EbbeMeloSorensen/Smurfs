@@ -1,0 +1,26 @@
+@startuml
+title HTTP API - Delete a Smurf
+actor Operator
+participant "JWT authentication" as Auth
+participant SmurfsController as API
+participant "Delete.Handler" as Delete
+participant "Unit of work" as Unit
+
+Operator -> Auth : DELETE /api/smurfs/{id}
+alt invalid authentication
+  Auth --> Operator : 401
+else authenticated
+  Auth -> API : Route identifier
+  API -> Delete : Send Delete.Command with cancellation
+  Delete -> Unit : Open session and find id
+  alt missing Smurf
+    Delete --> API : Failed result
+  else found
+    Delete -> Unit : Stage selected Smurf removal
+    Delete -> Unit : CompleteAsync
+    Delete --> API : Success
+  end
+  Delete -> Unit : DisposeAsync
+  API --> Operator : 200 on success or 400 on handler failure
+end
+@enduml

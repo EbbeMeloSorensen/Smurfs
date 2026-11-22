@@ -18,17 +18,19 @@
       "classification": "Functionality",
       "status": "Proposed",
       "method": "Manual acceptance and repository integration",
-      "implementation": "Implemented in console and WPF through the shared create command.",
+      "implementation": "Implemented in console, WPF, and WebClient/API through the shared create command.",
       "design": [
         "console-create",
         "catalog",
-        "wpf-create"
+        "wpf-create",
+        "api-create"
       ],
       "automated": [
         "IT-002",
-        "IT-006"
+        "IT-006",
+        "WT-001"
       ],
-      "note": "The integration test covers catalog enforcement and persistence. The WPF form and console procedures are manual and unexecuted."
+      "note": "SQLite create integration and React form tests cover selected behavior. Manual cases remain unexecuted in the formal execution record."
     },
     "FR-003": {
       "classification": "Functionality",
@@ -40,23 +42,30 @@
         "wpf-browse",
         "api-list"
       ],
-      "automated": [],
-      "note": "WPF shows the number of pages and has no total row count or direct page entry. Manual console and WPF cases are unexecuted. No checked-in automated client paging tests."
+      "automated": [
+        "IT-009",
+        "IT-010",
+        "IT-011",
+        "WT-003"
+      ],
+      "note": "Backend query and React store tests exist. Console parsing, desktop navigation, live HTTP and browser system acceptance remain manual."
     },
     "FR-004": {
       "classification": "Functionality",
       "status": "Proposed",
       "method": "Catalog integration and manual boundary and rejection scenarios",
-      "implementation": "Implemented in console and WPF through the shared create command.",
+      "implementation": "Implemented in console, WPF, and WebClient/API through the shared create command.",
       "design": [
         "catalog",
         "console-create",
-        "wpf-create"
+        "wpf-create",
+        "api-create"
       ],
       "automated": [
-        "IT-006"
+        "IT-006",
+        "WT-001"
       ],
-      "note": "The integration test covers catalog enforcement and persistence. The WPF form and console procedures are manual and unexecuted."
+      "note": "SQLite create integration and React form tests cover selected behavior. Manual cases remain unexecuted in the formal execution record."
     },
     "RR-001": {
       "classification": "Reliability",
@@ -68,7 +77,7 @@
         "api-list"
       ],
       "automated": [],
-      "note": "Console accepts explicit paging inputs. WPF uses bounded controls and does not expose numeric paging inputs. The console manual case is unexecuted."
+      "note": "The list handler rejects invalid paging. Existing manual console and API cases are not recorded as executed."
     },
     "CR-001": {
       "classification": "++ Design constraint",
@@ -121,6 +130,88 @@
       ],
       "automated": [],
       "note": "AT-007 defines the four failure scenarios. Formal manual acceptance has not been recorded."
+    },
+    "FR-005": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "SQLite edit integration and React form tests",
+      "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
+      "design": [
+        "api-edit"
+      ],
+      "automated": [
+        "IT-007",
+        "WT-002"
+      ],
+      "note": "Tests cover validation, persistence, nullable clearing, and retry. Formal browser acceptance is unrecorded."
+    },
+    "FR-006": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "SQLite deletion integration and manual browser acceptance",
+      "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
+      "design": [
+        "api-details"
+      ],
+      "automated": [
+        "IT-008"
+      ],
+      "note": "Deletion and preservation of another Smurf/shared pet are automated; browser deletion and live PostgreSQL execution remain manual."
+    },
+    "FR-007": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "SQLite filtered-query integration and client store tests",
+      "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
+      "design": [
+        "api-filters"
+      ],
+      "automated": [
+        "IT-010",
+        "WT-003"
+      ],
+      "note": "Covers combinations, filtered totals/pages, repeated searches, and stale responses. Live PostgreSQL and full browser acceptance remain manual."
+    },
+    "FR-008": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "SQLite sorting/UTC integration and client store tests",
+      "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
+      "design": [
+        "api-sorting",
+        "creation-times"
+      ],
+      "automated": [
+        "IT-011",
+        "IT-012",
+        "WT-004"
+      ],
+      "note": "Covers ordering before paging, ties, fixed seed times, and retained server order. Historical default timestamps do not reconstruct actual dates."
+    },
+    "FR-009": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "SQLite single-record integration and React detail tests",
+      "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
+      "design": [
+        "api-details"
+      ],
+      "automated": [
+        "IT-009",
+        "WT-005"
+      ],
+      "note": "Covers fields, missing IDs, nulls, and date display; live HTTP/browser acceptance remains manual."
+    },
+    "FR-010": {
+      "classification": "Functionality",
+      "status": "Proposed",
+      "method": "Manual HTTP authentication checks",
+      "implementation": "Implemented in the application layer, authenticated API, and WebClient.",
+      "design": [
+        "api-auth"
+      ],
+      "automated": [],
+      "note": "JWT login/register are implemented. Formal manual acceptance has not been recorded."
     }
   },
   "useCases": {
@@ -133,7 +224,22 @@
     ],
     "UC-003": [
       "FR-003",
-      "RR-001"
+      "RR-001",
+      "FR-007",
+      "FR-008"
+    ],
+    "UC-004": [
+      "FR-009"
+    ],
+    "UC-005": [
+      "FR-005",
+      "FR-004"
+    ],
+    "UC-006": [
+      "FR-006"
+    ],
+    "UC-007": [
+      "FR-010"
     ]
   },
   "acceptance": {
@@ -194,13 +300,48 @@
       ]
     },
     "AT-008": {
-      "useCases": ["UC-003"],
-      "requirements": ["FR-003", "RR-001"]
+      "useCases": [
+        "UC-003",
+        "UC-007"
+      ],
+      "requirements": [
+        "FR-003",
+        "RR-001",
+        "FR-010"
+      ]
     },
     "AT-007": {
       "useCases": [],
       "requirements": [
         "SR-001"
+      ]
+    },
+    "AT-009": {
+      "useCases": [
+        "UC-002",
+        "UC-004",
+        "UC-005",
+        "UC-006",
+        "UC-007"
+      ],
+      "requirements": [
+        "FR-002",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-009",
+        "FR-010"
+      ]
+    },
+    "AT-010": {
+      "useCases": [
+        "UC-003",
+        "UC-007"
+      ],
+      "requirements": [
+        "FR-003",
+        "FR-007",
+        "FR-008"
       ]
     }
   },
@@ -254,6 +395,41 @@
       "title": "Application logging",
       "path": "structural/index.md",
       "anchor": "application-logging"
+    },
+    "api-create": {
+      "title": "WebClient creation",
+      "path": "behavioral/http-api.md",
+      "anchor": "webclient-creation"
+    },
+    "api-edit": {
+      "title": "WebClient editing",
+      "path": "behavioral/http-api.md",
+      "anchor": "webclient-editing"
+    },
+    "api-details": {
+      "title": "WebClient details and deletion",
+      "path": "behavioral/http-api.md",
+      "anchor": "webclient-smurf-details"
+    },
+    "api-filters": {
+      "title": "Filtering",
+      "path": "behavioral/http-api.md",
+      "anchor": "filtering-the-smurf-list"
+    },
+    "api-sorting": {
+      "title": "Sorting",
+      "path": "behavioral/http-api.md",
+      "anchor": "sorting-the-smurf-list"
+    },
+    "creation-times": {
+      "title": "Creation timestamps",
+      "path": "structural/index.md",
+      "anchor": "creation-timestamps-and-list-ordering"
+    },
+    "api-auth": {
+      "title": "HTTP authentication",
+      "path": "behavioral/http-api.md",
+      "anchor": "sign-in"
     }
   },
   "automated": {
@@ -291,6 +467,61 @@
       "title": "Create command catalog and SQLite integration",
       "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/CreateSmurfTests.cs",
       "symbol": "Create_UsesCatalogForDraftAndPersistsOnlyValidSmurfs"
+    },
+    "IT-007": {
+      "title": "Edit PersistsValidChangesAndRejectsInvalidOrMissingSmurfs",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/EditSmurfTests.cs",
+      "symbol": "Edit_PersistsValidChangesAndRejectsInvalidOrMissingSmurfs"
+    },
+    "IT-008": {
+      "title": "Delete RemovesSelectedSmurfAndRejectsMissingIdentifier",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/DeleteSmurfTests.cs",
+      "symbol": "Delete_RemovesSelectedSmurfAndRejectsMissingIdentifier"
+    },
+    "IT-009": {
+      "title": "Details ReturnsFieldsAndRejectsMissingSmurf",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/SmurfDetailsTests.cs",
+      "symbol": "Details_ReturnsFieldsAndRejectsMissingSmurf"
+    },
+    "IT-010": {
+      "title": "List AppliesFiltersBeforeCountingAndPaging",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/SmurfFilterTests.cs",
+      "symbol": "List_AppliesFiltersBeforeCountingAndPaging"
+    },
+    "IT-011": {
+      "title": "List SortsFilteredRowsBeforePagingAndPreservesUtc",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/SmurfSortingTests.cs",
+      "symbol": "List_SortsFilteredRowsBeforePagingAndPreservesUtc"
+    },
+    "IT-012": {
+      "title": "Seeding UsesFixedUtcCreationTimes",
+      "file": "tests/Smurf.Persistence.EFCore.AppData.UnitTest/SmurfSortingTests.cs",
+      "symbol": "Seeding_UsesFixedUtcCreationTimes"
+    },
+    "WT-001": {
+      "title": "creates a Smurf with typed values and returns to the list",
+      "file": "src/Smurfs.WebClient/src/features/smurfs/form/SmurfForm.test.tsx",
+      "symbol": "creates a Smurf with typed values and returns to the list"
+    },
+    "WT-002": {
+      "title": "loads a Smurf for editing and saves changed and cleared values through PUT",
+      "file": "src/Smurfs.WebClient/src/features/smurfs/form/SmurfForm.test.tsx",
+      "symbol": "loads a Smurf for editing and saves changed and cleared values through PUT"
+    },
+    "WT-003": {
+      "title": "Search resets paging and changes values even when the filter keys stay the same",
+      "file": "src/Smurfs.WebClient/src/app/stores/smurfStore.test.ts",
+      "symbol": "Search resets paging and changes values even when the filter keys stay the same"
+    },
+    "WT-004": {
+      "title": "Created sorting is sent to the API and the list retains server ordering",
+      "file": "src/Smurfs.WebClient/src/app/stores/smurfStore.test.ts",
+      "symbol": "Created sorting is sent to the API and the list retains server ordering"
+    },
+    "WT-005": {
+      "title": "displays the Smurf fields, false infection, and birthday without a timezone shift",
+      "file": "src/Smurfs.WebClient/src/features/smurfs/details/SmurfDetailedInfo.test.tsx",
+      "symbol": "displays the Smurf fields, false infection, and birthday without a timezone shift"
     }
   }
 }

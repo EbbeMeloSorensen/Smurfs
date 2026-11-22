@@ -13,12 +13,13 @@ else Authenticated
   Auth -> Controller : Dispatch with query parameters
   Controller -> MediatR : Send List.Query
   MediatR -> Handler : Handle query
-  alt Invalid paging values
+  alt Invalid paging, infection tokens, or sorting
     Handler --> Controller : Failed result via MediatR
     Controller --> Operator : 400 Bad Request
   else Valid paging
     Handler -> Reader : GetPageAsync
-    Reader --> Handler : Page of Smurf summaries
+    Reader -> Reader : Apply filters, count, order, then page
+    Reader --> Handler : Smurf DTOs and filtered totals
     Handler --> Controller : Successful result via MediatR
     Controller --> Operator : 200 JSON array and Pagination header
   end

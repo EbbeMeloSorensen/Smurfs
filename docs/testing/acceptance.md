@@ -1,6 +1,6 @@
 # Manual acceptance cases
 
-These procedures cover proposed requirements and their current console and WPF realizations. Run them for review and record observations separately. See the [test plan](index.md) and [execution record](execution-record.md).
+These procedures cover proposed requirements and their current console, desktop, API, and WebClient realizations. Run them for review and record observations separately. See the [test plan](index.md) and [execution record](execution-record.md).
 
 ## Solution-wide acceptance criterion
 
@@ -99,9 +99,9 @@ $wpf = (Resolve-Path 'src/Smurfs.UI.WPF/bin/Debug/net10.0-windows/Smurfs.UI.WPF.
 ```
 
 1. On the disposable PostgreSQL instance with `Smurfs_WPF` absent, launch WPF with `& $wpf`. Startup creates and seeds the catalog. Expect the main window to show **No page loaded** with both navigation buttons disabled.
-2. Select **Load smurfs**. With the 1,007 sample rows, expect **Page 1 of 41**, 25 rows, **Previous** disabled and **Next** enabled.
-3. Select **Next** until the final page. Expect the page number to advance each time. The last page should contain seven rows, with **Next** disabled and **Previous** enabled.
-4. Select **Previous** and expect **Page 40 of 41**. Select **Load smurfs** and expect **Page 1 of 41** again.
+2. Select **Load smurfs**. With the current eight seed rows, expect **Page 1 of 1**, eight rows, and both navigation buttons disabled. For the remaining steps, use a console configured to the same disposable WPF catalog to add 20 rows named Acceptance WPF 01 through Acceptance WPF 20. Confirm each create command succeeds. This gives 28 rows; select **Load smurfs** again and expect **Page 1 of 2**, 25 rows, **Previous** disabled and **Next** enabled.
+3. Select **Next**. Expect **Page 2 of 2**, three rows, **Next** disabled and **Previous** enabled.
+4. Select **Previous** and expect **Page 1 of 2**. Select **Load smurfs** and expect **Page 1 of 2** again.
 5. Close the WPF window and run `Pop-Location` in the setup shell.
 
 **Acceptance criteria** — Page labels and navigation boundaries follow the displayed result. Restarting the list returns to page 1. The separate console case covers direct paging input, the total row count and nonpositive input handling.
@@ -148,3 +148,34 @@ Set `Database__Provider=Postgres` and `ConnectionStrings__Postgres` to a connect
 4. Send `pageNumber=0` with the bearer token. Expect 400. Correct the page number and expect 200.
 
 For the hosted WebClient, reload `/smurfs` and confirm it loads the client. Request an unknown path such as `/api/typo` and expect 404. Request `GET /api/account` without a bearer token and expect 401.
+
+
+## AT-009 Create, inspect, edit, and delete in the WebClient
+
+**Scope** — Review [UC-002](../requirements/use-cases.md#uc-002-create-a-smurf), [UC-004](../requirements/use-cases.md#uc-004-inspect-a-smurf), [UC-005](../requirements/use-cases.md#uc-005-edit-a-smurf), and [UC-006](../requirements/use-cases.md#uc-006-delete-a-smurf). This is a planned manual case; record results separately.
+
+**Setup** — Use a disposable API database, Development configuration, and the current production client bundle. Follow AT-008 for startup and authentication, then sign into the browser client.
+
+1. Select Create Smurf. Enter Acceptance Web, health 42, birthday 2000-01-02, infection No, and gender Female. Submit. Expect one new row and return to /smurfs.
+2. Open the row. Verify all values and reload its direct detail URL. Record the id and createdUtc from the authenticated GET response.
+3. Open Edit. Change health to 12, clear birthday, and choose Unknown for infection and gender. Save. Verify updated detail values, explicit API nulls, and the unchanged id and createdUtc.
+4. Attempt to save a blank name and then a 21-character name. Expect validation and unchanged stored values. Cancel a valid draft and confirm it was not saved.
+5. Select Delete and decline confirmation. The record remains. Repeat and confirm deletion. Expect return to the overview, the record absent, and its direct GET returning 404.
+6. Sign out and confirm protected requests return 401.
+
+**Acceptance criteria** — Create and edit persist only valid values; nulls round-trip, cancellation preserves data, successful deletion removes the selected row, and authentication protects API operations.
+
+## AT-010 Filter and sort before paging
+
+**Scope** — Review [UC-003](../requirements/use-cases.md#uc-003-list-smurfs), including FR-007 and FR-008. Record results separately.
+
+**Setup** — Use the disposable authenticated API/WebClient from AT-009. Create Alpha Older (infection Yes), Alpha Newer (No), and Beta Unknown (Unknown) in that order, recording identifiers and createdUtc values. Wait between creates so times differ.
+
+1. Search for alpha with all infection boxes clear. Expect both Alpha rows, with page totals counting only these matches.
+2. Select No and Search. Expect Alpha Newer only. Change to Yes and Search without changing the name field. Expect Alpha Older only.
+3. Clear the name and select only Unspecified. Expect rows whose infection value is null, including Beta Unknown.
+4. Use name=alpha, sorting=created, pageSize=1 in authenticated GET requests. Page 1 must contain Alpha Newer, page 2 Alpha Older, with totalCount 2. Switching sorting=name reverses that ordering for these names. A page beyond the results is empty with totalCount 2.
+5. In the browser, select Newest first and Search. Verify descending creation timestamps. Switch to Name and Search, verifying the server's alphabetical order. Every Search starts a new result set at page 1.
+6. Send infected=invalid and sorting=invalid separately. Expect 400. Correct them and expect 200.
+
+**Acceptance criteria** — Filtering precedes counting and paging; sorting is global across pages, changed filter values take effect, and unknown infection is distinct from false.

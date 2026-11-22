@@ -4,7 +4,7 @@
 - [WPF workflows](wpf.md) separates application lifetime from operator actions.
 
 - [WinForms browsing](winforms.md) and Avalonia use the shared desktop paging view model.
-- [HTTP API workflows](http-api.md) cover startup, sign-in, and protected paging.
+- [HTTP API workflows](http-api.md) cover startup, sign-in, protected catalog operations, and WebClient create/detail/edit/delete, filtering, and sorting.
 
 ## Shared persistence behavior
 

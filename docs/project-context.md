@@ -8,7 +8,7 @@ Smurfs is a small C#/.NET learning/reference solution for AI-assisted roundtrip 
 
 ## Actors and verification
 
-The catalog operator initializes local storage, creates a Smurf and lists stored Smurfs through the console. The WPF client supports creating a Smurf and browsing adjacent pages through the same application use cases. The [use case specifications](requirements/use-cases.md) distinguish proposed intent from current behavior. Village, Pet and their associations have persistence coverage and no console management workflow. The [test plan](testing/index.md) pairs in-memory SQLite integration tests with manual console and WPF cases on a disposable PostgreSQL instance. Use the [requirements specification](requirements/index.md) for approval status and the generated matrix for evidence links.
+The catalog operator initializes local storage, creates a Smurf and lists stored Smurfs through the console. The authenticated HTTP API and React client also support creation, detail retrieval, editing, deletion, filtering, and sorting. The WPF client supports creating a Smurf and browsing adjacent pages through the same application use cases. The [use case specifications](requirements/use-cases.md) distinguish proposed intent from current behavior. Village, Pet and their associations have persistence coverage and no console management workflow. The [test plan](testing/index.md) pairs in-memory SQLite integration tests with manual console and WPF cases on a disposable PostgreSQL instance. Use the [requirements specification](requirements/index.md) for approval status and the generated matrix for evidence links.
 
 ## Domain intent
 
@@ -43,6 +43,8 @@ Reconcile `docs/structural/diagrams/persistence-model.puml` against both the run
 
 ## HTTP API baseline
 
-Smurfs.API composes Identity, JWT bearer authentication and the shared MediatR list query. Its two EF Core contexts share a database selected by `Database:Provider`, using matching SQLite or PostgreSQL context types and migration sets. The API also hosts the production WebClient. See the [HTTP API workflows](behavioral/http-api.md).
+Smurfs.API composes Identity, JWT bearer authentication and the shared MediatR catalog handlers. Its two EF Core contexts share a database selected by `Database:Provider`, using matching SQLite or PostgreSQL context types and migration sets. The API also hosts the production WebClient. See the [HTTP API workflows](behavioral/http-api.md).
 
 Identity persistence is referenced directly by the API. The HTTP user accessor lives in Smurfs.API.Services and implements the application-owned IUserAccessor contract. Shared Infrastructure supplies catalog reads and logging without depending on Identity persistence or HTTP context APIs.
+
+The current seed count is eight rows. Each has a distinct fixed CreatedUtc timestamp starting at 2026-01-01T00:00:00Z. The application constructs new Smurfs with the current UTC creation time. Editing preserves it. Sorting and filtering execute before database paging. Provider snapshots include the Health rename, nullable Birthday/Infected/Gender, and required CreatedUtc; migration files are present for both providers.

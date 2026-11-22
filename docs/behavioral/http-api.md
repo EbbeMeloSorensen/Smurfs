@@ -30,7 +30,7 @@ For [UC-003](../requirements/use-cases.md#uc-003-list-smurfs), send `GET /api/sm
 
 The Create Smurf button opens /smurfs/new. The form accepts a required nonblank name up to 20 characters, an integer health value (default zero), an optional birthday, infection status (Unknown, Yes, or No), and gender (Unknown, Male, or Female). It posts name, health, birthday, infected, and gender to the authenticated POST /api/smurfs endpoint. Unknown values are sent as null. Birthdays use midnight UTC for the selected calendar date. Successful submission returns to Smurf Overview and resets the list so its next load reads the saved catalog. Failed submission keeps the form values and shows an error. Submission is disabled while saving.
 
-Create.Command defaults the added fields so existing name-only desktop and console callers continue to create Smurfs with zero health and unknown birthday and infection status.
+Create.Command defaults the added fields so existing name-only desktop and console callers continue to create Smurfs with zero health and unknown birthday, infection status, and gender.
 
 ## WebClient Smurf details
 
@@ -57,3 +57,16 @@ Select Name or Newest first and click Search. Both modes reset the loaded list t
 The API includes createdUtc in both list and detail DTOs as a UTC timestamp. Creation assigns it automatically; editing leaves it unchanged.
 
 The WebClient uses Smurf types, stores, components, and API methods directly. Canonical browser routes are /smurfs, /smurfs/new, /smurfs/{id}, and /smurfs/{id}/edit. Old overview/detail URLs and the former create/manage URLs redirect to these routes to preserve bookmarks. The client keeps API timestamps as ISO strings and displays calendar birthdays without timezone conversion.
+
+
+## Edit and delete request sequences
+
+The application coordinates validation and writes through a unit of work. The API's existing result mapping returns 400 for missing edit/delete identifiers. Direct detail retrieval returns 404 for a missing identifier.
+
+![API edit sequence](../_generated/diagrams/behavioral/diagrams/api-edit.svg)
+
+[Edit source](diagrams/api-edit.puml)
+
+![API delete sequence](../_generated/diagrams/behavioral/diagrams/api-delete.svg)
+
+[Delete source](diagrams/api-delete.puml)

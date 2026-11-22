@@ -1,0 +1,37 @@
+@startuml
+title HTTP API - Edit a Smurf
+actor Operator
+participant "JWT authentication" as Auth
+participant SmurfsController as API
+participant "Edit.Handler" as Edit
+participant IBusinessRuleCatalog as Rules
+participant "Unit of work" as Unit
+
+Operator -> Auth : PUT /api/smurfs/{id} with replacement fields
+alt invalid authentication
+  Auth --> Operator : 401
+else authenticated
+  Auth -> API : Route id and JSON body
+  API -> Edit : Send Edit.Command with cancellation
+  Edit -> Rules : Validate proposed name draft
+  alt invalid draft
+    Edit --> API : Failed result
+  else valid draft
+    Edit -> Unit : Open session and find id
+    alt missing Smurf
+      Edit --> API : Failed result
+    else existing Smurf
+      Edit -> Edit : Apply editable fields, preserve CreatedUtc
+      Edit -> Rules : Validate edited entity
+      alt valid entity
+        Edit -> Unit : CompleteAsync
+        Edit --> API : Success
+      else rejected entity
+        Edit --> API : Failed result, no commit
+      end
+    end
+    Edit -> Unit : DisposeAsync
+  end
+  API --> Operator : 200 on success or 400 on handler failure
+end
+@enduml

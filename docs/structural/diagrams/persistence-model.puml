@@ -1,5 +1,5 @@
 @startuml
-' Runtime model. Existing migrations and snapshots still use Age.
+' Current runtime model and latest provider snapshots.
 hide methods
 entity "Smurfs" as SmurfTable {
   * Id : Guid <<PK>>
@@ -38,13 +38,13 @@ note bottom of PetTable
   PostgreSQL uses uuid for Guid, text for string, and integer for Health.
   SQLite uses TEXT for Guid/string and INTEGER for Health.
   Pet FK: ON DELETE RESTRICT; Village FK: no cascade.
-  Runtime property is Health. Existing migrations and snapshots still use Age.
-  Provider migrations are pending; existing databases retain Age.
+  Later migrations rename Age to Health and add optional attributes.
+  Current snapshots include all fields shown.
 end note
 note bottom of SmurfTable
   Birthday, Infected, and Gender are optional in the runtime model.
   Gender is stored as an integer by EF convention (Male=0, Female=1).
-  Provider migrations must be generated and applied separately.
+  Both providers include migrations for these properties.
 end note
 note bottom of SmurfTable
   CreatedUtc is required in the runtime model.

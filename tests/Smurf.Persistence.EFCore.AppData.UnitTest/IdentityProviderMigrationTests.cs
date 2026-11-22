@@ -70,6 +70,9 @@ public sealed class IdentityProviderMigrationTests
         var saved = await manager.FindByNameAsync(account.UserName);
         Assert.NotNull(saved);
         Assert.True(await manager.CheckPasswordAsync(saved, "Pa$$w0rd"));
-        Assert.Equal(2, (await context.Database.GetAppliedMigrationsAsync()).Count());
+        var expectedMigrations = context.Database.GetMigrations()
+            .Concat(catalog.Database.GetMigrations()).Distinct().OrderBy(id => id);
+        var appliedMigrations = (await context.Database.GetAppliedMigrationsAsync()).OrderBy(id => id);
+        Assert.Equal(expectedMigrations, appliedMigrations);
     }
 }

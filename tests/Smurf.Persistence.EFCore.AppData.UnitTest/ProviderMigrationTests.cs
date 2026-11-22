@@ -18,7 +18,10 @@ public sealed class ProviderMigrationTests
     public void Postgres_UsesExistingMigrationAndMatchingSnapshot()
     {
         using var context = new PostgresDataContextFactory().CreateDbContext([]);
-        Assert.Equal("20261118194640_InitialPostgres", Assert.Single(context.Database.GetMigrations()));
+        var migrations = context.Database.GetMigrations().ToArray();
+        Assert.Contains("20261118194640_InitialPostgres", migrations);
+        Assert.Contains("20261122081738_AddedCreatedTimestampToSmurf", migrations);
+        Assert.All(migrations, migration => Assert.DoesNotContain("Sqlite", migration));
         Assert.False(context.Database.HasPendingModelChanges());
     }
 
@@ -41,7 +44,7 @@ public sealed class ProviderMigrationTests
         await initializer.MigrateAsync();
         await initializer.SeedAsync();
         var count = await context.Smurfs.CountAsync();
-        Assert.Equal(1007, count);
+        Assert.Equal(8, count);
         await initializer.MigrateAsync();
         await initializer.SeedAsync();
 
@@ -59,7 +62,10 @@ public sealed class ProviderMigrationTests
     public void Sqlite_UsesIndependentMigrationAndMatchingSnapshot()
     {
         using var context = new SqliteDataContextFactory().CreateDbContext([]);
-        Assert.EndsWith("_InitialSqlite", Assert.Single(context.Database.GetMigrations()));
+        var migrations = context.Database.GetMigrations().ToArray();
+        Assert.Contains("20261118192145_InitialSqlite", migrations);
+        Assert.Contains("20261122081748_AddedCreatedTimestampToSmurf", migrations);
+        Assert.All(migrations, migration => Assert.DoesNotContain("Postgres", migration));
         Assert.False(context.Database.HasPendingModelChanges());
     }
 }

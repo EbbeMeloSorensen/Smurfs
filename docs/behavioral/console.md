@@ -20,7 +20,7 @@ Provider names are case-insensitive. A missing or unsupported provider, or a mis
 
 ## initdb
 
-Explicitly applies outstanding migrations and seeds seven named samples and 1,000 randomly named Smurfs when the Smurfs table is empty. It also runs against an existing database. This realizes [UC-001 Initialize local storage](../requirements/use-cases.md#uc-001-initialize-local-storage).
+Explicitly applies outstanding migrations and seeds seven named samples and one randomly named Smurf when the Smurfs table is empty. It also runs against an existing database. This realizes [UC-001 Initialize local storage](../requirements/use-cases.md#uc-001-initialize-local-storage).
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- initdb

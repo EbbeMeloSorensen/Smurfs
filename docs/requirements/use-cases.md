@@ -4,7 +4,7 @@
 
 [PlantUML source](diagrams/use-cases.puml) · [Use case to requirement mapping](../_generated/traceability.md#use-case-to-requirement)
 
-The external actor is the catalog operator. The following specifications describe candidate intent for workflows already exposed by the console. Automatic first-use setup is an observed startup behavior. The model leaves it out of the actor-goal relationships because explicit initialization is a separate operator goal. The [console workflow](../behavioral/console.md) realizes all three goals. The [WPF workflow](../behavioral/wpf.md) realizes the create form for UC-002 and adjacent-page browsing for UC-003. WPF performs setup automatically during startup.
+The catalog operator is the external actor. These specifications describe the current catalog goals for requirements review. Console initialization is explicit; desktop and API startup also initialize their configured stores. Console and WPF create named Smurfs, while the WebClient supplies the richer create fields. The HTTP API and WebClient implement detail, edit, and delete workflows. Existing approval states remain in the [traceability matrix](../_generated/traceability.md).
 
 ## UC-001 Initialize local storage
 
@@ -31,7 +31,7 @@ The external actor is the catalog operator. The following specifications describ
 - **Purpose and actor** — The catalog operator reviews stored Smurfs.
 - **Preconditions** — Local storage is readable.
 - **Trigger** — The operator requests a page.
-- **Main success scenario** — The system presents the requested page and total stored row count.
+- **Main success scenario** — The system applies selected name/infection filters and ordering, then presents the requested page and matching row count where the client exposes it.
 - **Alternatives and exceptions** — A page past the available rows is empty. Nonpositive paging inputs produce an input error and can be corrected. A storage failure is reported.
 - **Postconditions** — The request does not change stored Smurfs.
 - **Requirements** — See the [UC-003 mapping](../_generated/traceability.md#uc-003).
@@ -39,3 +39,40 @@ The external actor is the catalog operator. The following specifications describ
 The console accepts explicit page numbers and sizes and reports the total row count. WPF starts at page 1 and lets the operator step through adjacent pages of 25 rows. WPF displays the current page and number of pages. Direct page entry, page-size selection and the total row count are available in the console. WPF prevents out-of-bound navigation through its controls. These are current client behaviors. The proposed requirements above retain their existing scope and status.
 
 Avalonia and WinForms use the shared desktop paging view model. The [HTTP API](../behavioral/http-api.md#list-smurfs) realizes UC-003 through an authenticated GET and returns totals in the pagination header.
+
+## UC-004 Inspect a Smurf
+
+- **Actor and goal** — The operator opens a selected Smurf's details.
+- **Preconditions** — Storage is readable; HTTP access is authenticated.
+- **Scenario** — Select a Smurf or open its detail URL. The system returns its current scalar values and represents unknown values explicitly.
+- **Exceptions** — A missing identifier is reported as not found. Retrieval failures are reported.
+- **Postconditions** — Stored data is unchanged.
+- **Requirements** — See the [UC-004 mapping](../_generated/traceability.md#uc-004).
+
+## UC-005 Edit a Smurf
+
+- **Actor and goal** — The operator corrects an existing Smurf's details.
+- **Preconditions** — The Smurf exists and the HTTP caller is authenticated.
+- **Scenario** — Open Edit, change values, and save. The system validates and commits them, then shows updated details.
+- **Exceptions** — Cancel leaves storage unchanged. Invalid input or a save failure keeps the draft available for correction or retry. A missing Smurf is reported.
+- **Postconditions** — A successful edit persists the editable values while preserving creation time and relationships.
+- **Requirements** — See the [UC-005 mapping](../_generated/traceability.md#uc-005).
+
+## UC-006 Delete a Smurf
+
+- **Actor and goal** — The operator removes a selected Smurf.
+- **Preconditions** — The HTTP caller is authenticated.
+- **Scenario** — Select Delete and confirm. The system removes the Smurf and returns to the overview.
+- **Exceptions** — Declining confirmation leaves it unchanged. A missing identifier or storage failure is reported.
+- **Postconditions** — Successful deletion removes only the selected Smurf.
+- **Requirements** — See the [UC-006 mapping](../_generated/traceability.md#uc-006).
+
+## UC-007 Authenticate API access
+
+- **Actor and goal** — The user obtains access to the protected API.
+- **Scenario** — Register an account or submit valid email/password credentials. The system returns account information and a bearer token. The client attaches that token to protected requests.
+- **Exceptions** — Invalid credentials return 401. Registration errors are reported. Missing or invalid tokens prevent protected requests.
+- **Postconditions** — Valid authentication permits access according to the current API policy.
+- **Requirements** — See the [UC-007 mapping](../_generated/traceability.md#uc-007).
+
+The client-side logout removes the stored token. Production token lifecycle, authorization roles, and account policies are review items rather than new acceptance claims.

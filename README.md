@@ -24,7 +24,7 @@ The architectural documentation separates structural and behavioral perspectives
 The following documents provide the starting points for understanding and maintaining the solution:
 
 - **[AGENTS.md](AGENTS.md):** Instructions for AI-assisted development and maintaining consistency between code, models, and documentation.
-- **[Requirements and use cases](docs/requirements/index.md):** FURPS++ specification, proposed console goals and approval status.
+- **[Requirements and use cases](docs/requirements/index.md):** FURPS++ specification, catalog goals, quality attributes, and approval status.
 - **[Verification and validation](docs/testing/index.md):** integration scope, manual acceptance procedures and execution records.
 - **[Engineering process](docs/engineering/index.md):** iterative V-model and traceability.
 - **Engineering conventions:** Coding, architecture, documentation, and testing standards for the solution.
@@ -177,7 +177,7 @@ Both scripts should produce equivalent documentation on Windows and Linux. For r
 - [November 2026 persistence baseline](docs/baseline-2026-11-04.md)
 ## Populate a database for paging tests
 
-The console seeds 1,007 sample rows on first initialization of an empty catalog. Select SQLite or PostgreSQL in the console settings and use a disposable test database. See [console database settings](docs/behavioral/console.md#database-settings) for file locations and environment overrides.
+The current seed configuration creates eight sample rows (seven named samples and one randomly named Smurf) on first initialization of an empty catalog. Select SQLite or PostgreSQL in the console settings and use a disposable test database. See [console database settings](docs/behavioral/console.md#database-settings) for file locations and environment overrides.
 
 ```powershell
 dotnet run --project src/Smurfs.UI.Console -- initdb

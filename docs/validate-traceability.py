@@ -113,12 +113,16 @@ def validate(docs):
             raise ValueError(f"{identifier}: missing design heading {entry['anchor']}")
 
     for identifier, entry in data["automated"].items():
-        if not re.fullmatch(r"(?:IT|VT)-\d{3}", identifier):
+        if not re.fullmatch(r"(?:IT|VT|WT)-\d{3}", identifier):
             raise ValueError(f"Invalid evidence ID: {identifier}")
         required_text(identifier, entry, ("title", "file", "symbol"))
         source = (docs.parent / entry["file"]).read_text(encoding="utf-8-sig")
         symbol = re.escape(entry["symbol"])
-        if not re.search(rf"^\s*(?:public\s+(?:async\s+)?(?:Task|void)|def)\s+{symbol}\s*\(", source, re.MULTILINE):
+        if identifier.startswith("WT-"):
+            found = re.search(rf"^\s*(?:test|it)\(['\"]{symbol}['\"]\s*,", source, re.MULTILINE)
+        else:
+            found = re.search(rf"^\s*(?:public\s+(?:async\s+)?(?:Task|void)|def)\s+{symbol}\s*\(", source, re.MULTILINE)
+        if not found:
             raise ValueError(f"{identifier}: missing declaration {entry['symbol']} in {entry['file']}")
     return data, titles
 

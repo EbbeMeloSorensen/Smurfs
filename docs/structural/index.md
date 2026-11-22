@@ -40,7 +40,7 @@ The [console architecture source](diagrams/console-architecture.puml) shows sele
 
 This design supports [SR-001 Diagnose failures after exit](../requirements/index.md#sr-001-diagnose-failures-after-exit).
 
-The create and list handlers use typed `ILogger<T>` instances from the host. Successful operations log at Information, and handled input rejections log at Debug. A MediatR behavior logs unexpected handler exceptions at Error and propagates them to the caller. The handlers log operational details such as page and row counts and omit draft names and request payloads.
+The create, edit, delete, and list handlers use typed `ILogger<T>` instances from the host. Successful operations log at Information, and handled input rejections log at Debug. A MediatR behavior logs unexpected handler exceptions at Error and propagates them to the caller. The handlers log operational details such as page and row counts and omit draft names and request payloads.
 
 WPF and the console initialize the shared file logger in `Smurfs.Infrastructure` before building their hosts. When available, the logger records startup failures even if the host could not be built. It writes plain-text files to `%LOCALAPPDATA%\Smurfs\Logs\wpf-YYYYMMDD.log` and `%LOCALAPPDATA%\Smurfs\Logs\console-YYYYMMDD.log`. Each entry includes the timestamp, level, category, message, and any exception details. Avalonia and WinForms also use the shared logger, with the `avalonia-` and `winforms-` prefixes. Each frontend rolls files daily or at 5 MiB and retains its latest 14 files. Smurfs categories default to Information and other categories to Warning. Set `Logging__LogLevel__Smurfs=Debug` before launching either frontend for more detail. WPF keeps debugger output, and the console keeps diagnostics on stderr and command results on stdout.
 
@@ -52,9 +52,9 @@ The separate Identity adapter defines an EF context for ASP.NET Core Identity an
 
 This app-data model reflects the current EF runtime model: Smurfs, Villages and Pets tables. DataContext exposes all three entity sets. Smurf has optional indexed PetId and shadow VillageId foreign keys; each village and pet can be associated with multiple Smurfs. VillageId is nullable and maintained by EF, with no corresponding C# property. SmurfConfiguration explicitly maps the optional Pet relationship with Restrict. SmurfConfiguration also explicitly maps optional Village membership through the shadow VillageId, with ClientSetNull and navigation from Village to Smurfs only. DataContext.OnModelCreating calls the shared Configure helper, which applies SmurfConfiguration. See [ADR 0002](../decisions/0002-pet-configuration.md) for the mapping and deletion semantics.
 
-EF Core can materialize legacy Smurf names through the backing field. The PostgreSQL Name column requires a value but does not enforce the domainâ€™s whitespace or length checks.
+EF Core can materialize legacy Smurf names through the backing field. The PostgreSQL Name column requires a value but does not enforce the domain's whitespace or length checks.
 
-The regenerated initial migration `20261118194640_InitialPostgres` and snapshot now match this model: Smurfs, Pets and Villages, with nullable indexed PetId and VillageId foreign keys. Both foreign keys reference the corresponding Id primary key. The Pet foreign key specifies ON DELETE RESTRICT; the Village foreign key specifies no cascading database delete action. This replaces the earlier initial migration; it creates the current schema directly rather than renaming an existing Pet table. This PostgreSQL baseline is associated with PostgresDataContext and retains its deployed migration ID. The separate SQLite baseline is associated with SqliteDataContext and is tested against an in-memory SQLite database. See the current test plan for provider coverage.
+AppData retains the PostgreSQL baseline 20261118194640_InitialPostgres and SQLite baseline 20261118192145_InitialSqlite. Each provider now also includes ChangedAgeToHealth, GenderAndInfected (which adds Birthday as well), and AddedCreatedTimestampToSmurf migrations. Both current snapshots contain Health, Birthday, Infected, Gender, and CreatedUtc. The Age column belongs to the historical initial schema and is renamed by the later migration. The latest CreatedUtc migrations use the generated year-0001 default for existing rows. Presence in source does not establish which migrations have been applied to a particular database. SQLite migration application is exercised in-memory; live PostgreSQL application remains a separate check.
 
 ![Relational persistence model](../_generated/diagrams/structural/diagrams/persistence-model.svg)
 
@@ -80,17 +80,13 @@ Delete.Command identifies an existing Smurf by Id. The handler loads the entity 
 
 The authenticated API exposes DELETE /api/smurfs/{id} with no request body. The controller uses the existing result mapping, returning 200 on success and 400 if the Smurf is missing. DeleteSmurfTests verifies persisted removal, preservation of another Smurf and a shared pet, missing identifiers, and cancellation.
 
-## Pending Health schema migration
+## Optional domain values
 
-The active domain model, application DTOs, edit command, and API edit body use Health (health in JSON). Existing PostgreSQL and SQLite migrations and model snapshots still define Age. New provider migrations must be created and applied before using the renamed property with migrated databases. Review generated migrations to preserve existing values when renaming the column. Snapshot agreement and migration-backed integration checks will report this deliberate mismatch until migration work is completed.
-
-Smurf.Birthday is an optional DateTime, defaulting to null when unknown. It has no additional validation. The runtime persistence model includes the nullable property; provider migrations for Birthday are pending.
-
-Smurf also exposes nullable Infected (bool) and Gender (the domain enum with Male and Female values). Null represents an unknown value for either property. EF Core maps Gender to a nullable integer by convention. Provider migrations for these properties are pending.
+Smurf.Birthday is a nullable DateTime. Infected is a nullable bool, and Gender is a nullable domain enum with Male and Female values. Null represents an unknown value. EF Core maps Gender to a nullable integer by convention. Both providers include migrations and matching snapshots for these properties.
 
 ## Smurf list response fields
 
-The paged read DTO exposes id, name, health, birthday, infected, gender, and petId. GET /api/smurfs includes nullable properties explicitly as JSON null when unknown. Gender is serialized as Male or Female text. Infection status distinguishes true, false, and null. PetId identifies the related pet without serializing its navigation graph. SmurfReadService projects these fields directly from the database.
+The paged read DTO exposes id, name, createdUtc, health, birthday, infected, gender, and petId. GET /api/smurfs includes nullable properties explicitly as JSON null when unknown. Gender is serialized as Male or Female text. Infection status distinguishes true, false, and null. PetId identifies the related pet without serializing its navigation graph. SmurfReadService projects these fields directly from the database.
 
 ## Creation timestamps and list ordering
 

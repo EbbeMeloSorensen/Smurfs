@@ -8,7 +8,7 @@ namespace Smurfs.Persistence.EFCore.AppData;
 public class Seeding
 {
     /// <summary>
-    /// Saves the named samples and 1,000 randomly named Smurfs when the Smurfs table is empty.
+    /// Saves seven named samples and the configured number of randomly named Smurfs when the Smurfs table is empty.
     /// </summary>
     public static async Task SeedDatabase(
         DataContext context)

@@ -5,8 +5,16 @@ rectangle "Smurfs" {
   usecase "UC-001\nInitialize local storage" as Initialize
   usecase "UC-002\nCreate a Smurf" as Create
   usecase "UC-003\nList Smurfs" as List
+  usecase "UC-004\nInspect a Smurf" as Details
+  usecase "UC-005\nEdit a Smurf" as Edit
+  usecase "UC-006\nDelete a Smurf" as Delete
+  usecase "UC-007\nAuthenticate API access" as Authenticate
 }
 Operator -- Initialize
 Operator -- Create
 Operator -- List
+Operator -- Details
+Operator -- Edit
+Operator -- Delete
+Operator -- Authenticate
 @enduml
