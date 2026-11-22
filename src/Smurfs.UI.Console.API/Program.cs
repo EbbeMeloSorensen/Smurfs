@@ -13,10 +13,13 @@ internal static class Program
         try
         {
             using var configuration = new ConfigurationManager();
+
             configuration.SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddEnvironmentVariables();
+
             var baseUrl = configuration["Api:BaseUrl"];
+
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var address))
             {
                 throw new InvalidOperationException("Configure Api:BaseUrl as an absolute HTTP(S) server URL ending in /.");
@@ -27,6 +30,7 @@ internal static class Program
                 BaseAddress = address,
                 Timeout = TimeSpan.FromSeconds(30)
             };
+
             var api = new SmurfsApiClient(http);
             System.Console.WriteLine($"Smurfs API console — {address}");
             return await RunAsync(api);
@@ -43,10 +47,12 @@ internal static class Program
     private static async Task<int> RunAsync(SmurfsApiClient api)
     {
         var handler = new List.Handler(api);
+
         while (true)
         {
             System.Console.Write("Email (blank to quit): ");
             var email = System.Console.ReadLine();
+
             if (string.IsNullOrWhiteSpace(email))
             {
                 return 0;
@@ -54,6 +60,7 @@ internal static class Program
 
             System.Console.Write("Password: ");
             var password = ReadPassword();
+
             if (password is null)
             {
                 return 0;
@@ -78,6 +85,7 @@ internal static class Program
 
             var pageNumber = 1;
             var pageSize = 5;
+
             while (true)
             {
                 try
@@ -94,13 +102,16 @@ internal static class Program
 
                     var page = result.Value;
                     System.Console.WriteLine($"Smurfs (page {page.CurrentPage}, {page.TotalPages} total pages, {page.TotalCount} rows):");
+
                     foreach (var smurf in page)
                     {
                         System.Console.WriteLine($" {smurf.Name}");
                     }
 
                     System.Console.Write("Next / Previous / Reload / Login / Quit (n/p/r/l/q): ");
+
                     var command = System.Console.ReadLine()?.Trim().ToLowerInvariant();
+
                     if (command is null or "q" or "quit")
                     {
                         return 0;
@@ -158,6 +169,7 @@ internal static class Program
         while (true)
         {
             var key = System.Console.ReadKey(intercept: true);
+
             if (key.Key == ConsoleKey.Enter)
             {
                 System.Console.WriteLine();
