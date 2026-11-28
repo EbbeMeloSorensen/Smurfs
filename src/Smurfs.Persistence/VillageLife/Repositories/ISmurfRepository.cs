@@ -1,7 +1,7 @@
 using Craft.Persistence;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 
-namespace Smurfs.Persistence.Repositories;
+namespace Smurfs.Persistence.VillageLife.Repositories;
 
 /// <summary>
 /// Queries Smurfs and stages their mutations within an owning persistence session.

@@ -16,7 +16,7 @@ using Smurfs.Application.Smurfs;
 using Smurfs.Infrastructure.Logging;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.UI.Console.Verbs;
-using Smurfs.Domain.BusinessRules;
+using Smurfs.Domain.VillageLife.BusinessRules;
 
 namespace Smurfs.UI.Console;
 

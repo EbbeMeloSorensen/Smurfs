@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Smurfs.Application.Core;
 using Smurfs.Application.Smurfs;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 
 namespace Smurfs.Persistence.API;
 

@@ -1,4 +1,4 @@
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 
 namespace Smurfs.Persistence;
 

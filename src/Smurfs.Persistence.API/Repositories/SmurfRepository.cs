@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
-using Smurfs.Domain;
-using Smurfs.Persistence.Repositories;
+using Smurfs.Domain.VillageLife;
+using Smurfs.Persistence.VillageLife.Repositories;
 
 namespace Smurfs.Persistence.API.Repositories;
 

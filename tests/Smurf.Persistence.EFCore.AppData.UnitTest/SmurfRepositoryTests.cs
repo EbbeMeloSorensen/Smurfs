@@ -1,7 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Smurfs.Persistence.EFCore.AppData;
-using Smurfs.Persistence.EFCore.AppData.Repositories;
+using Smurfs.Persistence.EFCore.AppData.VillageLife.Repositories;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;
 
@@ -30,7 +30,7 @@ public class SmurfRepositoryTests
 
             var repository = new SmurfRepository(context);
 
-            var smurf = new Smurfs.Domain.Smurf
+            var smurf = new Smurfs.Domain.VillageLife.Smurf
             {
                 Name = "Papa Smurf"
             };
@@ -43,7 +43,7 @@ public class SmurfRepositoryTests
         // Assert - use a fresh DbContext
         await using (var context = new SqliteDataContext(options))
         {
-            var savedSmurf = await context.Set<Smurfs.Domain.Smurf>()
+            var savedSmurf = await context.Set<Smurfs.Domain.VillageLife.Smurf>()
                 .SingleAsync();
 
             Assert.Equal("Papa Smurf", savedSmurf.Name);

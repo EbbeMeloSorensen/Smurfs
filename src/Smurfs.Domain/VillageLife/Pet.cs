@@ -1,4 +1,4 @@
-namespace Smurfs.Domain;
+namespace Smurfs.Domain.VillageLife;
 
 /// <summary>
 /// A named pet that may be shared by multiple Smurfs.

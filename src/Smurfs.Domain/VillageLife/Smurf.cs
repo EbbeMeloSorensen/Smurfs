@@ -1,6 +1,6 @@
-using Smurfs.Domain.BusinessRules.AtomicRules;
+using Smurfs.Domain.VillageLife.BusinessRules.AtomicRules;
 
-namespace Smurfs.Domain;
+namespace Smurfs.Domain.VillageLife;
 
 /// <summary>
 /// A named Smurf with health, an optional birthday, and an optional pet.

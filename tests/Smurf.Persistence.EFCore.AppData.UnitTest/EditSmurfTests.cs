@@ -3,8 +3,8 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Smurfs.Application.Smurfs;
-using Smurfs.Domain;
-using Smurfs.Domain.BusinessRules;
+using Smurfs.Domain.VillageLife;
+using Smurfs.Domain.VillageLife.BusinessRules;
 using Smurfs.Persistence.EFCore.AppData;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;
@@ -29,7 +29,7 @@ public sealed class EditSmurfTests
         await using var context = await factory.CreateDbContextAsync();
         await context.Database.EnsureCreatedAsync();
         var pet = new Pet { Name = "Pet" };
-        var original = new Smurfs.Domain.Smurf { Name = "Original", Health = 7, Pet = pet };
+        var original = new Smurfs.Domain.VillageLife.Smurf { Name = "Original", Health = 7, Pet = pet };
         context.Smurfs.Add(original);
         await context.SaveChangesAsync();
         var createdUtc = original.CreatedUtc;
@@ -79,9 +79,9 @@ public sealed class EditSmurfTests
         Assert.Single(await context.Smurfs.ToListAsync());
     }
 
-    private sealed class RejectedHealthRule : IBusinessRule<Smurfs.Domain.Smurf>
+    private sealed class RejectedHealthRule : IBusinessRule<Smurfs.Domain.VillageLife.Smurf>
     {
-        public BusinessRuleViolation? Validate(Smurfs.Domain.Smurf smurf) =>
-            smurf.Health == 99 ? new(nameof(Smurfs.Domain.Smurf.Health), "Test health rejected.") : null;
+        public BusinessRuleViolation? Validate(Smurfs.Domain.VillageLife.Smurf smurf) =>
+            smurf.Health == 99 ? new(nameof(Smurfs.Domain.VillageLife.Smurf.Health), "Test health rejected.") : null;
     }
 }

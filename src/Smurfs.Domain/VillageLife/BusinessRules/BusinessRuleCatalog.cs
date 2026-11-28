@@ -1,7 +1,7 @@
 using Craft.Domain;
-using Smurfs.Domain.BusinessRules.AtomicRules;
+using Smurfs.Domain.VillageLife.BusinessRules.AtomicRules;
 
-namespace Smurfs.Domain.BusinessRules;
+namespace Smurfs.Domain.VillageLife.BusinessRules;
 
 /// <summary>
 /// Provides the business rules registered by the Smurfs domain.

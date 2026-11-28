@@ -2,7 +2,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Smurfs.Application.Smurfs;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 using Smurfs.Persistence.EFCore.AppData;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;
@@ -27,8 +27,8 @@ public sealed class DeleteSmurfTests
         await using var context = await factory.CreateDbContextAsync();
         await context.Database.EnsureCreatedAsync();
         var pet = new Pet { Name = "Shared pet" };
-        var selected = new Smurfs.Domain.Smurf { Name = "Selected", Pet = pet };
-        var remaining = new Smurfs.Domain.Smurf { Name = "Remaining", Pet = pet };
+        var selected = new Smurfs.Domain.VillageLife.Smurf { Name = "Selected", Pet = pet };
+        var remaining = new Smurfs.Domain.VillageLife.Smurf { Name = "Remaining", Pet = pet };
         context.Smurfs.AddRange(selected, remaining);
         await context.SaveChangesAsync();
         var handler = new Delete.Handler(new UnitOfWorkFactory(factory));

@@ -3,8 +3,8 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Smurfs.Application.Smurfs;
-using Smurfs.Domain;
-using Smurfs.Domain.BusinessRules;
+using Smurfs.Domain.VillageLife;
+using Smurfs.Domain.VillageLife.BusinessRules;
 using Smurfs.Persistence.EFCore.AppData;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;

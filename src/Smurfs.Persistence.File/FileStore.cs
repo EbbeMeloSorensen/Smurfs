@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 using IOFile = System.IO.File;
 
 namespace Smurfs.Persistence.File;

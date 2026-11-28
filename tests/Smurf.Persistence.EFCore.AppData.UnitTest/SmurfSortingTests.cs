@@ -23,11 +23,11 @@ public sealed class SmurfSortingTests
             new DbContextOptionsBuilder<SqliteDataContext>().UseSqlite(connection).Options);
         await context.Database.EnsureCreatedAsync();
         var baseline = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var oldest = new Smurfs.Domain.Smurf { Name = "A", CreatedUtc = baseline, Infected = true };
-        var newer = new Smurfs.Domain.Smurf { Name = "Z", CreatedUtc = baseline.AddDays(1), Infected = true };
-        var tied = new Smurfs.Domain.Smurf { Name = "M", CreatedUtc = baseline.AddDays(1), Infected = true };
+        var oldest = new Smurfs.Domain.VillageLife.Smurf { Name = "A", CreatedUtc = baseline, Infected = true };
+        var newer = new Smurfs.Domain.VillageLife.Smurf { Name = "Z", CreatedUtc = baseline.AddDays(1), Infected = true };
+        var tied = new Smurfs.Domain.VillageLife.Smurf { Name = "M", CreatedUtc = baseline.AddDays(1), Infected = true };
         context.Smurfs.AddRange(oldest, newer, tied,
-            new Smurfs.Domain.Smurf { Name = "Excluded", CreatedUtc = baseline.AddDays(2), Infected = false });
+            new Smurfs.Domain.VillageLife.Smurf { Name = "Excluded", CreatedUtc = baseline.AddDays(2), Infected = false });
         await context.SaveChangesAsync();
         context.ChangeTracker.Clear();
         var persisted = await context.Smurfs.SingleAsync(smurf => smurf.Id == oldest.Id);

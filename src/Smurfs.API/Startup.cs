@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Smurfs.API.Extensions;

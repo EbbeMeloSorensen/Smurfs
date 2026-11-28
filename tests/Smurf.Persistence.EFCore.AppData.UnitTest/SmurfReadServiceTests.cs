@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 using Smurfs.Infrastructure.Smurfs;
 using Smurfs.Persistence.EFCore.AppData;
 
@@ -23,7 +23,7 @@ public sealed class SmurfReadServiceTests
         await using var context = new SqliteDataContext(options);
         await context.Database.EnsureCreatedAsync();
         var pet = new Pet { Name = "Pet" };
-        var known = new Smurfs.Domain.Smurf
+        var known = new Smurfs.Domain.VillageLife.Smurf
         {
             Name = "A",
             Health = 42,
@@ -32,7 +32,7 @@ public sealed class SmurfReadServiceTests
             Gender = Gender.Female,
             Pet = pet
         };
-        var unknown = new Smurfs.Domain.Smurf { Name = "B" };
+        var unknown = new Smurfs.Domain.VillageLife.Smurf { Name = "B" };
         context.Smurfs.AddRange(known, unknown);
         await context.SaveChangesAsync();
 

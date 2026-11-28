@@ -2,7 +2,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Smurfs.Application.Smurfs;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 using Smurfs.Persistence.EFCore.AppData;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;
@@ -26,7 +26,7 @@ public sealed class SmurfDetailsTests
         var factory = provider.GetRequiredService<IDbContextFactory<DataContext>>();
         await using var context = await factory.CreateDbContextAsync();
         await context.Database.EnsureCreatedAsync();
-        var smurf = new Smurfs.Domain.Smurf
+        var smurf = new Smurfs.Domain.VillageLife.Smurf
         {
             Name = "Kylling",
             Health = 42,

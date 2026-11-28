@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Smurfs.Domain;
-using Smurfs.Persistence.EFCore.AppData.EntityConfigurations;
+using Smurfs.Domain.VillageLife;
+using Smurfs.Persistence.EFCore.AppData.VillageLife.EntityConfigurations;
 
 namespace Smurfs.Persistence.EFCore.AppData;
 

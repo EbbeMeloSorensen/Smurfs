@@ -3,7 +3,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MediatR;
 using Smurfs.Application.Smurfs;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 
 namespace Smurfs.ViewModel;
 

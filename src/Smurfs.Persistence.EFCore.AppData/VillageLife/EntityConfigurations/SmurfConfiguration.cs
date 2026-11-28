@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 
-namespace Smurfs.Persistence.EFCore.AppData.EntityConfigurations;
+namespace Smurfs.Persistence.EFCore.AppData.VillageLife.EntityConfigurations;
 
 /// <summary>
 /// Defines the Smurf primary key and optional many-to-one Pet and Village relationships.

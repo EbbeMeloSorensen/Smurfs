@@ -12,7 +12,7 @@ The catalog operator initializes local storage, creates a Smurf and lists stored
 
 ## Domain intent
 
-- `Smurf`, `Village`, and `Pet` are domain concepts.
+- `Smurf`, `Village`, and `Pet` belong to `Smurfs.Domain.VillageLife`. Each domain model has its own folder and namespace within `Smurfs.Domain`.
 - A `Village` can contain zero or many `Smurf` instances; each `Smurf` belongs to zero or one `Village`. This is accepted in [ADR 0001](decisions/0001-village-membership.md). Navigation goes from Village to Smurfs only; Smurf has no Village navigation. The relational model uses nullable `Smurfs.VillageId` referencing `Villages.Id`, explicitly mapped in SmurfConfiguration as an EF shadow property with ClientSetNull.
 - A `Smurf` has zero or one `Pet`; a `Pet` may be shared by multiple `Smurf` instances. [ADR 0002](decisions/0002-pet-configuration.md) records explicit Restrict mapping and its tracked/untracked deletion semantics.
 - Smurf name assignments require non-whitespace text and at most 20 characters. The WPF dialog and shared create handler validate proposed names through the domain catalog. The handler constructs the Smurf and validates the entity before persistence.
@@ -32,6 +32,7 @@ For behavioral modeling, document one sequence per console verb and describe sha
 - The File adapter supplies the same persistence and application read contracts using independent JSON snapshots. Its selected architecture and concurrency limits are documented in the structural file-persistence section. Preserve project boundaries among Smurfs.Domain, Smurfs.Persistence, Smurfs.Persistence.EFCore.AppData and Craft dependencies as actually present.
 - Scope the persistence architecture diagram to solution-owned types grouped by assembly components. Keep relevant direct dependencies between these types; omit standalone EF Core/BCL types and their arrows. Framework names may remain in member signatures. Do not add a shared external framework hub as the solution grows.
 - Both AppData and Identity use an abstract DataContext with sibling PostgresDataContext and SqliteDataContext types. Each provider owns a migration set and snapshot in its respective persistence assembly. The API, console, WPF, Avalonia, and WinForms select provider contexts from settings. SQLite tests select SqliteDataContext.
+- AppData domain models share `DataContext` and `UnitOfWork` for the selected provider. Model-specific repositories and EF mappings live under their model folders.
 - DataContext.OnModelCreating calls Configure to apply SmurfConfiguration; Smurf key, Pet and Village relationship rules belong in that configuration.
 - EF Core is code-first. No migrations, database schema or storage behavior should be inferred purely from PlantUML.
 

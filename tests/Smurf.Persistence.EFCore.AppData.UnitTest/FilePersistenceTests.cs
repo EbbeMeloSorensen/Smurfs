@@ -1,12 +1,12 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Smurfs.Application.Smurfs;
-using Smurfs.Domain;
-using Smurfs.Domain.BusinessRules;
+using Smurfs.Domain.VillageLife;
+using Smurfs.Domain.VillageLife.BusinessRules;
 using Smurfs.Persistence;
 using Smurfs.Persistence.File;
 using FileReadService = Smurfs.Persistence.File.Smurfs.SmurfReadService;
-using SmurfEntity = Smurfs.Domain.Smurf;
+using SmurfEntity = Smurfs.Domain.VillageLife.Smurf;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;
 

@@ -1,4 +1,4 @@
-namespace Smurfs.Domain;
+namespace Smurfs.Domain.VillageLife;
 
 /// <summary>
 /// Identifies a Smurf's gender.

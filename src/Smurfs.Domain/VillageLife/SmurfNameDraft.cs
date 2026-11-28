@@ -1,4 +1,4 @@
-namespace Smurfs.Domain;
+namespace Smurfs.Domain.VillageLife;
 
 /// <summary>
 /// Carries a proposed name that can be checked before a Smurf exists.

@@ -1,4 +1,4 @@
-namespace Smurfs.Domain;
+namespace Smurfs.Domain.VillageLife;
 
 /// <summary>
 /// A village model with a mutable collection of Smurfs.

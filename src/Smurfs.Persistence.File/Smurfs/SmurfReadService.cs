@@ -21,7 +21,7 @@ public sealed class SmurfReadService(IUnitOfWorkFactory factory) : ISmurfReadSer
         ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
         await using var session = factory.CreateUnitOfWork();
         var rows = await session.Smurfs.FindAsync([], cancellationToken);
-        IEnumerable<Domain.Smurf> query = rows;
+        IEnumerable<Domain.VillageLife.Smurf> query = rows;
         if (!string.IsNullOrWhiteSpace(name))
         {
             query = query.Where(smurf => smurf.Name.Contains(name.Trim(), StringComparison.OrdinalIgnoreCase));

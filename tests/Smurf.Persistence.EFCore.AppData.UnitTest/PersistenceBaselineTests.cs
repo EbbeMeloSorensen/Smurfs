@@ -2,8 +2,8 @@ using System.Linq.Expressions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Smurfs.Persistence.EFCore.AppData;
-using Smurfs.Persistence.EFCore.AppData.Repositories;
-using SmurfEntity = Smurfs.Domain.Smurf;
+using Smurfs.Persistence.EFCore.AppData.VillageLife.Repositories;
+using SmurfEntity = Smurfs.Domain.VillageLife.Smurf;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;
 
@@ -184,8 +184,8 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         await using var context = new SqliteDataContext(Options);
         Assert.False(context.Database.HasPendingModelChanges());
         Assert.Equal(3, context.Model.GetEntityTypes().Count());
-        Assert.Equal("Pets", context.Model.FindEntityType(typeof(Smurfs.Domain.Pet))!.GetTableName());
-        Assert.Equal("Villages", context.Model.FindEntityType(typeof(Smurfs.Domain.Village))!.GetTableName());
+        Assert.Equal("Pets", context.Model.FindEntityType(typeof(Smurfs.Domain.VillageLife.Pet))!.GetTableName());
+        Assert.Equal("Villages", context.Model.FindEntityType(typeof(Smurfs.Domain.VillageLife.Village))!.GetTableName());
         var relationships = context.Model.FindEntityType(typeof(SmurfEntity))!.GetForeignKeys().ToArray();
         Assert.Equal(2, relationships.Length);
         Assert.All(relationships, relationship =>
@@ -195,18 +195,18 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
 
         });
         var village = Assert.Single(relationships, relationship =>
-            relationship.PrincipalEntityType.ClrType == typeof(Smurfs.Domain.Village));
+            relationship.PrincipalEntityType.ClrType == typeof(Smurfs.Domain.VillageLife.Village));
         Assert.Equal(DeleteBehavior.ClientSetNull, village.DeleteBehavior);
         var pet = Assert.Single(relationships, relationship =>
-            relationship.PrincipalEntityType.ClrType == typeof(Smurfs.Domain.Pet));
+            relationship.PrincipalEntityType.ClrType == typeof(Smurfs.Domain.VillageLife.Pet));
         Assert.Equal(DeleteBehavior.Restrict, pet.DeleteBehavior);
         Assert.Equal(nameof(SmurfEntity.PetId), Assert.Single(pet.Properties).Name);
         var foreignKey = Assert.Single(village.Properties);
         Assert.Equal("VillageId", foreignKey.Name);
         Assert.True(foreignKey.IsShadowProperty());
         Assert.Null(village.DependentToPrincipal);
-        Assert.Equal(nameof(Smurfs.Domain.Village.Smurfs), village.PrincipalToDependent!.Name);
-        Assert.Equal(nameof(Smurfs.Domain.Village.Id), Assert.Single(village.PrincipalKey.Properties).Name);
+        Assert.Equal(nameof(Smurfs.Domain.VillageLife.Village.Smurfs), village.PrincipalToDependent!.Name);
+        Assert.Equal(nameof(Smurfs.Domain.VillageLife.Village.Id), Assert.Single(village.PrincipalKey.Properties).Name);
         Assert.Equal(typeof(Guid?), foreignKey.ClrType);
     }
 
@@ -218,8 +218,8 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
     {
         await using (var context = new SqliteDataContext(Options))
         {
-            var pet = new Smurfs.Domain.Pet { Name = "Shared" };
-            var village = new Smurfs.Domain.Village { Name = "Home" };
+            var pet = new Smurfs.Domain.VillageLife.Pet { Name = "Shared" };
+            var village = new Smurfs.Domain.VillageLife.Village { Name = "Home" };
             village.Smurfs.Add(new SmurfEntity { Name = "Papa", Pet = pet });
             village.Smurfs.Add(new SmurfEntity { Name = "Brainy", Pet = pet });
             context.Villages.Add(village);
@@ -257,7 +257,7 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         await using (var seed = new SqliteDataContext(options))
         {
             await seed.Database.MigrateAsync();
-            var pet = new Smurfs.Domain.Pet { Name = "Shared" };
+            var pet = new Smurfs.Domain.VillageLife.Pet { Name = "Shared" };
             seed.Smurfs.AddRange(new SmurfEntity { Name = "Papa", Pet = pet },
                 new SmurfEntity { Name = "Brainy", Pet = pet });
             await seed.SaveChangesAsync();
@@ -303,8 +303,8 @@ public sealed class PersistenceBaselineTests : IAsyncLifetime
         await using var context = new SqliteDataContext(options);
         await context.Database.MigrateAsync();
         Assert.Equal(context.Database.GetMigrations(), await context.Database.GetAppliedMigrationsAsync());
-        var pet = new Smurfs.Domain.Pet { Name = "Shared" };
-        var village = new Smurfs.Domain.Village { Name = "Migrated" };
+        var pet = new Smurfs.Domain.VillageLife.Pet { Name = "Shared" };
+        var village = new Smurfs.Domain.VillageLife.Village { Name = "Migrated" };
         village.Smurfs.Add(new SmurfEntity { Name = "Papa", Pet = pet });
         village.Smurfs.Add(new SmurfEntity { Name = "Brainy", Pet = pet });
         context.Villages.Add(village);

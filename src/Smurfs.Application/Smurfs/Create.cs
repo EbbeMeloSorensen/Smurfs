@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Smurfs.Application.Core;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 using Smurfs.Persistence;
 
 namespace Smurfs.Application.Smurfs;

@@ -1,4 +1,4 @@
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 using Microsoft.AspNetCore.Mvc;
 using Smurfs.Application.Smurfs;
 

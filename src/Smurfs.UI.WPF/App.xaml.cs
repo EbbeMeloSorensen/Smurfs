@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Smurfs.Application.Core;
 using Smurfs.Application.Smurfs;
-using Smurfs.Domain.BusinessRules;
+using Smurfs.Domain.VillageLife.BusinessRules;
 using Smurfs.Infrastructure.Logging;
 using Smurfs.Infrastructure.Pagination;
 using Smurfs.Infrastructure.Smurfs;

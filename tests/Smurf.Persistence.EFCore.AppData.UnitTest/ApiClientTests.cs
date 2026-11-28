@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Smurfs.Domain;
+using Smurfs.Domain.VillageLife;
 using Smurfs.Persistence.API;
 
 namespace Smurf.Persistence.EFCore.AppData.UnitTest;

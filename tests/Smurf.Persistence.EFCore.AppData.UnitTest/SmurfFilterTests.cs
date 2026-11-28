@@ -37,11 +37,11 @@ public sealed class SmurfFilterTests
         await using var context = new SqliteDataContext(options);
         await context.Database.EnsureCreatedAsync();
         context.Smurfs.AddRange(
-            new Smurfs.Domain.Smurf { Name = "Papa", Infected = true },
-            new Smurfs.Domain.Smurf { Name = "PAPA two", Infected = false },
-            new Smurfs.Domain.Smurf { Name = "Other", Infected = true },
-            new Smurfs.Domain.Smurf { Name = "painter", Infected = null },
-            new Smurfs.Domain.Smurf { Name = "Literal %", Infected = false });
+            new Smurfs.Domain.VillageLife.Smurf { Name = "Papa", Infected = true },
+            new Smurfs.Domain.VillageLife.Smurf { Name = "PAPA two", Infected = false },
+            new Smurfs.Domain.VillageLife.Smurf { Name = "Other", Infected = true },
+            new Smurfs.Domain.VillageLife.Smurf { Name = "painter", Infected = null },
+            new Smurfs.Domain.VillageLife.Smurf { Name = "Literal %", Infected = false });
         await context.SaveChangesAsync();
         var handler = new Smurfs.Application.Smurfs.List.Handler(new SmurfReadService(context));
         var query = new Smurfs.Application.Smurfs.List.Query

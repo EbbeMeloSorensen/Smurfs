@@ -1,6 +1,6 @@
 using Craft.Domain;
 
-namespace Smurfs.Domain.BusinessRules.AtomicRules;
+namespace Smurfs.Domain.VillageLife.BusinessRules.AtomicRules;
 
 /// <summary>
 /// Requires a nonblank Smurf name of at most 20 characters.

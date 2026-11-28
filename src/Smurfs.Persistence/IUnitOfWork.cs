@@ -1,4 +1,4 @@
-using Smurfs.Persistence.Repositories;
+using Smurfs.Persistence.VillageLife.Repositories;
 
 namespace Smurfs.Persistence;
 

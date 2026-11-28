@@ -1,9 +1,9 @@
 using Craft.Persistence.EFCore;
 using Microsoft.EntityFrameworkCore;
-using Smurfs.Domain;
-using Smurfs.Persistence.Repositories;
+using Smurfs.Domain.VillageLife;
+using Smurfs.Persistence.VillageLife.Repositories;
 
-namespace Smurfs.Persistence.EFCore.AppData.Repositories;
+namespace Smurfs.Persistence.EFCore.AppData.VillageLife.Repositories;
 
 /// <summary>
 /// Applies the generic EF Core repository behavior to Smurfs.
